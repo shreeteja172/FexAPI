@@ -1,4 +1,0 @@
-# Framework: Next.js
-# Format: endpoint: field:type,field:type
-users: id:uuid,fullName:name,username:string,email:email,avatarUrl:url
-posts: id:uuid,title:string,body:string,createdAt:date

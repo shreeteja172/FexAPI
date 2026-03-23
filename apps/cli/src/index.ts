@@ -9,15 +9,19 @@ import {
   writeFileSync,
 } from "node:fs";
 import { dirname, join } from "node:path";
+import { parseMockitSchema } from "./schema";
 import { startServer } from "./server";
+import type { GeneratedApiSpec } from "./server";
 
 const args = process.argv.slice(2);
+const GENERATED_SPEC_RELATIVE_PATH = "mockit/generated.api.json";
 
 const printHelp = () => {
   console.log("mockit-cli");
   console.log("");
   console.log("Usage:");
   console.log("  mockit init [--force]");
+  console.log("  mockit generate");
   console.log("  mockit serve [--host <host>] [--port <number>]");
   console.log("  mockit [--host <host>] [--port <number>]");
   console.log("  mockit --help");
@@ -25,6 +29,7 @@ const printHelp = () => {
   console.log("Examples:");
   console.log("  mockit init");
   console.log("  mockit init --force");
+  console.log("  mockit generate");
   console.log("  mockit serve --host 127.0.0.1 --port 5000");
   console.log("  mockit --port 4000");
   console.log("");
@@ -36,6 +41,10 @@ const printHelp = () => {
   console.log("`mockit init` creates:");
   console.log("  mockit.config.json");
   console.log("  mockit/schema.mockit");
+  console.log("");
+  console.log("Then run:");
+  console.log("  mockit generate");
+  console.log("  mockit serve");
 };
 
 type SupportedFramework =
@@ -228,9 +237,13 @@ const getSchemaTemplate = (framework: SupportedFramework): string => {
 
   return [
     frameworkHint,
-    "# Format: endpoint: field:type,field:type",
-    "users: id:uuid,fullName:name,username:string,email:email,avatarUrl:url",
-    "posts: id:uuid,title:string,body:string,createdAt:date",
+    "# Server",
+    "port: 4000",
+    "",
+    "# Routes",
+    "# Format: METHOD /endpoint: field:type,field:type",
+    "GET /users: id:uuid,fullName:name,username:string,email:email,avatarUrl:url",
+    "GET /posts: id:uuid,title:string,body:string,createdAt:date",
   ].join("\n");
 };
 
@@ -247,6 +260,25 @@ const parseInitOptions = (
   }
 
   return { force: initArgs.includes("--force") };
+};
+
+const parseGenerateOptions = (generateArgs: string[]): { error?: string } => {
+  const invalidFlags = generateArgs.filter((value) => value.startsWith("-"));
+
+  if (invalidFlags.length > 0) {
+    return { error: `Unknown option(s): ${invalidFlags.join(", ")}` };
+  }
+
+  return {};
+};
+
+const resolveProjectRoot = (): string | undefined => {
+  const packageJsonPath = findClosestPackageJson(process.cwd());
+  if (!packageJsonPath) {
+    return undefined;
+  }
+
+  return dirname(packageJsonPath);
 };
 
 const initializeProject = ({ force }: { force: boolean }): number => {
@@ -275,6 +307,7 @@ const initializeProject = ({ force }: { force: boolean }): number => {
     frameworks: detectedProject.frameworks,
     tooling: detectedProject.tooling,
     schemaPath: "mockit/schema.mockit",
+    generatedPath: GENERATED_SPEC_RELATIVE_PATH,
     createdAt: new Date().toISOString(),
   };
 
@@ -322,9 +355,86 @@ const initializeProject = ({ force }: { force: boolean }): number => {
   return 0;
 };
 
+const generateFromSchema = (): number => {
+  const projectRoot = resolveProjectRoot();
+
+  if (!projectRoot) {
+    console.error(
+      "Could not find package.json in this directory or parent directories.",
+    );
+    return 1;
+  }
+
+  const schemaPath = join(projectRoot, "mockit", "schema.mockit");
+  const generatedPath = join(projectRoot, "mockit", "generated.api.json");
+  const configPath = join(projectRoot, "mockit.config.json");
+
+  if (!existsSync(schemaPath)) {
+    console.error(`Schema file not found: ${schemaPath}`);
+    console.error("Run `mockit init` first.");
+    return 1;
+  }
+
+  const schemaText = readFileSync(schemaPath, "utf-8");
+  const parsed = parseMockitSchema(schemaText);
+
+  if (parsed.errors.length > 0 || !parsed.schema) {
+    console.error("Failed to generate API from schema.mockit");
+    for (const error of parsed.errors) {
+      console.error(`- ${error}`);
+    }
+
+    return 1;
+  }
+
+  const generated = {
+    schemaVersion: 1,
+    generatedAt: new Date().toISOString(),
+    port: parsed.schema.port,
+    routes: parsed.schema.routes,
+  };
+
+  writeFileSync(
+    generatedPath,
+    `${JSON.stringify(generated, null, 2)}\n`,
+    "utf-8",
+  );
+
+  let existingConfig: Record<string, unknown> = {};
+  if (existsSync(configPath)) {
+    try {
+      existingConfig = JSON.parse(readFileSync(configPath, "utf-8")) as Record<
+        string,
+        unknown
+      >;
+    } catch {
+      existingConfig = {};
+    }
+  }
+
+  const updatedConfig = {
+    ...existingConfig,
+    schemaPath: "mockit/schema.mockit",
+    generatedPath: GENERATED_SPEC_RELATIVE_PATH,
+    lastGeneratedAt: new Date().toISOString(),
+  };
+
+  writeFileSync(
+    configPath,
+    `${JSON.stringify(updatedConfig, null, 2)}\n`,
+    "utf-8",
+  );
+
+  console.log(`Generated API spec at ${generatedPath}`);
+  console.log(`Routes generated: ${parsed.schema.routes.length}`);
+  console.log(`Configured server port: ${parsed.schema.port}`);
+
+  return 0;
+};
+
 const parseServeOptions = (
   serveArgs: string[],
-): { host: string; port: number } | { error: string } => {
+): { host: string; port?: number } | { error: string } => {
   const getFlagValue = (
     flagName: "--host" | "--port",
   ): string | { error: string } | undefined => {
@@ -361,13 +471,44 @@ const parseServeOptions = (
   }
 
   const host = hostValue ?? "127.0.0.1";
-  const port = Number(portValue ?? 4000);
+  const port = portValue ? Number(portValue) : undefined;
 
-  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+  if (
+    port !== undefined &&
+    (!Number.isInteger(port) || port < 1 || port > 65535)
+  ) {
     return { error: `Invalid port: ${portValue ?? ""}`.trim() };
   }
 
   return { host, port };
+};
+
+const loadGeneratedApiSpec = (
+  projectRoot: string,
+): GeneratedApiSpec | undefined => {
+  const generatedPath = join(projectRoot, GENERATED_SPEC_RELATIVE_PATH);
+
+  if (!existsSync(generatedPath)) {
+    return undefined;
+  }
+
+  try {
+    const parsed = JSON.parse(readFileSync(generatedPath, "utf-8")) as {
+      port?: unknown;
+      routes?: unknown;
+    };
+
+    if (typeof parsed.port !== "number" || !Array.isArray(parsed.routes)) {
+      return undefined;
+    }
+
+    return {
+      port: parsed.port,
+      routes: parsed.routes as GeneratedApiSpec["routes"],
+    };
+  } catch {
+    return undefined;
+  }
 };
 
 const [firstArg, ...restArgs] = args;
@@ -392,6 +533,25 @@ if (firstArg === "init") {
 
   const exitCode = initializeProject({ force: initOptions.force });
   process.exit(exitCode);
+} else if (firstArg === "generate") {
+  if (restArgs.includes("--help") || restArgs.includes("-h")) {
+    console.log("Usage: mockit generate");
+    console.log(
+      "Reads mockit/schema.mockit and creates mockit/generated.api.json.",
+    );
+    process.exit(0);
+  }
+
+  const generateOptions = parseGenerateOptions(restArgs);
+  if (generateOptions.error) {
+    console.error(generateOptions.error);
+    console.log("");
+    console.log("Usage: mockit generate");
+    process.exit(1);
+  }
+
+  const exitCode = generateFromSchema();
+  process.exit(exitCode);
 } else if (!firstArg || firstArg === "serve" || firstArg.startsWith("-")) {
   const serveArgs = firstArg === "serve" ? restArgs : args;
 
@@ -409,7 +569,27 @@ if (firstArg === "init") {
     process.exit(1);
   }
 
-  const server = startServer({ host: options.host, port: options.port });
+  const projectRoot = resolveProjectRoot();
+  const generatedSpec = projectRoot
+    ? loadGeneratedApiSpec(projectRoot)
+    : undefined;
+  const effectivePort = options.port ?? generatedSpec?.port ?? 4000;
+
+  if (generatedSpec) {
+    console.log(
+      `Using generated schema routes (${generatedSpec.routes.length}) from ${GENERATED_SPEC_RELATIVE_PATH}`,
+    );
+  } else {
+    console.log(
+      "No generated schema found. Run `mockit generate` to serve schema-defined endpoints.",
+    );
+  }
+
+  const server = startServer({
+    host: options.host,
+    port: effectivePort,
+    apiSpec: generatedSpec,
+  });
 
   const shutdown = () => {
     server.close((error) => {
