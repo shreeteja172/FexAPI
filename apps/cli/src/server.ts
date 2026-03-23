@@ -170,25 +170,6 @@ const toCollectionKey = (routePath: string): string => {
   return lastSegment.replace(/[^a-zA-Z0-9_]/g, "_");
 };
 
-const createMockUser = () => {
-  return {
-    id: faker.string.uuid(),
-    fullName: faker.person.fullName(),
-    username: faker.internet.username(),
-    email: faker.internet.email(),
-    avatarUrl: faker.image.avatar(),
-  };
-};
-
-const createMockPost = () => {
-  return {
-    id: faker.string.uuid(),
-    title: faker.lorem.sentence(),
-    body: faker.lorem.paragraphs({ min: 1, max: 3 }),
-    createdAt: faker.date.recent({ days: 14 }).toISOString(),
-  };
-};
-
 const createRecordFromSchemaName = (
   schemaName: string,
   schemaDefinitions: FexapiSchemaDefinitions,
@@ -198,14 +179,6 @@ const createRecordFromSchemaName = (
   const customSchemaDefinition = schemaDefinitions[normalizedSchemaName];
   if (customSchemaDefinition) {
     return createRecordFromSchemaDefinition(customSchemaDefinition);
-  }
-
-  if (normalizedSchemaName === "user") {
-    return createMockUser();
-  }
-
-  if (normalizedSchemaName === "post") {
-    return createMockPost();
   }
 
   return {
@@ -241,6 +214,16 @@ export const startServer = ({
   const corsEnabled = runtimeConfig?.cors ?? false;
   const responseDelay = runtimeConfig?.delay ?? 0;
   const configuredRoutes = runtimeConfig?.routes ?? {};
+  const availableConfiguredRoutes = Object.keys(configuredRoutes).map(
+    (path) => `GET ${path}`,
+  );
+  const availableSchemaRoutes = apiSpec
+    ? apiSpec.routes.map((route) => `${route.method} ${route.path}`)
+    : [];
+  const availableRoutes = [
+    "GET /health",
+    ...new Set([...availableConfiguredRoutes, ...availableSchemaRoutes]),
+  ];
 
   const server = createServer((request, response) => {
     const pathname = new URL(request.url ?? "/", "http://localhost").pathname;
@@ -312,43 +295,12 @@ export const startServer = ({
       }
     }
 
-    if (request.method === "GET" && pathname === "/users") {
-      const count = getCountFromUrl(request.url, 8);
-      sendJson(
-        response,
-        200,
-        {
-          users: Array.from({ length: count }, createMockUser),
-        },
-        { cors: corsEnabled, delay: responseDelay },
-      );
-      return;
-    }
-
-    if (request.method === "GET" && pathname === "/posts") {
-      const count = getCountFromUrl(request.url, 5);
-      sendJson(
-        response,
-        200,
-        {
-          posts: Array.from({ length: count }, createMockPost),
-        },
-        { cors: corsEnabled, delay: responseDelay },
-      );
-      return;
-    }
-
     sendJson(
       response,
       404,
       {
         message: "Route not found",
-        availableRoutes: apiSpec
-          ? [
-              "GET /health",
-              ...apiSpec.routes.map((route) => `${route.method} ${route.path}`),
-            ]
-          : ["GET /health", "GET /users?count=10", "GET /posts?count=5"],
+        availableRoutes,
       },
       { cors: corsEnabled, delay: responseDelay },
     );

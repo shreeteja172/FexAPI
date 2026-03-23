@@ -14,6 +14,55 @@ npm install -g fexapi
 fexapi [options]
 ```
 
+## Prisma-like Flow (Dynamic)
+
+### 1) Initialize
+
+```bash
+pnpm dlx fexapi init
+```
+
+Creates:
+
+- `fexapi/schema.fexapi`
+- `fexapi.config.json`
+
+### 2) Edit schema file
+
+`fexapi/schema.fexapi` uses a simple DSL with only `:` and `,` (no semicolons):
+
+```txt
+# Server
+port: 4100
+
+# Routes
+GET /users: id:uuid,name:name,email:email,age:number,phone:phone,pic:url,courseName:string
+GET /courses: id:uuid,courseName:string,mentor:name
+```
+
+### 3) Generate artifacts (like migrations)
+
+```bash
+npx fexapi generate
+```
+
+Generates:
+
+- `fexapi/generated.api.json`
+- `fexapi/migrations/*.json`
+
+### 4) Start server
+
+```bash
+npx fexapi run
+# or
+npx fexapi serve
+# or (inside local workspace package)
+npm run serve
+```
+
+Server port is read from `schema.fexapi` unless overridden by CLI `--port`.
+
 ## Configuration File Support
 
 Create a `fexapi.config.js` in your project root:
@@ -41,7 +90,7 @@ Notes:
 
 - `port` sets the default server port (CLI `--port` still has priority).
 - `routes` maps endpoint paths to generated payload settings.
-- `schema` supports `user`, `post`, and falls back to a generic record for unknown values.
+- `schema` maps to files under `schemas/` (for example `schema: "user"` -> `schemas/user.yaml`); unknown names fall back to a generic record.
 - `cors: true` enables CORS headers and OPTIONS preflight handling.
 - `delay` adds response latency in milliseconds.
 

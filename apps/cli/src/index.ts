@@ -36,7 +36,7 @@ if (firstArg === "init") {
   if (restArgs.includes("--help") || restArgs.includes("-h")) {
     console.log("Usage: fexapi generate");
     console.log(
-      "Reads fexapi/schema.fexapi and creates fexapi/generated.api.json.",
+      "Reads fexapi/schema.fexapi and creates generated API artifacts + migrations.",
     );
     process.exit(0);
   }
@@ -50,8 +50,14 @@ if (firstArg === "init") {
   }
 
   process.exit(generateFromSchema());
-} else if (!firstArg || firstArg === "serve" || firstArg.startsWith("-")) {
-  const serveArgs = firstArg === "serve" ? restArgs : args;
+} else if (
+  !firstArg ||
+  firstArg === "serve" ||
+  firstArg === "run" ||
+  firstArg.startsWith("-")
+) {
+  const serveArgs =
+    firstArg === "serve" || firstArg === "run" ? restArgs : args;
 
   if (serveArgs.includes("--help") || serveArgs.includes("-h")) {
     printHelp();
@@ -67,7 +73,10 @@ if (firstArg === "init") {
     process.exit(1);
   }
 
-  process.exit(serveProject(options));
+  const exitCode = serveProject(options);
+  if (exitCode !== 0) {
+    process.exit(exitCode);
+  }
 } else if (firstArg === "help") {
   printHelp();
   process.exit(0);

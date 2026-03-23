@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { GENERATED_SPEC_RELATIVE_PATH } from "../constants";
 import { resolveProjectRoot } from "../project/paths";
@@ -16,6 +16,7 @@ export const generateFromSchema = (): number => {
 
   const schemaPath = join(projectRoot, "fexapi", "schema.fexapi");
   const generatedPath = join(projectRoot, "fexapi", "generated.api.json");
+  const migrationsDirectoryPath = join(projectRoot, "fexapi", "migrations");
   const configPath = join(projectRoot, "fexapi.config.json");
 
   if (!existsSync(schemaPath)) {
@@ -43,9 +44,30 @@ export const generateFromSchema = (): number => {
     routes: parsed.schema.routes,
   };
 
+  mkdirSync(migrationsDirectoryPath, { recursive: true });
+
+  const migrationId = new Date().toISOString().replace(/[.:]/g, "-");
+  const migrationPath = join(
+    migrationsDirectoryPath,
+    `${migrationId}_schema.json`,
+  );
+  const migration = {
+    migrationId,
+    sourceSchema: "fexapi/schema.fexapi",
+    createdAt: generated.generatedAt,
+    port: parsed.schema.port,
+    routes: parsed.schema.routes,
+  };
+
   writeFileSync(
     generatedPath,
     `${JSON.stringify(generated, null, 2)}\n`,
+    "utf-8",
+  );
+
+  writeFileSync(
+    migrationPath,
+    `${JSON.stringify(migration, null, 2)}\n`,
     "utf-8",
   );
 
@@ -75,6 +97,7 @@ export const generateFromSchema = (): number => {
   );
 
   console.log(`Generated API spec at ${generatedPath}`);
+  console.log(`Migration created at ${migrationPath}`);
   console.log(`Routes generated: ${parsed.schema.routes.length}`);
   console.log(`Configured server port: ${parsed.schema.port}`);
 
