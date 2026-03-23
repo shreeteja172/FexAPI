@@ -45,6 +45,38 @@ Notes:
 - `cors: true` enables CORS headers and OPTIONS preflight handling.
 - `delay` adds response latency in milliseconds.
 
+## Custom Schema Definitions
+
+You can define custom schemas in YAML files under `schemas/`.
+
+```yaml
+# schemas/user.yaml
+name:
+  type: string
+  faker: person.fullName
+email:
+  type: string
+  faker: internet.email
+age:
+  type: number
+  min: 18
+  max: 80
+```
+
+Then reference it in `fexapi.config.js`:
+
+```js
+routes: {
+  "/users": { count: 50, schema: "user" }
+}
+```
+
+Notes:
+
+- Supported file extensions: `.yaml`, `.yml`
+- Schema name is taken from filename (for example `schemas/user.yaml` -> `schema: "user"`)
+- `faker` values map to Faker paths like `person.fullName`, `internet.email`
+
 ## Features
 
 - Schema-based mock API generation

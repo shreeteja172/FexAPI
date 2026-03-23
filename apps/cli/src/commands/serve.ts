@@ -1,6 +1,7 @@
 import { GENERATED_SPEC_RELATIVE_PATH } from "../constants";
 import { loadGeneratedApiSpec } from "../config/generated-spec";
 import { loadFexapiRuntimeConfig } from "../config/runtime-config";
+import { loadSchemaDefinitions } from "../config/schema-definitions";
 import { resolveProjectRoot } from "../project/paths";
 import { startServer } from "../server";
 
@@ -15,6 +16,9 @@ export const serveProject = ({
   const runtimeConfig = projectRoot
     ? loadFexapiRuntimeConfig(projectRoot)
     : undefined;
+  const schemaDefinitions = projectRoot
+    ? loadSchemaDefinitions(projectRoot)
+    : {};
   const generatedSpec = projectRoot
     ? loadGeneratedApiSpec(projectRoot)
     : undefined;
@@ -25,6 +29,12 @@ export const serveProject = ({
   if (runtimeConfig?.routes && Object.keys(runtimeConfig.routes).length > 0) {
     console.log(
       `Using routes from fexapi.config.js (${Object.keys(runtimeConfig.routes).length})`,
+    );
+  }
+
+  if (Object.keys(schemaDefinitions).length > 0) {
+    console.log(
+      `Loaded custom schemas from /schemas (${Object.keys(schemaDefinitions).length})`,
     );
   }
 
@@ -49,6 +59,7 @@ export const serveProject = ({
     port: effectivePort,
     apiSpec: generatedSpec,
     runtimeConfig,
+    schemaDefinitions,
   });
 
   const shutdown = () => {

@@ -2,13 +2,18 @@ import { faker } from "@faker-js/faker";
 import { createServer } from "node:http";
 import type { ServerResponse } from "node:http";
 import type { FexapiField, FexapiRoute } from "./schema";
-import type { FexapiRuntimeConfig } from "./types/config";
+import type {
+  FexapiRuntimeConfig,
+  FexapiSchemaDefinitions,
+  FexapiSchemaFieldDefinition,
+} from "./types/config";
 
 export type ServerOptions = {
   host?: string;
   port?: number;
   apiSpec?: GeneratedApiSpec;
   runtimeConfig?: FexapiRuntimeConfig;
+  schemaDefinitions?: FexapiSchemaDefinitions;
 };
 
 export type GeneratedApiSpec = {
@@ -81,6 +86,79 @@ const createRecordFromRoute = (route: FexapiRoute): Record<string, unknown> => {
   }, {});
 };
 
+const resolveFakerMethod = (path: string): (() => unknown) | undefined => {
+  const pathParts = path.split(".").filter(Boolean);
+  let current: unknown = faker;
+
+  for (const pathPart of pathParts) {
+    if (typeof current !== "object" || current === null) {
+      return undefined;
+    }
+
+    current = (current as Record<string, unknown>)[pathPart];
+  }
+
+  if (typeof current !== "function") {
+    return undefined;
+  }
+
+  return current as () => unknown;
+};
+
+const createValueFromSchemaFieldDefinition = (
+  fieldDefinition: FexapiSchemaFieldDefinition,
+): unknown => {
+  if (fieldDefinition.faker) {
+    const fakerMethod = resolveFakerMethod(fieldDefinition.faker);
+    if (fakerMethod) {
+      return fakerMethod();
+    }
+  }
+
+  switch (fieldDefinition.type) {
+    case "number": {
+      const min =
+        typeof fieldDefinition.min === "number" ? fieldDefinition.min : 1;
+      const max =
+        typeof fieldDefinition.max === "number" ? fieldDefinition.max : 10000;
+
+      return faker.number.int({
+        min: Math.min(min, max),
+        max: Math.max(min, max),
+      });
+    }
+    case "boolean":
+      return faker.datatype.boolean();
+    case "date":
+      return faker.date.recent({ days: 30 }).toISOString();
+    case "uuid":
+      return faker.string.uuid();
+    case "email":
+      return faker.internet.email();
+    case "url":
+      return faker.internet.url();
+    case "name":
+      return faker.person.fullName();
+    case "phone":
+      return faker.phone.number();
+    case "string":
+    default:
+      return faker.lorem.words({ min: 1, max: 4 });
+  }
+};
+
+const createRecordFromSchemaDefinition = (
+  schemaDefinition: Record<string, FexapiSchemaFieldDefinition>,
+): Record<string, unknown> => {
+  const result: Record<string, unknown> = {};
+
+  for (const [fieldName, fieldDefinition] of Object.entries(schemaDefinition)) {
+    result[fieldName] = createValueFromSchemaFieldDefinition(fieldDefinition);
+  }
+
+  return result;
+};
+
 const toCollectionKey = (routePath: string): string => {
   const segments = routePath.split("/").filter(Boolean);
   const lastSegment = segments[segments.length - 1];
@@ -113,8 +191,14 @@ const createMockPost = () => {
 
 const createRecordFromSchemaName = (
   schemaName: string,
+  schemaDefinitions: FexapiSchemaDefinitions,
 ): Record<string, unknown> => {
   const normalizedSchemaName = schemaName.trim().toLowerCase();
+
+  const customSchemaDefinition = schemaDefinitions[normalizedSchemaName];
+  if (customSchemaDefinition) {
+    return createRecordFromSchemaDefinition(customSchemaDefinition);
+  }
 
   if (normalizedSchemaName === "user") {
     return createMockUser();
@@ -152,6 +236,7 @@ export const startServer = ({
   port = DEFAULT_PORT,
   apiSpec,
   runtimeConfig,
+  schemaDefinitions = {},
 }: ServerOptions = {}) => {
   const corsEnabled = runtimeConfig?.cors ?? false;
   const responseDelay = runtimeConfig?.delay ?? 0;
@@ -192,7 +277,10 @@ export const startServer = ({
           200,
           {
             [payloadKey]: Array.from({ length: configuredRoute.count }, () =>
-              createRecordFromSchemaName(configuredRoute.schema),
+              createRecordFromSchemaName(
+                configuredRoute.schema,
+                schemaDefinitions,
+              ),
             ),
           },
           { cors: corsEnabled, delay: responseDelay },
