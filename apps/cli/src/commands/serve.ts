@@ -1,0 +1,69 @@
+import { GENERATED_SPEC_RELATIVE_PATH } from "../constants";
+import { loadGeneratedApiSpec } from "../config/generated-spec";
+import { loadFexapiRuntimeConfig } from "../config/runtime-config";
+import { resolveProjectRoot } from "../project/paths";
+import { startServer } from "../server";
+
+export const serveProject = ({
+  host,
+  port,
+}: {
+  host: string;
+  port?: number;
+}): number => {
+  const projectRoot = resolveProjectRoot();
+  const runtimeConfig = projectRoot
+    ? loadFexapiRuntimeConfig(projectRoot)
+    : undefined;
+  const generatedSpec = projectRoot
+    ? loadGeneratedApiSpec(projectRoot)
+    : undefined;
+
+  const effectivePort =
+    port ?? runtimeConfig?.port ?? generatedSpec?.port ?? 4000;
+
+  if (runtimeConfig?.routes && Object.keys(runtimeConfig.routes).length > 0) {
+    console.log(
+      `Using routes from fexapi.config.js (${Object.keys(runtimeConfig.routes).length})`,
+    );
+  }
+
+  if (
+    generatedSpec &&
+    !(runtimeConfig?.routes && Object.keys(runtimeConfig.routes).length > 0)
+  ) {
+    console.log(
+      `Using generated schema routes (${generatedSpec.routes.length}) from ${GENERATED_SPEC_RELATIVE_PATH}`,
+    );
+  } else if (
+    !runtimeConfig?.routes ||
+    Object.keys(runtimeConfig.routes).length === 0
+  ) {
+    console.log(
+      "No generated schema found. Run `fexapi generate` to serve schema-defined endpoints.",
+    );
+  }
+
+  const server = startServer({
+    host,
+    port: effectivePort,
+    apiSpec: generatedSpec,
+    runtimeConfig,
+  });
+
+  const shutdown = () => {
+    server.close((error) => {
+      if (error) {
+        console.error("Error while shutting down server", error);
+        process.exit(1);
+      }
+
+      process.exit(0);
+    });
+  };
+
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
+
+  return 0;
+};
