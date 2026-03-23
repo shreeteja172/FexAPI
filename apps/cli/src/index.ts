@@ -1,6 +1,13 @@
 #!/usr/bin/env node
 
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, join } from "node:path";
 import { startServer } from "./server";
 
@@ -10,13 +17,14 @@ const printHelp = () => {
   console.log("mockit-cli");
   console.log("");
   console.log("Usage:");
-  console.log("  mockit init");
+  console.log("  mockit init [--force]");
   console.log("  mockit serve [--host <host>] [--port <number>]");
   console.log("  mockit [--host <host>] [--port <number>]");
   console.log("  mockit --help");
   console.log("");
   console.log("Examples:");
   console.log("  mockit init");
+  console.log("  mockit init --force");
   console.log("  mockit serve --host 127.0.0.1 --port 5000");
   console.log("  mockit --port 4000");
   console.log("");
@@ -24,9 +32,30 @@ const printHelp = () => {
   console.log("  npx mockit init");
   console.log("  pnpm dlx mockit init");
   console.log("  yarn dlx mockit init");
+  console.log("");
+  console.log("`mockit init` creates:");
+  console.log("  mockit.config.json");
+  console.log("  mockit/schema.mockit");
 };
 
-type SupportedFramework = "nextjs" | "reactjs" | "unknown";
+type SupportedFramework =
+  | "nextjs"
+  | "reactjs"
+  | "vue"
+  | "nuxt"
+  | "svelte"
+  | "sveltekit"
+  | "angular"
+  | "solid"
+  | "remix"
+  | "astro"
+  | "unknown";
+
+type DetectedProject = {
+  primaryFramework: SupportedFramework;
+  frameworks: SupportedFramework[];
+  tooling: string[];
+};
 
 const findClosestPackageJson = (startDirectory: string): string | undefined => {
   let currentDirectory = startDirectory;
@@ -46,7 +75,7 @@ const findClosestPackageJson = (startDirectory: string): string | undefined => {
   }
 };
 
-const detectFramework = (packageJsonPath: string): SupportedFramework => {
+const readDependencyNames = (packageJsonPath: string): Set<string> => {
   type JsonLike = Record<string, unknown>;
 
   const packageJsonText = readFileSync(packageJsonPath, "utf-8");
@@ -60,20 +89,167 @@ const detectFramework = (packageJsonPath: string): SupportedFramework => {
     string,
     string
   >;
-  const allDeps = { ...dependencies, ...devDependencies };
 
-  if ("next" in allDeps) {
-    return "nextjs";
-  }
-
-  if ("react" in allDeps || "react-dom" in allDeps) {
-    return "reactjs";
-  }
-
-  return "unknown";
+  return new Set([
+    ...Object.keys(dependencies),
+    ...Object.keys(devDependencies),
+  ]);
 };
 
-const initializeProject = (): number => {
+const readWorkspaceDependencyNames = (projectRoot: string): Set<string> => {
+  const result = new Set<string>();
+
+  const rootsToScan = [
+    join(projectRoot, "apps"),
+    join(projectRoot, "packages"),
+  ];
+
+  for (const rootPath of rootsToScan) {
+    if (!existsSync(rootPath)) {
+      continue;
+    }
+
+    for (const entry of readdirSync(rootPath)) {
+      const entryPath = join(rootPath, entry);
+      if (!statSync(entryPath).isDirectory()) {
+        continue;
+      }
+
+      const packageJsonPath = join(entryPath, "package.json");
+      if (!existsSync(packageJsonPath)) {
+        continue;
+      }
+
+      const dependencyNames = readDependencyNames(packageJsonPath);
+      for (const dependencyName of dependencyNames) {
+        result.add(dependencyName);
+      }
+    }
+  }
+
+  return result;
+};
+
+const detectProject = (
+  packageJsonPath: string,
+  projectRoot: string,
+): DetectedProject => {
+  const dependencyNames = readDependencyNames(packageJsonPath);
+
+  const frameworks = new Set<SupportedFramework>();
+  const tooling = new Set<string>();
+
+  if (
+    dependencyNames.has("turbo") ||
+    existsSync(join(projectRoot, "turbo.json"))
+  ) {
+    tooling.add("turborepo");
+  }
+
+  if (dependencyNames.has("nx") || existsSync(join(projectRoot, "nx.json"))) {
+    tooling.add("nx");
+  }
+
+  if (existsSync(join(projectRoot, "pnpm-workspace.yaml"))) {
+    tooling.add("pnpm-workspace");
+  }
+
+  if (tooling.has("turborepo") || tooling.has("pnpm-workspace")) {
+    const workspaceDeps = readWorkspaceDependencyNames(projectRoot);
+    for (const dependencyName of workspaceDeps) {
+      dependencyNames.add(dependencyName);
+    }
+  }
+
+  if (dependencyNames.has("next")) {
+    frameworks.add("nextjs");
+  }
+
+  if (dependencyNames.has("react") || dependencyNames.has("react-dom")) {
+    frameworks.add("reactjs");
+  }
+
+  if (dependencyNames.has("vue")) {
+    frameworks.add("vue");
+  }
+
+  if (dependencyNames.has("nuxt")) {
+    frameworks.add("nuxt");
+  }
+
+  if (dependencyNames.has("svelte")) {
+    frameworks.add("svelte");
+  }
+
+  if (dependencyNames.has("@sveltejs/kit")) {
+    frameworks.add("sveltekit");
+  }
+
+  if (dependencyNames.has("@angular/core")) {
+    frameworks.add("angular");
+  }
+
+  if (dependencyNames.has("solid-js")) {
+    frameworks.add("solid");
+  }
+
+  if (
+    dependencyNames.has("@remix-run/react") ||
+    dependencyNames.has("@remix-run/node")
+  ) {
+    frameworks.add("remix");
+  }
+
+  if (dependencyNames.has("astro")) {
+    frameworks.add("astro");
+  }
+
+  if (dependencyNames.has("vite")) {
+    tooling.add("vite");
+  }
+
+  const frameworkList = Array.from(frameworks);
+  const primaryFramework = frameworkList[0] ?? "unknown";
+
+  return {
+    primaryFramework,
+    frameworks: frameworkList.length > 0 ? frameworkList : ["unknown"],
+    tooling: Array.from(tooling),
+  };
+};
+
+const getSchemaTemplate = (framework: SupportedFramework): string => {
+  const frameworkHint =
+    framework === "nextjs"
+      ? "# Framework: Next.js"
+      : framework === "reactjs"
+        ? "# Framework: React"
+        : "# Framework: unknown";
+
+  return [
+    frameworkHint,
+    "# Format: endpoint: field:type,field:type",
+    "users: id:uuid,fullName:name,username:string,email:email,avatarUrl:url",
+    "posts: id:uuid,title:string,body:string,createdAt:date",
+  ].join("\n");
+};
+
+const parseInitOptions = (
+  initArgs: string[],
+): { force: boolean } | { error: string } => {
+  const validFlags = new Set(["--force"]);
+  const invalidFlags = initArgs.filter(
+    (value) => value.startsWith("-") && !validFlags.has(value),
+  );
+
+  if (invalidFlags.length > 0) {
+    return { error: `Unknown option(s): ${invalidFlags.join(", ")}` };
+  }
+
+  return { force: initArgs.includes("--force") };
+};
+
+const initializeProject = ({ force }: { force: boolean }): number => {
   const packageJsonPath = findClosestPackageJson(process.cwd());
 
   if (!packageJsonPath) {
@@ -84,29 +260,62 @@ const initializeProject = (): number => {
   }
 
   const projectRoot = dirname(packageJsonPath);
-  const framework = detectFramework(packageJsonPath);
+  const detectedProject = detectProject(packageJsonPath, projectRoot);
+  const mockitDirectoryPath = join(projectRoot, "mockit");
+  const schemaPath = join(mockitDirectoryPath, "schema.mockit");
   const configPath = join(projectRoot, "mockit.config.json");
 
-  if (existsSync(configPath)) {
-    console.log(`mockit.config.json already exists at ${configPath}`);
-    console.log(`Detected framework: ${framework}`);
-    return 0;
-  }
+  mkdirSync(mockitDirectoryPath, { recursive: true });
+
+  const configExists = existsSync(configPath);
+  const schemaExists = existsSync(schemaPath);
 
   const config = {
-    framework,
+    framework: detectedProject.primaryFramework,
+    frameworks: detectedProject.frameworks,
+    tooling: detectedProject.tooling,
+    schemaPath: "mockit/schema.mockit",
     createdAt: new Date().toISOString(),
   };
 
-  writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf-8");
+  if (!configExists || force) {
+    writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf-8");
+  }
+
+  if (!schemaExists || force) {
+    writeFileSync(
+      schemaPath,
+      `${getSchemaTemplate(detectedProject.primaryFramework)}\n`,
+      "utf-8",
+    );
+  }
 
   console.log(`Initialized Mockit in ${projectRoot}`);
-  console.log(`Detected framework: ${framework}`);
-  console.log(`Created ${configPath}`);
+  console.log(`Detected framework: ${detectedProject.primaryFramework}`);
+  console.log(`Detected frameworks: ${detectedProject.frameworks.join(", ")}`);
+  if (detectedProject.tooling.length > 0) {
+    console.log(`Detected tooling: ${detectedProject.tooling.join(", ")}`);
+  }
 
-  if (framework === "unknown") {
+  if (configExists && !force) {
+    console.log(`Exists ${configPath}`);
+  } else if (configExists && force) {
+    console.log(`Overwritten ${configPath}`);
+  } else {
+    console.log(`Created ${configPath}`);
+  }
+
+  if (schemaExists && !force) {
+    console.log(`Exists ${schemaPath}`);
+  } else if (schemaExists && force) {
+    console.log(`Overwritten ${schemaPath}`);
+  } else {
+    console.log(`Created ${schemaPath}`);
+  }
+
+  if (detectedProject.primaryFramework === "unknown") {
     console.log(
-      "No Next.js/React dependency found. Update mockit.config.json if needed.",
+      "No known framework dependency found. Update mockit.config.json and schema.mockit if needed.",
     );
   }
 
@@ -165,14 +374,23 @@ const [firstArg, ...restArgs] = args;
 
 if (firstArg === "init") {
   if (restArgs.includes("--help") || restArgs.includes("-h")) {
-    console.log("Usage: mockit init");
+    console.log("Usage: mockit init [--force]");
     console.log(
-      "Detects the project framework and creates mockit.config.json.",
+      "Detects frameworks/tooling and creates mockit.config.json + mockit/schema.mockit.",
     );
+    console.log("Use --force to overwrite existing files.");
     process.exit(0);
   }
 
-  const exitCode = initializeProject();
+  const initOptions = parseInitOptions(restArgs);
+  if ("error" in initOptions) {
+    console.error(initOptions.error);
+    console.log("");
+    console.log("Usage: mockit init [--force]");
+    process.exit(1);
+  }
+
+  const exitCode = initializeProject({ force: initOptions.force });
   process.exit(exitCode);
 } else if (!firstArg || firstArg === "serve" || firstArg.startsWith("-")) {
   const serveArgs = firstArg === "serve" ? restArgs : args;
