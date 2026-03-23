@@ -1,5 +1,5 @@
 {
-  "name": "cli",
+  "name": "mockit",
   "version": "1.0.0",
   "description": "Mockit CLI for running a local mock API server",
   "main": "./dist/index.js",
@@ -16,7 +16,12 @@
     "start": "node dist/index.js",
     "dev": "tsc -w -p tsconfig.json"
   },
-  "keywords": [],
+  "keywords": [
+    "mock",
+    "cli",
+    "nextjs",
+    "react"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
