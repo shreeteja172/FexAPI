@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { createServer } from "node:http";
 import type { ServerResponse } from "node:http";
-import type { MockitField, MockitRoute } from "./schema";
+import type { NexapiField, NexapiRoute } from "./schema";
 
 export type ServerOptions = {
   host?: string;
@@ -11,7 +11,7 @@ export type ServerOptions = {
 
 export type GeneratedApiSpec = {
   port: number;
-  routes: MockitRoute[];
+  routes: NexapiRoute[];
 };
 
 const DEFAULT_HOST = "127.0.0.1";
@@ -26,7 +26,7 @@ const sendJson = (
   response.end(JSON.stringify(payload));
 };
 
-const createValueFromField = (field: MockitField): unknown => {
+const createValueFromField = (field: NexapiField): unknown => {
   switch (field.type) {
     case "number":
       return faker.number.int({ min: 1, max: 10000 });
@@ -51,7 +51,7 @@ const createValueFromField = (field: MockitField): unknown => {
   }
 };
 
-const createRecordFromRoute = (route: MockitRoute): Record<string, unknown> => {
+const createRecordFromRoute = (route: NexapiRoute): Record<string, unknown> => {
   return route.fields.reduce<Record<string, unknown>>((record, field) => {
     record[field.name] = createValueFromField(field);
     return record;

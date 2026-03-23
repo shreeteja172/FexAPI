@@ -1,4 +1,4 @@
-export type MockitFieldType =
+export type NexapiFieldType =
   | "number"
   | "string"
   | "boolean"
@@ -9,23 +9,23 @@ export type MockitFieldType =
   | "name"
   | "phone";
 
-export type MockitField = {
+export type NexapiField = {
   name: string;
-  type: MockitFieldType;
+  type: NexapiFieldType;
 };
 
-export type MockitRoute = {
+export type NexapiRoute = {
   method: string;
   path: string;
-  fields: MockitField[];
+  fields: NexapiField[];
 };
 
-export type MockitSchema = {
+export type NexapiSchema = {
   port: number;
-  routes: MockitRoute[];
+  routes: NexapiRoute[];
 };
 
-const VALID_TYPES: MockitFieldType[] = [
+const VALID_TYPES: NexapiFieldType[] = [
   "number",
   "string",
   "boolean",
@@ -39,7 +39,7 @@ const VALID_TYPES: MockitFieldType[] = [
 
 const DEFAULT_PORT = 4000;
 
-const parseField = (rawField: string): MockitField | { error: string } => {
+const parseField = (rawField: string): NexapiField | { error: string } => {
   const [rawName, rawType] = rawField.split(":");
   const name = rawName?.trim();
   const type = rawType?.trim().toLowerCase();
@@ -52,7 +52,7 @@ const parseField = (rawField: string): MockitField | { error: string } => {
     return { error: `Invalid field "${rawField}". Missing field type.` };
   }
 
-  if (!VALID_TYPES.includes(type as MockitFieldType)) {
+  if (!VALID_TYPES.includes(type as NexapiFieldType)) {
     return {
       error: `Unknown type "${type}" in field "${name}". Valid types: ${VALID_TYPES.join(", ")}`,
     };
@@ -60,11 +60,11 @@ const parseField = (rawField: string): MockitField | { error: string } => {
 
   return {
     name,
-    type: type as MockitFieldType,
+    type: type as NexapiFieldType,
   };
 };
 
-const parseRoute = (line: string): MockitRoute | { error: string } => {
+const parseRoute = (line: string): NexapiRoute | { error: string } => {
   const separatorIndex = line.indexOf(":");
 
   if (separatorIndex === -1) {
@@ -99,7 +99,7 @@ const parseRoute = (line: string): MockitRoute | { error: string } => {
     return { error: `Route path must start with '/': ${path}` };
   }
 
-  const fields: MockitField[] = [];
+  const fields: NexapiField[] = [];
   for (const part of rawFields.split(",")) {
     const trimmedPart = part.trim();
     if (!trimmedPart) {
@@ -121,11 +121,11 @@ const parseRoute = (line: string): MockitRoute | { error: string } => {
   return { method, path, fields };
 };
 
-export const parseMockitSchema = (
+export const parseNexapiSchema = (
   schemaText: string,
-): { schema?: MockitSchema; errors: string[] } => {
+): { schema?: NexapiSchema; errors: string[] } => {
   let port = DEFAULT_PORT;
-  const routes: MockitRoute[] = [];
+  const routes: NexapiRoute[] = [];
   const errors: string[] = [];
 
   const lines = schemaText
@@ -161,7 +161,7 @@ export const parseMockitSchema = (
   }
 
   if (routes.length === 0) {
-    errors.push("No routes defined in schema.mockit.");
+    errors.push("No routes defined in schema.nexapi.");
   }
 
   if (errors.length > 0) {

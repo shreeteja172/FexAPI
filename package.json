@@ -1,5 +1,5 @@
 {
-  "name": "mockit",
+  "name": "nexapi",
   "private": true,
   "scripts": {
     "build": "turbo run build",

@@ -9,42 +9,42 @@ import {
   writeFileSync,
 } from "node:fs";
 import { dirname, join } from "node:path";
-import { parseMockitSchema } from "./schema";
+import { parseNexapiSchema } from "./schema";
 import { startServer } from "./server";
 import type { GeneratedApiSpec } from "./server";
 
 const args = process.argv.slice(2);
-const GENERATED_SPEC_RELATIVE_PATH = "mockit/generated.api.json";
+const GENERATED_SPEC_RELATIVE_PATH = "nexapi/generated.api.json";
 
 const printHelp = () => {
-  console.log("mockit-cli");
+  console.log("nexapi-cli");
   console.log("");
   console.log("Usage:");
-  console.log("  mockit init [--force]");
-  console.log("  mockit generate");
-  console.log("  mockit serve [--host <host>] [--port <number>]");
-  console.log("  mockit [--host <host>] [--port <number>]");
-  console.log("  mockit --help");
+  console.log("  nexapi init [--force]");
+  console.log("  nexapi generate");
+  console.log("  nexapi serve [--host <host>] [--port <number>]");
+  console.log("  nexapi [--host <host>] [--port <number>]");
+  console.log("  nexapi --help");
   console.log("");
   console.log("Examples:");
-  console.log("  mockit init");
-  console.log("  mockit init --force");
-  console.log("  mockit generate");
-  console.log("  mockit serve --host 127.0.0.1 --port 5000");
-  console.log("  mockit --port 4000");
+  console.log("  nexapi init");
+  console.log("  nexapi init --force");
+  console.log("  nexapi generate");
+  console.log("  nexapi serve --host 127.0.0.1 --port 5000");
+  console.log("  nexapi --port 4000");
   console.log("");
   console.log("Package manager usage:");
-  console.log("  npx mockit init");
-  console.log("  pnpm dlx mockit init");
-  console.log("  yarn dlx mockit init");
+  console.log("  npx nexapi init");
+  console.log("  pnpm dlx nexapi init");
+  console.log("  yarn dlx nexapi init");
   console.log("");
-  console.log("`mockit init` creates:");
-  console.log("  mockit.config.json");
-  console.log("  mockit/schema.mockit");
+  console.log("`nexapi init` creates:");
+  console.log("  nexapi.config.json");
+  console.log("  nexapi/schema.nexapi");
   console.log("");
   console.log("Then run:");
-  console.log("  mockit generate");
-  console.log("  mockit serve");
+  console.log("  nexapi generate");
+  console.log("  nexapi serve");
 };
 
 type SupportedFramework =
@@ -293,11 +293,11 @@ const initializeProject = ({ force }: { force: boolean }): number => {
 
   const projectRoot = dirname(packageJsonPath);
   const detectedProject = detectProject(packageJsonPath, projectRoot);
-  const mockitDirectoryPath = join(projectRoot, "mockit");
-  const schemaPath = join(mockitDirectoryPath, "schema.mockit");
-  const configPath = join(projectRoot, "mockit.config.json");
+  const nexapiDirectoryPath = join(projectRoot, "nexapi");
+  const schemaPath = join(nexapiDirectoryPath, "schema.nexapi");
+  const configPath = join(projectRoot, "nexapi.config.json");
 
-  mkdirSync(mockitDirectoryPath, { recursive: true });
+  mkdirSync(nexapiDirectoryPath, { recursive: true });
 
   const configExists = existsSync(configPath);
   const schemaExists = existsSync(schemaPath);
@@ -306,7 +306,7 @@ const initializeProject = ({ force }: { force: boolean }): number => {
     framework: detectedProject.primaryFramework,
     frameworks: detectedProject.frameworks,
     tooling: detectedProject.tooling,
-    schemaPath: "mockit/schema.mockit",
+    schemaPath: "nexapi/schema.nexapi",
     generatedPath: GENERATED_SPEC_RELATIVE_PATH,
     createdAt: new Date().toISOString(),
   };
@@ -323,7 +323,7 @@ const initializeProject = ({ force }: { force: boolean }): number => {
     );
   }
 
-  console.log(`Initialized Mockit in ${projectRoot}`);
+  console.log(`Initialized Nexapi in ${projectRoot}`);
   console.log(`Detected framework: ${detectedProject.primaryFramework}`);
   console.log(`Detected frameworks: ${detectedProject.frameworks.join(", ")}`);
   if (detectedProject.tooling.length > 0) {
@@ -348,7 +348,7 @@ const initializeProject = ({ force }: { force: boolean }): number => {
 
   if (detectedProject.primaryFramework === "unknown") {
     console.log(
-      "No known framework dependency found. Update mockit.config.json and schema.mockit if needed.",
+      "No known framework dependency found. Update nexapi.config.json and schema.nexapi if needed.",
     );
   }
 
@@ -365,21 +365,21 @@ const generateFromSchema = (): number => {
     return 1;
   }
 
-  const schemaPath = join(projectRoot, "mockit", "schema.mockit");
-  const generatedPath = join(projectRoot, "mockit", "generated.api.json");
-  const configPath = join(projectRoot, "mockit.config.json");
+  const schemaPath = join(projectRoot, "nexapi", "schema.nexapi");
+  const generatedPath = join(projectRoot, "nexapi", "generated.api.json");
+  const configPath = join(projectRoot, "nexapi.config.json");
 
   if (!existsSync(schemaPath)) {
     console.error(`Schema file not found: ${schemaPath}`);
-    console.error("Run `mockit init` first.");
+    console.error("Run `nexapi init` first.");
     return 1;
   }
 
   const schemaText = readFileSync(schemaPath, "utf-8");
-  const parsed = parseMockitSchema(schemaText);
+  const parsed = parseNexapiSchema(schemaText);
 
   if (parsed.errors.length > 0 || !parsed.schema) {
-    console.error("Failed to generate API from schema.mockit");
+    console.error("Failed to generate API from schema.nexapi");
     for (const error of parsed.errors) {
       console.error(`- ${error}`);
     }
@@ -414,7 +414,7 @@ const generateFromSchema = (): number => {
 
   const updatedConfig = {
     ...existingConfig,
-    schemaPath: "mockit/schema.mockit",
+    schemaPath: "nexapi/schema.nexapi",
     generatedPath: GENERATED_SPEC_RELATIVE_PATH,
     lastGeneratedAt: new Date().toISOString(),
   };
@@ -515,9 +515,9 @@ const [firstArg, ...restArgs] = args;
 
 if (firstArg === "init") {
   if (restArgs.includes("--help") || restArgs.includes("-h")) {
-    console.log("Usage: mockit init [--force]");
+    console.log("Usage: nexapi init [--force]");
     console.log(
-      "Detects frameworks/tooling and creates mockit.config.json + mockit/schema.mockit.",
+      "Detects frameworks/tooling and creates nexapi.config.json + nexapi/schema.nexapi.",
     );
     console.log("Use --force to overwrite existing files.");
     process.exit(0);
@@ -527,7 +527,7 @@ if (firstArg === "init") {
   if ("error" in initOptions) {
     console.error(initOptions.error);
     console.log("");
-    console.log("Usage: mockit init [--force]");
+    console.log("Usage: nexapi init [--force]");
     process.exit(1);
   }
 
@@ -535,9 +535,9 @@ if (firstArg === "init") {
   process.exit(exitCode);
 } else if (firstArg === "generate") {
   if (restArgs.includes("--help") || restArgs.includes("-h")) {
-    console.log("Usage: mockit generate");
+    console.log("Usage: nexapi generate");
     console.log(
-      "Reads mockit/schema.mockit and creates mockit/generated.api.json.",
+      "Reads nexapi/schema.nexapi and creates nexapi/generated.api.json.",
     );
     process.exit(0);
   }
@@ -546,7 +546,7 @@ if (firstArg === "init") {
   if (generateOptions.error) {
     console.error(generateOptions.error);
     console.log("");
-    console.log("Usage: mockit generate");
+    console.log("Usage: nexapi generate");
     process.exit(1);
   }
 
@@ -581,7 +581,7 @@ if (firstArg === "init") {
     );
   } else {
     console.log(
-      "No generated schema found. Run `mockit generate` to serve schema-defined endpoints.",
+      "No generated schema found. Run `nexapi generate` to serve schema-defined endpoints.",
     );
   }
 

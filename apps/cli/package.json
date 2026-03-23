@@ -1,11 +1,11 @@
 {
-  "name": "mockit",
+  "name": "nexapi",
   "version": "1.0.0",
-  "description": "Mockit CLI for running a local mock API server",
+  "description": "Nexapi CLI for running a local mock API server",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "mockit": "./dist/index.js"
+    "nexapi": "./dist/index.js"
   },
   "files": [
     "dist"
