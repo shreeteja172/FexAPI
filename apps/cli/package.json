@@ -1,34 +1,51 @@
 {
-  "name": "nexapi",
-  "version": "1.0.0",
-  "description": "Nexapi CLI for running a local mock API server",
+  "name": "fexapi",
+  "version": "0.1.0",
+  "description": "Mock API generation CLI tool for local development and testing",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "nexapi": "./dist/index.js"
+    "fexapi": "dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check-types": "tsc --noEmit",
     "start": "node dist/index.js",
-    "dev": "tsc -w -p tsconfig.json"
+    "dev": "tsc -w -p tsconfig.json",
+    "prepublishOnly": "pnpm build"
   },
   "keywords": [
     "mock",
+    "api",
     "cli",
-    "nextjs",
-    "react"
+    "testing",
+    "development",
+    "faker",
+    "mock-server"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Shreeteja Mutukundu smutukundu2006@gmail.com",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shreeteja172/fexapi.git",
+    "directory": "apps/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/shreeteja172/fexapi/issues"
+  },
+  "homepage": "https://github.com/shreeteja172/fexapi#readme",
   "devDependencies": {
     "@types/node": "^22.15.3",
     "typescript": "5.9.2"
   },
   "dependencies": {
     "@faker-js/faker": "^10.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

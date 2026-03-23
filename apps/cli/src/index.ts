@@ -9,42 +9,42 @@ import {
   writeFileSync,
 } from "node:fs";
 import { dirname, join } from "node:path";
-import { parseNexapiSchema } from "./schema";
+import { parseFexapiSchema } from "./schema";
 import { startServer } from "./server";
 import type { GeneratedApiSpec } from "./server";
 
 const args = process.argv.slice(2);
-const GENERATED_SPEC_RELATIVE_PATH = "nexapi/generated.api.json";
+const GENERATED_SPEC_RELATIVE_PATH = "fexapi/generated.api.json";
 
 const printHelp = () => {
-  console.log("nexapi-cli");
+  console.log("fexapi-cli");
   console.log("");
   console.log("Usage:");
-  console.log("  nexapi init [--force]");
-  console.log("  nexapi generate");
-  console.log("  nexapi serve [--host <host>] [--port <number>]");
-  console.log("  nexapi [--host <host>] [--port <number>]");
-  console.log("  nexapi --help");
+  console.log("  fexapi init [--force]");
+  console.log("  fexapi generate");
+  console.log("  fexapi serve [--host <host>] [--port <number>]");
+  console.log("  fexapi [--host <host>] [--port <number>]");
+  console.log("  fexapi --help");
   console.log("");
   console.log("Examples:");
-  console.log("  nexapi init");
-  console.log("  nexapi init --force");
-  console.log("  nexapi generate");
-  console.log("  nexapi serve --host 127.0.0.1 --port 5000");
-  console.log("  nexapi --port 4000");
+  console.log("  fexapi init");
+  console.log("  fexapi init --force");
+  console.log("  fexapi generate");
+  console.log("  fexapi serve --host 127.0.0.1 --port 5000");
+  console.log("  fexapi --port 4000");
   console.log("");
   console.log("Package manager usage:");
-  console.log("  npx nexapi init");
-  console.log("  pnpm dlx nexapi init");
-  console.log("  yarn dlx nexapi init");
+  console.log("  npx fexapi init");
+  console.log("  pnpm dlx fexapi init");
+  console.log("  yarn dlx fexapi init");
   console.log("");
-  console.log("`nexapi init` creates:");
-  console.log("  nexapi.config.json");
-  console.log("  nexapi/schema.nexapi");
+  console.log("`fexapi init` creates:");
+  console.log("  fexapi.config.json");
+  console.log("  fexapi/schema.fexapi");
   console.log("");
   console.log("Then run:");
-  console.log("  nexapi generate");
-  console.log("  nexapi serve");
+  console.log("  fexapi generate");
+  console.log("  fexapi serve");
 };
 
 type SupportedFramework =
@@ -293,11 +293,11 @@ const initializeProject = ({ force }: { force: boolean }): number => {
 
   const projectRoot = dirname(packageJsonPath);
   const detectedProject = detectProject(packageJsonPath, projectRoot);
-  const nexapiDirectoryPath = join(projectRoot, "nexapi");
-  const schemaPath = join(nexapiDirectoryPath, "schema.nexapi");
-  const configPath = join(projectRoot, "nexapi.config.json");
+  const fexapiDirectoryPath = join(projectRoot, "fexapi");
+  const schemaPath = join(fexapiDirectoryPath, "schema.fexapi");
+  const configPath = join(projectRoot, "fexapi.config.json");
 
-  mkdirSync(nexapiDirectoryPath, { recursive: true });
+  mkdirSync(fexapiDirectoryPath, { recursive: true });
 
   const configExists = existsSync(configPath);
   const schemaExists = existsSync(schemaPath);
@@ -306,7 +306,7 @@ const initializeProject = ({ force }: { force: boolean }): number => {
     framework: detectedProject.primaryFramework,
     frameworks: detectedProject.frameworks,
     tooling: detectedProject.tooling,
-    schemaPath: "nexapi/schema.nexapi",
+    schemaPath: "fexapi/schema.fexapi",
     generatedPath: GENERATED_SPEC_RELATIVE_PATH,
     createdAt: new Date().toISOString(),
   };
@@ -323,7 +323,7 @@ const initializeProject = ({ force }: { force: boolean }): number => {
     );
   }
 
-  console.log(`Initialized Nexapi in ${projectRoot}`);
+  console.log(`Initialized Fexapi in ${projectRoot}`);
   console.log(`Detected framework: ${detectedProject.primaryFramework}`);
   console.log(`Detected frameworks: ${detectedProject.frameworks.join(", ")}`);
   if (detectedProject.tooling.length > 0) {
@@ -348,7 +348,7 @@ const initializeProject = ({ force }: { force: boolean }): number => {
 
   if (detectedProject.primaryFramework === "unknown") {
     console.log(
-      "No known framework dependency found. Update nexapi.config.json and schema.nexapi if needed.",
+      "No known framework dependency found. Update fexapi.config.json and schema.fexapi if needed.",
     );
   }
 
@@ -365,21 +365,21 @@ const generateFromSchema = (): number => {
     return 1;
   }
 
-  const schemaPath = join(projectRoot, "nexapi", "schema.nexapi");
-  const generatedPath = join(projectRoot, "nexapi", "generated.api.json");
-  const configPath = join(projectRoot, "nexapi.config.json");
+  const schemaPath = join(projectRoot, "fexapi", "schema.fexapi");
+  const generatedPath = join(projectRoot, "fexapi", "generated.api.json");
+  const configPath = join(projectRoot, "fexapi.config.json");
 
   if (!existsSync(schemaPath)) {
     console.error(`Schema file not found: ${schemaPath}`);
-    console.error("Run `nexapi init` first.");
+    console.error("Run `fexapi init` first.");
     return 1;
   }
 
   const schemaText = readFileSync(schemaPath, "utf-8");
-  const parsed = parseNexapiSchema(schemaText);
+  const parsed = parseFexapiSchema(schemaText);
 
   if (parsed.errors.length > 0 || !parsed.schema) {
-    console.error("Failed to generate API from schema.nexapi");
+    console.error("Failed to generate API from schema.fexapi");
     for (const error of parsed.errors) {
       console.error(`- ${error}`);
     }
@@ -414,7 +414,7 @@ const generateFromSchema = (): number => {
 
   const updatedConfig = {
     ...existingConfig,
-    schemaPath: "nexapi/schema.nexapi",
+    schemaPath: "fexapi/schema.fexapi",
     generatedPath: GENERATED_SPEC_RELATIVE_PATH,
     lastGeneratedAt: new Date().toISOString(),
   };
@@ -515,9 +515,9 @@ const [firstArg, ...restArgs] = args;
 
 if (firstArg === "init") {
   if (restArgs.includes("--help") || restArgs.includes("-h")) {
-    console.log("Usage: nexapi init [--force]");
+    console.log("Usage: fexapi init [--force]");
     console.log(
-      "Detects frameworks/tooling and creates nexapi.config.json + nexapi/schema.nexapi.",
+      "Detects frameworks/tooling and creates fexapi.config.json + fexapi/schema.fexapi.",
     );
     console.log("Use --force to overwrite existing files.");
     process.exit(0);
@@ -527,7 +527,7 @@ if (firstArg === "init") {
   if ("error" in initOptions) {
     console.error(initOptions.error);
     console.log("");
-    console.log("Usage: nexapi init [--force]");
+    console.log("Usage: fexapi init [--force]");
     process.exit(1);
   }
 
@@ -535,9 +535,9 @@ if (firstArg === "init") {
   process.exit(exitCode);
 } else if (firstArg === "generate") {
   if (restArgs.includes("--help") || restArgs.includes("-h")) {
-    console.log("Usage: nexapi generate");
+    console.log("Usage: fexapi generate");
     console.log(
-      "Reads nexapi/schema.nexapi and creates nexapi/generated.api.json.",
+      "Reads fexapi/schema.fexapi and creates fexapi/generated.api.json.",
     );
     process.exit(0);
   }
@@ -546,7 +546,7 @@ if (firstArg === "init") {
   if (generateOptions.error) {
     console.error(generateOptions.error);
     console.log("");
-    console.log("Usage: nexapi generate");
+    console.log("Usage: fexapi generate");
     process.exit(1);
   }
 
@@ -581,7 +581,7 @@ if (firstArg === "init") {
     );
   } else {
     console.log(
-      "No generated schema found. Run `nexapi generate` to serve schema-defined endpoints.",
+      "No generated schema found. Run `fexapi generate` to serve schema-defined endpoints.",
     );
   }
 

@@ -21,7 +21,9 @@ const ThemeImage = (props: Props) => {
 export default function Home() {
   return (
     <div>
-      Welcome to serverless mock API playground! This is a simple app to test your mock APIs created with nexapi. You can find the source code for this app on{" "}
+      Welcome to serverless mock API playground! This is a simple app to test
+      your mock APIs created with fexapi. You can find the source code for this
+      app on{" "}
     </div>
   );
 }

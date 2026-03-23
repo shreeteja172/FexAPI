@@ -1,4 +1,4 @@
-export type NexapiFieldType =
+export type FexapiFieldType =
   | "number"
   | "string"
   | "boolean"
@@ -9,23 +9,23 @@ export type NexapiFieldType =
   | "name"
   | "phone";
 
-export type NexapiField = {
+export type FexapiField = {
   name: string;
-  type: NexapiFieldType;
+  type: FexapiFieldType;
 };
 
-export type NexapiRoute = {
+export type FexapiRoute = {
   method: string;
   path: string;
-  fields: NexapiField[];
+  fields: FexapiField[];
 };
 
-export type NexapiSchema = {
+export type FexapiSchema = {
   port: number;
-  routes: NexapiRoute[];
+  routes: FexapiRoute[];
 };
 
-const VALID_TYPES: NexapiFieldType[] = [
+const VALID_TYPES: FexapiFieldType[] = [
   "number",
   "string",
   "boolean",
@@ -39,7 +39,7 @@ const VALID_TYPES: NexapiFieldType[] = [
 
 const DEFAULT_PORT = 4000;
 
-const parseField = (rawField: string): NexapiField | { error: string } => {
+const parseField = (rawField: string): FexapiField | { error: string } => {
   const [rawName, rawType] = rawField.split(":");
   const name = rawName?.trim();
   const type = rawType?.trim().toLowerCase();
@@ -52,7 +52,7 @@ const parseField = (rawField: string): NexapiField | { error: string } => {
     return { error: `Invalid field "${rawField}". Missing field type.` };
   }
 
-  if (!VALID_TYPES.includes(type as NexapiFieldType)) {
+  if (!VALID_TYPES.includes(type as FexapiFieldType)) {
     return {
       error: `Unknown type "${type}" in field "${name}". Valid types: ${VALID_TYPES.join(", ")}`,
     };
@@ -60,11 +60,11 @@ const parseField = (rawField: string): NexapiField | { error: string } => {
 
   return {
     name,
-    type: type as NexapiFieldType,
+    type: type as FexapiFieldType,
   };
 };
 
-const parseRoute = (line: string): NexapiRoute | { error: string } => {
+const parseRoute = (line: string): FexapiRoute | { error: string } => {
   const separatorIndex = line.indexOf(":");
 
   if (separatorIndex === -1) {
@@ -99,7 +99,7 @@ const parseRoute = (line: string): NexapiRoute | { error: string } => {
     return { error: `Route path must start with '/': ${path}` };
   }
 
-  const fields: NexapiField[] = [];
+  const fields: FexapiField[] = [];
   for (const part of rawFields.split(",")) {
     const trimmedPart = part.trim();
     if (!trimmedPart) {
@@ -121,11 +121,11 @@ const parseRoute = (line: string): NexapiRoute | { error: string } => {
   return { method, path, fields };
 };
 
-export const parseNexapiSchema = (
+export const parseFexapiSchema = (
   schemaText: string,
-): { schema?: NexapiSchema; errors: string[] } => {
+): { schema?: FexapiSchema; errors: string[] } => {
   let port = DEFAULT_PORT;
-  const routes: NexapiRoute[] = [];
+  const routes: FexapiRoute[] = [];
   const errors: string[] = [];
 
   const lines = schemaText
@@ -161,7 +161,7 @@ export const parseNexapiSchema = (
   }
 
   if (routes.length === 0) {
-    errors.push("No routes defined in schema.nexapi.");
+    errors.push("No routes defined in schema.fexapi.");
   }
 
   if (errors.length > 0) {
