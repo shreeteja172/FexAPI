@@ -1,16 +1,27 @@
 {
   "name": "cli",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Mockit CLI for running a local mock API server",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "mockit": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p tsconfig.json",
+    "check-types": "tsc --noEmit",
+    "start": "node dist/index.js",
+    "dev": "tsc -w -p tsconfig.json"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^22.15.3"
+    "@types/node": "^22.15.3",
+    "typescript": "5.9.2"
   },
   "dependencies": {
     "@faker-js/faker": "^10.3.0"
