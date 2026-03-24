@@ -82,7 +82,7 @@ export const parseServeOptions = (
 export const parseDevOptions = (
   devArgs: string[],
 ):
-  | { host: string; port?: number; watchEnabled: boolean }
+  | { host: string; port?: number; watchEnabled: boolean; logEnabled: boolean }
   | { error: string } => {
   const getFlagValue = (
     flagName: "--host" | "--port",
@@ -106,7 +106,8 @@ export const parseDevOptions = (
       value.startsWith("-") &&
       value !== "--host" &&
       value !== "--port" &&
-      value !== "--watch",
+      value !== "--watch" &&
+      value !== "--log",
   );
   if (unknownFlags.length > 0) {
     return { error: `Unknown option(s): ${unknownFlags.join(", ")}` };
@@ -132,5 +133,10 @@ export const parseDevOptions = (
     return { error: `Invalid port: ${portValue ?? ""}`.trim() };
   }
 
-  return { host, port, watchEnabled: devArgs.includes("--watch") };
+  return {
+    host,
+    port,
+    watchEnabled: devArgs.includes("--watch"),
+    logEnabled: devArgs.includes("--log"),
+  };
 };

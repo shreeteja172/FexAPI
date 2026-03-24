@@ -34,13 +34,15 @@ export const runDevCommand = ({
   host,
   port,
   watchEnabled,
+  logEnabled,
 }: {
   host: string;
   port?: number;
   watchEnabled: boolean;
+  logEnabled: boolean;
 }): number => {
   if (!watchEnabled) {
-    return serveProject({ host, port });
+    return serveProject({ host, port, logEnabled });
   }
 
   const projectRoot = resolveProjectRoot();
@@ -52,7 +54,7 @@ export const runDevCommand = ({
     return 1;
   }
 
-  let currentServer = createProjectServer({ host, port });
+  let currentServer = createProjectServer({ host, port, logEnabled });
   if (!currentServer) {
     return 1;
   }
@@ -82,7 +84,7 @@ export const runDevCommand = ({
       });
     });
 
-    currentServer = createProjectServer({ host, port });
+    currentServer = createProjectServer({ host, port, logEnabled });
 
     restartInProgress = false;
 

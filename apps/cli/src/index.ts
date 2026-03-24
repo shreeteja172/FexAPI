@@ -56,7 +56,7 @@ const main = async () => {
   } else if (firstArg === "dev") {
     if (restArgs.includes("--help") || restArgs.includes("-h")) {
       console.log(
-        "Usage: fexapi dev [--watch] [--host <host>] [--port <number>]",
+        "Usage: fexapi dev [--watch] [--host <host>] [--port <number>] [--log]",
       );
       console.log(
         "Starts development server and optionally auto-reloads when config/schema files change.",
@@ -69,7 +69,7 @@ const main = async () => {
       console.error(devOptions.error);
       console.log("");
       console.log(
-        "Usage: fexapi dev [--watch] [--host <host>] [--port <number>]",
+        "Usage: fexapi dev [--watch] [--host <host>] [--port <number>] [--log]",
       );
       process.exit(1);
     }

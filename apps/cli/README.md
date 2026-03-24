@@ -69,6 +69,8 @@ npx fexapi serve
 npx fexapi serve --log
 # or dev watch mode (nodemon-like)
 npx fexapi dev --watch
+# watch mode + request logs
+npx fexapi dev --watch --log
 # or (inside local workspace package)
 npm run serve
 ```
