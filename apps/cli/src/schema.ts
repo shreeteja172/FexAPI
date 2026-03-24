@@ -38,6 +38,9 @@ const VALID_TYPES: FexapiFieldType[] = [
 ];
 
 const DEFAULT_PORT = 4000;
+const ROUTE_FORMAT_ERROR_MESSAGE =
+  "Invalid route definition. Expected format: " +
+  "METHOD /endpoint: field:type,field:type";
 
 const parseField = (rawField: string): FexapiField | { error: string } => {
   const [rawName, rawType] = rawField.split(":");
@@ -54,7 +57,9 @@ const parseField = (rawField: string): FexapiField | { error: string } => {
 
   if (!VALID_TYPES.includes(type as FexapiFieldType)) {
     return {
-      error: `Unknown type "${type}" in field "${name}". Valid types: ${VALID_TYPES.join(", ")}`,
+      error: `Unknown type "${type}" in field "${name}". Valid types: ${VALID_TYPES.join(
+        ", ",
+      )}`,
     };
   }
 
@@ -68,20 +73,14 @@ const parseRoute = (line: string): FexapiRoute | { error: string } => {
   const separatorIndex = line.indexOf(":");
 
   if (separatorIndex === -1) {
-    return {
-      error:
-        "Invalid route definition. Expected format: METHOD /endpoint: field:type,field:type",
-    };
+    return { error: ROUTE_FORMAT_ERROR_MESSAGE };
   }
 
   const rawLeft = line.slice(0, separatorIndex);
   const rawFields = line.slice(separatorIndex + 1);
 
   if (!rawLeft || !rawFields) {
-    return {
-      error:
-        "Invalid route definition. Expected format: METHOD /endpoint: field:type,field:type",
-    };
+    return { error: ROUTE_FORMAT_ERROR_MESSAGE };
   }
 
   const [rawMethod, rawPath] = rawLeft.trim().split(/\s+/, 2);

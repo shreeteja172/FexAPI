@@ -1,6 +1,6 @@
 {
   "name": "fexapi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Mock API generation CLI tool for local development and testing",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "lint": "pnpm exec eslint . --max-warnings 0",
     "check-types": "tsc --noEmit",
     "start": "node dist/index.js",
     "serve": "node dist/index.js serve",
@@ -40,7 +41,9 @@
   },
   "homepage": "https://github.com/shreeteja172/fexapi#readme",
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@types/node": "^22.15.3",
+    "eslint": "^9.39.1",
     "typescript": "5.9.2"
   },
   "dependencies": {

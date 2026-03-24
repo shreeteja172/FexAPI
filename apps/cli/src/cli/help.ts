@@ -32,5 +32,5 @@ export const printHelp = () => {
   console.log("");
   console.log("Generate output:");
   console.log("  fexapi/generated.api.json");
-  console.log("  fexapi/migrations/*.json");
+  console.log("  fexapi/migrations/schema.json");
 };

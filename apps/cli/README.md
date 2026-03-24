@@ -40,7 +40,7 @@ GET /users: id:uuid,name:name,email:email,age:number,phone:phone,pic:url,courseN
 GET /courses: id:uuid,courseName:string,mentor:name
 ```
 
-### 3) Generate artifacts (like migrations)
+### 3) Generate artifacts (updates migration)
 
 ```bash
 npx fexapi generate
@@ -49,7 +49,7 @@ npx fexapi generate
 Generates:
 
 - `fexapi/generated.api.json`
-- `fexapi/migrations/*.json`
+- `fexapi/migrations/schema.json`
 
 ### 4) Start server
 

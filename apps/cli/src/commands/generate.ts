@@ -1,4 +1,11 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { GENERATED_SPEC_RELATIVE_PATH } from "../constants";
 import { resolveProjectRoot } from "../project/paths";
@@ -46,11 +53,18 @@ export const generateFromSchema = (): number => {
 
   mkdirSync(migrationsDirectoryPath, { recursive: true });
 
+  const existingMigrationFiles = readdirSync(migrationsDirectoryPath, {
+    withFileTypes: true,
+  })
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
+    .map((entry) => join(migrationsDirectoryPath, entry.name));
+
+  for (const migrationFilePath of existingMigrationFiles) {
+    unlinkSync(migrationFilePath);
+  }
+
   const migrationId = new Date().toISOString().replace(/[.:]/g, "-");
-  const migrationPath = join(
-    migrationsDirectoryPath,
-    `${migrationId}_schema.json`,
-  );
+  const migrationPath = join(migrationsDirectoryPath, "schema.json");
   const migration = {
     migrationId,
     sourceSchema: "fexapi/schema.fexapi",
@@ -97,7 +111,7 @@ export const generateFromSchema = (): number => {
   );
 
   console.log(`Generated API spec at ${generatedPath}`);
-  console.log(`Migration created at ${migrationPath}`);
+  console.log(`Migration updated at ${migrationPath}`);
   console.log(`Routes generated: ${parsed.schema.routes.length}`);
   console.log(`Configured server port: ${parsed.schema.port}`);
 

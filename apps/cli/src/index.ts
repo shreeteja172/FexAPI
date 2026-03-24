@@ -36,7 +36,7 @@ if (firstArg === "init") {
   if (restArgs.includes("--help") || restArgs.includes("-h")) {
     console.log("Usage: fexapi generate");
     console.log(
-      "Reads fexapi/schema.fexapi and creates generated API artifacts + migrations.",
+      "Reads fexapi/schema.fexapi and updates generated API artifacts + migration.",
     );
     process.exit(0);
   }
