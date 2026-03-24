@@ -223,7 +223,6 @@ export const startServer = ({
     ? apiSpec.routes.map((route) => `${route.method} ${route.path}`)
     : [];
   const availableRoutes = [
-    "GET /health",
     ...new Set([...availableConfiguredRoutes, ...availableSchemaRoutes]),
   ];
 
@@ -249,19 +248,6 @@ export const startServer = ({
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
       });
       response.end();
-      return;
-    }
-
-    if (request.method === "GET" && pathname === "/health") {
-      sendJson(
-        response,
-        200,
-        {
-          ok: true,
-          timestamp: new Date().toISOString(),
-        },
-        { cors: corsEnabled, delay: responseDelay },
-      );
       return;
     }
 
