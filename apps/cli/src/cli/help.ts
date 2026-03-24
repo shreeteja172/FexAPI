@@ -5,9 +5,9 @@ export const printHelp = () => {
   console.log("  fexapi init [--force]");
   console.log("  fexapi generate");
   console.log("  fexapi dev [--watch] [--host <host>] [--port <number>]");
-  console.log("  fexapi serve [--host <host>] [--port <number>]");
-  console.log("  fexapi run [--host <host>] [--port <number>]");
-  console.log("  fexapi [--host <host>] [--port <number>]");
+  console.log("  fexapi serve [--host <host>] [--port <number>] [--log]");
+  console.log("  fexapi run [--host <host>] [--port <number>] [--log]");
+  console.log("  fexapi [--host <host>] [--port <number>] [--log]");
   console.log("  fexapi --help");
   console.log("");
   console.log("Examples:");
@@ -15,6 +15,7 @@ export const printHelp = () => {
   console.log("  fexapi init --force");
   console.log("  fexapi generate");
   console.log("  fexapi dev --watch");
+  console.log("  fexapi serve --log");
   console.log("  fexapi serve --host 127.0.0.1 --port 5000");
   console.log("  fexapi --port 4000");
   console.log("");

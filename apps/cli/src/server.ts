@@ -14,6 +14,7 @@ export type ServerOptions = {
   apiSpec?: GeneratedApiSpec;
   runtimeConfig?: FexapiRuntimeConfig;
   schemaDefinitions?: FexapiSchemaDefinitions;
+  logRequests?: boolean;
 };
 
 export type GeneratedApiSpec = {
@@ -210,6 +211,7 @@ export const startServer = ({
   apiSpec,
   runtimeConfig,
   schemaDefinitions = {},
+  logRequests = false,
 }: ServerOptions = {}) => {
   const corsEnabled = runtimeConfig?.cors ?? false;
   const responseDelay = runtimeConfig?.delay ?? 0;
@@ -226,7 +228,19 @@ export const startServer = ({
   ];
 
   const server = createServer((request, response) => {
+    const requestStartedAt = Date.now();
     const pathname = new URL(request.url ?? "/", "http://localhost").pathname;
+
+    if (logRequests) {
+      response.on("finish", () => {
+        const method = request.method ?? "UNKNOWN";
+        const durationMs = Date.now() - requestStartedAt;
+        const statusCode = response.statusCode;
+        console.log(
+          `[${method}] ${pathname} → ${statusCode} (${durationMs}ms)`,
+        );
+      });
+    }
 
     if (corsEnabled && request.method === "OPTIONS") {
       response.writeHead(204, {

@@ -65,6 +65,8 @@ Generates:
 npx fexapi run
 # or
 npx fexapi serve
+# request/response logging
+npx fexapi serve --log
 # or dev watch mode (nodemon-like)
 npx fexapi dev --watch
 # or (inside local workspace package)
@@ -80,6 +82,11 @@ Server port is read from `schema.fexapi` unless overridden by CLI `--port`.
 - `fexapi.config.js`
 - `fexapi.config.json`
 - `schemas/*.yaml`
+
+`fexapi serve --log` prints request logs like:
+
+- `[GET] /users/1 → 200 (45ms)`
+- `[POST] /posts → 201 (12ms)`
 
 ## Configuration File Support
 

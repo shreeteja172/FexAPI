@@ -27,7 +27,7 @@ export const parseGenerateOptions = (
 
 export const parseServeOptions = (
   serveArgs: string[],
-): { host: string; port?: number } | { error: string } => {
+): { host: string; port?: number; logEnabled: boolean } | { error: string } => {
   const getFlagValue = (
     flagName: "--host" | "--port",
   ): string | { error: string } | undefined => {
@@ -47,7 +47,10 @@ export const parseServeOptions = (
 
   const unknownFlags = serveArgs.filter(
     (value) =>
-      value.startsWith("-") && value !== "--host" && value !== "--port",
+      value.startsWith("-") &&
+      value !== "--host" &&
+      value !== "--port" &&
+      value !== "--log",
   );
   if (unknownFlags.length > 0) {
     return { error: `Unknown option(s): ${unknownFlags.join(", ")}` };
@@ -73,7 +76,7 @@ export const parseServeOptions = (
     return { error: `Invalid port: ${portValue ?? ""}`.trim() };
   }
 
-  return { host, port };
+  return { host, port, logEnabled: serveArgs.includes("--log") };
 };
 
 export const parseDevOptions = (

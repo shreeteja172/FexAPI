@@ -9,9 +9,11 @@ import { startServer } from "../server";
 export const createProjectServer = ({
   host,
   port,
+  logEnabled = false,
 }: {
   host: string;
   port?: number;
+  logEnabled?: boolean;
 }): Server | undefined => {
   const projectRoot = resolveProjectRoot();
 
@@ -69,17 +71,20 @@ export const createProjectServer = ({
     apiSpec: generatedSpec,
     runtimeConfig,
     schemaDefinitions,
+    logRequests: logEnabled,
   });
 };
 
 export const serveProject = ({
   host,
   port,
+  logEnabled,
 }: {
   host: string;
   port?: number;
+  logEnabled?: boolean;
 }): number => {
-  const server = createProjectServer({ host, port });
+  const server = createProjectServer({ host, port, logEnabled });
 
   if (!server) {
     return 1;
