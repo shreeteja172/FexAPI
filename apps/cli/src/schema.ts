@@ -40,7 +40,41 @@ const VALID_TYPES: FexapiFieldType[] = [
 const DEFAULT_PORT = 4000;
 const ROUTE_FORMAT_ERROR_MESSAGE =
   "Invalid route definition. Expected format: " +
-  "METHOD /endpoint: field:type,field:type";
+  "METHOD /endpoint: field:type,field:type (or multiline fields under METHOD /endpoint:)";
+
+const isPortLine = (line: string): boolean => /^port\s*:/i.test(line.trim());
+
+const parseRouteHeader = (
+  line: string,
+):
+  | {
+      method: string;
+      path: string;
+      inlineFields: string;
+    }
+  | undefined => {
+  const separatorIndex = line.indexOf(":");
+
+  if (separatorIndex === -1) {
+    return undefined;
+  }
+
+  const rawLeft = line.slice(0, separatorIndex);
+  const rawFields = line.slice(separatorIndex + 1);
+  const [rawMethod, rawPath] = rawLeft.trim().split(/\s+/, 2);
+  const method = rawMethod?.toUpperCase();
+  const path = rawPath?.trim();
+
+  if (!method || !path || !path.startsWith("/")) {
+    return undefined;
+  }
+
+  return {
+    method,
+    path,
+    inlineFields: rawFields,
+  };
+};
 
 const parseField = (rawField: string): FexapiField | { error: string } => {
   const [rawName, rawType] = rawField.split(":");
@@ -69,48 +103,34 @@ const parseField = (rawField: string): FexapiField | { error: string } => {
   };
 };
 
-const parseRoute = (line: string): FexapiRoute | { error: string } => {
-  const separatorIndex = line.indexOf(":");
-
-  if (separatorIndex === -1) {
-    return { error: ROUTE_FORMAT_ERROR_MESSAGE };
-  }
-
-  const rawLeft = line.slice(0, separatorIndex);
-  const rawFields = line.slice(separatorIndex + 1);
-
-  if (!rawLeft || !rawFields) {
-    return { error: ROUTE_FORMAT_ERROR_MESSAGE };
-  }
-
-  const [rawMethod, rawPath] = rawLeft.trim().split(/\s+/, 2);
-  const method = rawMethod?.toUpperCase();
-  const path = rawPath?.trim();
-
+const parseRoute = ({
+  method,
+  path,
+  rawFields,
+}: {
+  method: string;
+  path: string;
+  rawFields: string[];
+}): FexapiRoute | { error: string } => {
   if (!method || !path) {
-    return {
-      error:
-        "Invalid route definition. Missing METHOD or /endpoint before ':'.",
-    };
-  }
-
-  if (!path.startsWith("/")) {
-    return { error: `Route path must start with '/': ${path}` };
+    return { error: ROUTE_FORMAT_ERROR_MESSAGE };
   }
 
   const fields: FexapiField[] = [];
-  for (const part of rawFields.split(",")) {
-    const trimmedPart = part.trim();
-    if (!trimmedPart) {
-      continue;
-    }
+  for (const rawFieldLine of rawFields) {
+    for (const part of rawFieldLine.split(",")) {
+      const trimmedPart = part.trim();
+      if (!trimmedPart) {
+        continue;
+      }
 
-    const parsedField = parseField(trimmedPart);
-    if ("error" in parsedField) {
-      return { error: parsedField.error };
-    }
+      const parsedField = parseField(trimmedPart);
+      if ("error" in parsedField) {
+        return { error: parsedField.error };
+      }
 
-    fields.push(parsedField);
+      fields.push(parsedField);
+    }
   }
 
   if (fields.length === 0) {
@@ -127,14 +147,18 @@ export const parseFexapiSchema = (
   const routes: FexapiRoute[] = [];
   const errors: string[] = [];
 
-  const lines = schemaText
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0 && !line.startsWith("#"));
+  const lines = schemaText.split(/\r?\n/);
 
-  for (const line of lines) {
-    if (line.toLowerCase().startsWith("port:")) {
-      const rawPort = line.slice(line.indexOf(":") + 1).trim();
+  for (let index = 0; index < lines.length; index += 1) {
+    const rawLine = lines[index] ?? "";
+    const trimmedLine = rawLine.trim();
+
+    if (!trimmedLine || trimmedLine.startsWith("#")) {
+      continue;
+    }
+
+    if (isPortLine(trimmedLine)) {
+      const rawPort = trimmedLine.slice(trimmedLine.indexOf(":") + 1).trim();
       const parsedPort = Number(rawPort);
 
       if (
@@ -150,13 +174,56 @@ export const parseFexapiSchema = (
       continue;
     }
 
-    const parsedRoute = parseRoute(line);
+    const header = parseRouteHeader(trimmedLine);
+    if (!header) {
+      errors.push(ROUTE_FORMAT_ERROR_MESSAGE);
+      continue;
+    }
+
+    const rawFields: string[] = [];
+    if (header.inlineFields.trim()) {
+      rawFields.push(header.inlineFields);
+    }
+
+    let lookaheadIndex = index + 1;
+    while (lookaheadIndex < lines.length) {
+      const lookaheadRawLine = lines[lookaheadIndex] ?? "";
+      const lookaheadTrimmedLine = lookaheadRawLine.trim();
+
+      if (!lookaheadTrimmedLine || lookaheadTrimmedLine.startsWith("#")) {
+        lookaheadIndex += 1;
+        continue;
+      }
+
+      if (
+        isPortLine(lookaheadTrimmedLine) ||
+        parseRouteHeader(lookaheadTrimmedLine)
+      ) {
+        break;
+      }
+
+      if (/^\s+/.test(lookaheadRawLine)) {
+        rawFields.push(lookaheadTrimmedLine.replace(/^-+\s*/, ""));
+        lookaheadIndex += 1;
+        continue;
+      }
+
+      break;
+    }
+
+    const parsedRoute = parseRoute({
+      method: header.method,
+      path: header.path,
+      rawFields,
+    });
+
     if ("error" in parsedRoute) {
       errors.push(parsedRoute.error);
       continue;
     }
 
     routes.push(parsedRoute);
+    index = lookaheadIndex - 1;
   }
 
   if (routes.length === 0) {

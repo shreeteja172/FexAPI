@@ -37,15 +37,29 @@ Creates:
 
 ### 2) Edit schema file
 
-`fexapi/schema.fexapi` uses a simple DSL with only `:` and `,` (no semicolons):
+`fexapi/schema.fexapi` supports readable multi-line route fields (single-line still works):
 
 ```txt
 # Server
 port: 4100
 
 # Routes
-GET /users: id:uuid,name:name,email:email,age:number,phone:phone,pic:url,courseName:string
-GET /courses: id:uuid,courseName:string,mentor:name
+GET /users:
+  id:uuid
+  name:name
+  email:email
+  age:number
+  phone:phone
+  pic:url
+  courseName:string
+
+GET /courses:
+  id:uuid
+  courseName:string
+  mentor:name
+
+# one-line format is also valid:
+# GET /users: id:uuid,name:name,email:email
 ```
 
 ### 3) Generate artifacts (updates migration)
