@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
 import {
+  parseDevOptions,
   parseGenerateOptions,
   parseInitOptions,
   parseServeOptions,
 } from "./cli/args";
+import { runDevCommand } from "./commands/dev";
 import { printHelp } from "./cli/help";
 import { generateFromSchema } from "./commands/generate";
 import { initializeProject } from "./commands/init";
@@ -51,6 +53,31 @@ const main = async () => {
     }
 
     process.exit(generateFromSchema());
+  } else if (firstArg === "dev") {
+    if (restArgs.includes("--help") || restArgs.includes("-h")) {
+      console.log(
+        "Usage: fexapi dev [--watch] [--host <host>] [--port <number>]",
+      );
+      console.log(
+        "Starts development server and optionally auto-reloads when config/schema files change.",
+      );
+      process.exit(0);
+    }
+
+    const devOptions = parseDevOptions(restArgs);
+    if ("error" in devOptions) {
+      console.error(devOptions.error);
+      console.log("");
+      console.log(
+        "Usage: fexapi dev [--watch] [--host <host>] [--port <number>]",
+      );
+      process.exit(1);
+    }
+
+    const exitCode = runDevCommand(devOptions);
+    if (exitCode !== 0) {
+      process.exit(exitCode);
+    }
   } else if (
     !firstArg ||
     firstArg === "serve" ||

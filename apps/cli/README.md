@@ -65,11 +65,21 @@ Generates:
 npx fexapi run
 # or
 npx fexapi serve
+# or dev watch mode (nodemon-like)
+npx fexapi dev --watch
 # or (inside local workspace package)
 npm run serve
 ```
 
 Server port is read from `schema.fexapi` unless overridden by CLI `--port`.
+
+`fexapi dev --watch` auto-reloads when these files change:
+
+- `fexapi/schema.fexapi`
+- `fexapi/generated.api.json`
+- `fexapi.config.js`
+- `fexapi.config.json`
+- `schemas/*.yaml`
 
 ## Configuration File Support
 

@@ -1,3 +1,4 @@
+import type { Server } from "node:http";
 import { GENERATED_SPEC_RELATIVE_PATH } from "../constants";
 import { loadGeneratedApiSpec } from "../config/generated-spec";
 import { loadFexapiRuntimeConfig } from "../config/runtime-config";
@@ -5,14 +6,22 @@ import { loadSchemaDefinitions } from "../config/schema-definitions";
 import { resolveProjectRoot } from "../project/paths";
 import { startServer } from "../server";
 
-export const serveProject = ({
+export const createProjectServer = ({
   host,
   port,
 }: {
   host: string;
   port?: number;
-}): number => {
+}): Server | undefined => {
   const projectRoot = resolveProjectRoot();
+
+  if (!projectRoot) {
+    console.error(
+      "Could not find package.json in this directory or parent directories.",
+    );
+    return undefined;
+  }
+
   const runtimeConfig = projectRoot
     ? loadFexapiRuntimeConfig(projectRoot)
     : undefined;
@@ -54,13 +63,27 @@ export const serveProject = ({
     );
   }
 
-  const server = startServer({
+  return startServer({
     host,
     port: effectivePort,
     apiSpec: generatedSpec,
     runtimeConfig,
     schemaDefinitions,
   });
+};
+
+export const serveProject = ({
+  host,
+  port,
+}: {
+  host: string;
+  port?: number;
+}): number => {
+  const server = createProjectServer({ host, port });
+
+  if (!server) {
+    return 1;
+  }
 
   const shutdown = () => {
     server.close((error) => {
