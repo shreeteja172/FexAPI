@@ -4,6 +4,7 @@ export const printHelp = () => {
   console.log("Usage:");
   console.log("  fexapi init [--force]");
   console.log("  fexapi generate");
+  console.log("  fexapi format");
   console.log(
     "  fexapi dev [--watch] [--host <host>] [--port <number>] [--log]",
   );
@@ -16,6 +17,7 @@ export const printHelp = () => {
   console.log("  fexapi init");
   console.log("  fexapi init --force");
   console.log("  fexapi generate");
+  console.log("  fexapi format");
   console.log("  fexapi dev --watch");
   console.log("  fexapi dev --watch --log");
   console.log("  fexapi serve --log");

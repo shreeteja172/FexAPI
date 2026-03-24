@@ -73,6 +73,16 @@ Generates:
 - `fexapi/generated.api.json`
 - `fexapi/migrations/schema.json`
 
+### 3a) Format schema (optional)
+
+Auto-format your schema to use readable multi-line field formatting:
+
+```bash
+npx fexapi format
+```
+
+This rewrites `fexapi/schema.fexapi` with each field on its own indented line for better readability.
+
 ### 4) Start server
 
 ```bash

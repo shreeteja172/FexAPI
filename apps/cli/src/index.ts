@@ -2,12 +2,14 @@
 
 import {
   parseDevOptions,
+  parseFormatOptions,
   parseGenerateOptions,
   parseInitOptions,
   parseServeOptions,
 } from "./cli/args";
 import { runDevCommand } from "./commands/dev";
 import { printHelp } from "./cli/help";
+import { formatSchema } from "./commands/format";
 import { generateFromSchema } from "./commands/generate";
 import { initializeProject } from "./commands/init";
 import { serveProject } from "./commands/serve";
@@ -53,6 +55,24 @@ const main = async () => {
     }
 
     process.exit(generateFromSchema());
+  } else if (firstArg === "format") {
+    if (restArgs.includes("--help") || restArgs.includes("-h")) {
+      console.log("Usage: fexapi format");
+      console.log(
+        "Reformats fexapi/schema.fexapi to use readable multi-line field formatting.",
+      );
+      process.exit(0);
+    }
+
+    const formatOptions = parseFormatOptions(restArgs);
+    if (formatOptions.error) {
+      console.error(formatOptions.error);
+      console.log("");
+      console.log("Usage: fexapi format");
+      process.exit(1);
+    }
+
+    process.exit(formatSchema());
   } else if (firstArg === "dev") {
     if (restArgs.includes("--help") || restArgs.includes("-h")) {
       console.log(

@@ -25,6 +25,18 @@ export const parseGenerateOptions = (
   return {};
 };
 
+export const parseFormatOptions = (
+  formatArgs: string[],
+): { error?: string } => {
+  const invalidFlags = formatArgs.filter((value) => value.startsWith("-"));
+
+  if (invalidFlags.length > 0) {
+    return { error: `Unknown option(s): ${invalidFlags.join(", ")}` };
+  }
+
+  return {};
+};
+
 export const parseServeOptions = (
   serveArgs: string[],
 ): { host: string; port?: number; logEnabled: boolean } | { error: string } => {
