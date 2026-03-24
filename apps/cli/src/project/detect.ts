@@ -118,7 +118,10 @@ export const detectProject = (
   };
 };
 
-export const getSchemaTemplate = (framework: SupportedFramework): string => {
+export const getSchemaTemplate = (
+  framework: SupportedFramework,
+  port = 4000,
+): string => {
   const frameworkHint =
     framework === "nextjs"
       ? "# Framework: Next.js"
@@ -129,7 +132,7 @@ export const getSchemaTemplate = (framework: SupportedFramework): string => {
   return [
     frameworkHint,
     "# Server",
-    "port: 4000",
+    `port: ${port}`,
     "",
     "# Routes",
     "# Format: METHOD /endpoint: field:type,field:type",

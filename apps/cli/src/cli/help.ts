@@ -23,7 +23,14 @@ export const printHelp = () => {
   console.log("");
   console.log("`fexapi init` creates:");
   console.log("  fexapi.config.json");
+  console.log("  fexapi.config.js");
   console.log("  fexapi/schema.fexapi");
+  console.log("  schemas/*.yaml (optional, via wizard)");
+  console.log("");
+  console.log("Init wizard asks:");
+  console.log("  What port? (default: 3000)");
+  console.log("  Enable CORS? (Y/n)");
+  console.log("  Generate sample schemas? (Y/n)");
   console.log("");
   console.log("Then run:");
   console.log("  # edit fexapi/schema.fexapi");

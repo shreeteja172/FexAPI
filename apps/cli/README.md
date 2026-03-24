@@ -22,10 +22,18 @@ fexapi [options]
 pnpm dlx fexapi init
 ```
 
+`fexapi init` runs an interactive setup wizard and asks:
+
+- What port? (default: 3000)
+- Enable CORS? (Y/n)
+- Generate sample schemas? (Y/n)
+
 Creates:
 
 - `fexapi/schema.fexapi`
 - `fexapi.config.json`
+- `fexapi.config.js`
+- `schemas/user.yaml` and `schemas/post.yaml` (if sample schemas are enabled)
 
 ### 2) Edit schema file
 
