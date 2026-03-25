@@ -122,34 +122,102 @@ export const getSchemaTemplate = (
   framework: SupportedFramework,
   port = 4000,
 ): string => {
-  const frameworkHint =
+  const frameworkLabel =
     framework === "nextjs"
-      ? "# Framework: Next.js"
+      ? "Next.js"
       : framework === "reactjs"
-        ? "# Framework: React"
-        : "# Framework: unknown";
+        ? "React"
+        : framework === "vue"
+          ? "Vue"
+          : framework === "nuxt"
+            ? "Nuxt"
+            : framework === "svelte"
+              ? "Svelte"
+              : framework === "sveltekit"
+                ? "SvelteKit"
+                : framework === "angular"
+                  ? "Angular"
+                  : framework === "solid"
+                    ? "Solid"
+                    : framework === "remix"
+                      ? "Remix"
+                      : framework === "astro"
+                        ? "Astro"
+                        : "unknown";
 
   return [
-    frameworkHint,
+    `# Framework: ${frameworkLabel}`,
+    "",
+    "# ──────────────────────────────────────────────",
     "# Server",
+    "# ──────────────────────────────────────────────",
     `port: ${port}`,
     "",
+    "# ──────────────────────────────────────────────",
+    "# Available types",
+    "#   string   → random words",
+    "#   number   → random integer",
+    "#   boolean  → true / false",
+    "#   uuid     → unique id",
+    "#   email    → fake email",
+    "#   name     → full name",
+    "#   url      → fake URL",
+    "#   phone    → phone number",
+    "#   date     → ISO date string",
+    "# ──────────────────────────────────────────────",
+    "",
+    "# ──────────────────────────────────────────────",
     "# Routes",
-    "# Format (single-line): METHOD /endpoint: field:type,field:type",
-    "# Format (multi-line):",
-    "# METHOD /endpoint:",
-    "#   field:type",
-    "#   field:type",
+    "#",
+    "# Single-line:  GET /items: id:uuid, name:string",
+    "# Multi-line:",
+    "#   GET /items:",
+    "#     id:uuid",
+    "#     name:string",
+    "# ──────────────────────────────────────────────",
+    "",
+    "# ── Users ────────────────────────────────────",
+    "",
     "GET /users:",
     "  id:uuid",
     "  fullName:name",
     "  username:string",
     "  email:email",
+    "  phone:phone",
     "  avatarUrl:url",
+    "  joinedAt:date",
+    "",
+    "POST /users:",
+    "  id:uuid",
+    "  fullName:name",
+    "  username:string",
+    "  email:email",
+    "",
+    "# ── Posts ────────────────────────────────────",
+    "",
     "GET /posts:",
     "  id:uuid",
     "  title:string",
     "  body:string",
+    "  authorId:uuid",
+    "  published:boolean",
     "  createdAt:date",
+    "",
+    "POST /posts:",
+    "  id:uuid",
+    "  title:string",
+    "  body:string",
+    "  authorId:uuid",
+    "",
+    "PUT /posts:",
+    "  id:uuid",
+    "  title:string",
+    "  body:string",
+    "",
+    "DELETE /posts: id:uuid",
+    "",
+    "# ── Comments (single-line example) ───────────",
+    "",
+    "GET /comments: id:uuid, body:string, postId:uuid, authorId:uuid, createdAt:date",
   ].join("\n");
 };

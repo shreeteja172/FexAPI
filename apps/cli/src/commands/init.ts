@@ -122,17 +122,25 @@ const getRuntimeConfigTemplate = ({
 }): string => {
   const routeSection = includeSampleRoutes
     ? [
+        "",
+        "  // How many items to return per GET request",
         "  routes: {",
-        '    "/users": { count: 25, schema: "user" },',
-        '    "/posts": { count: 40, schema: "post" },',
+        '    "/users": { count: 10, schema: "user" },',
+        '    "/posts": { count: 20, schema: "post" },',
         "  },",
       ]
     : [];
 
   return [
+    "// Fexapi runtime config",
+    "// Edit this file to customize server behavior",
     "module.exports = {",
     `  port: ${port},`,
+    "",
+    `  // Enable cross-origin requests (useful for frontend dev)`,
     `  cors: ${cors},`,
+    "",
+    "  // Add artificial delay (ms) to simulate slow networks",
     "  delay: 0,",
     ...routeSection,
     "};",
@@ -140,28 +148,68 @@ const getRuntimeConfigTemplate = ({
 };
 
 const SAMPLE_USER_SCHEMA = [
+  "# User schema",
+  "# Each field has a 'type' (required) and optional 'faker' override",
+  "#",
+  "# type   → picks a built-in generator (uuid, name, email, ...)",
+  "# faker  → use any faker.js method for custom data",
+  "#         see: https://fakerjs.dev/api/",
+  "",
   "id:",
   "  type: uuid",
+  "",
   "fullName:",
   "  type: name",
-  "  faker: person.fullName",
+  "  faker: person.fullName        # → \"John Doe\"",
+  "",
+  "username:",
+  "  type: string",
+  "  faker: internet.username      # → \"cool_user42\"",
+  "",
   "email:",
   "  type: email",
-  "  faker: internet.email",
+  "  faker: internet.email         # → \"john@example.com\"",
+  "",
   "avatarUrl:",
   "  type: url",
-  "  faker: image.avatar",
+  "  faker: image.avatar           # → avatar image URL",
+  "",
+  "bio:",
+  "  type: string",
+  "  faker: lorem.sentence         # → one random sentence",
+  "",
+  "isActive:",
+  "  type: boolean",
+  "",
+  "joinedAt:",
+  "  type: date",
 ].join("\n");
 
 const SAMPLE_POST_SCHEMA = [
+  "# Post schema",
+  "",
   "id:",
   "  type: uuid",
+  "",
   "title:",
   "  type: string",
-  "  faker: lorem.sentence",
+  "  faker: lorem.sentence         # → \"Quisquam voluptatem...\"",
+  "",
   "body:",
   "  type: string",
-  "  faker: lorem.paragraph",
+  "  faker: lorem.paragraphs       # → multiple paragraphs",
+  "",
+  "authorId:",
+  "  type: uuid",
+  "",
+  "published:",
+  "  type: boolean",
+  "",
+  "likes:",
+  "  type: number",
+  "  min: 0",
+  "  max: 500",
+  "",
   "createdAt:",
   "  type: date",
 ].join("\n");
@@ -186,7 +234,7 @@ export const initializeProject = async ({
   const schemaPath = join(fexapiDirectoryPath, "schema.fexapi");
   const configPath = join(projectRoot, "fexapi.config.json");
   const runtimeConfigPath = join(projectRoot, "fexapi.config.js");
-  const schemasDirectoryPath = join(projectRoot, "schemas");
+  const schemasDirectoryPath = join(projectRoot, "fexapi", "schemas");
   const userSchemaPath = join(schemasDirectoryPath, "user.yaml");
   const postSchemaPath = join(schemasDirectoryPath, "post.yaml");
 

@@ -278,19 +278,55 @@ export const startServer = ({
       );
 
       if (matchedRoute) {
-        const count = getCountFromUrl(request.url, 5);
-        const payloadKey = toCollectionKey(matchedRoute.path);
+        const method = request.method ?? "GET";
 
-        sendJson(
-          response,
-          200,
-          {
-            [payloadKey]: Array.from({ length: count }, () =>
-              createRecordFromRoute(matchedRoute),
-            ),
-          },
-          { cors: corsEnabled, delay: responseDelay },
-        );
+        if (method === "GET") {
+          const count = getCountFromUrl(request.url, 5);
+          const payloadKey = toCollectionKey(matchedRoute.path);
+
+          sendJson(
+            response,
+            200,
+            {
+              [payloadKey]: Array.from({ length: count }, () =>
+                createRecordFromRoute(matchedRoute),
+              ),
+            },
+            { cors: corsEnabled, delay: responseDelay },
+          );
+          return;
+        }
+
+        if (method === "DELETE") {
+          sendJson(
+            response,
+            200,
+            { message: `Deleted resource at ${matchedRoute.path}` },
+            { cors: corsEnabled, delay: responseDelay },
+          );
+          return;
+        }
+        const bodyChunks: Buffer[] = [];
+        request.on("data", (chunk: Buffer) => bodyChunks.push(chunk));
+        request.on("end", () => {
+          let requestBody: Record<string, unknown> = {};
+          try {
+            const raw = Buffer.concat(bodyChunks).toString("utf-8");
+            if (raw.trim()) {
+              requestBody = JSON.parse(raw) as Record<string, unknown>;
+            }
+          } catch {
+          }
+
+          const generatedRecord = createRecordFromRoute(matchedRoute);
+          const merged = { ...generatedRecord, ...requestBody };
+          const statusCode = method === "POST" ? 201 : 200;
+
+          sendJson(response, statusCode, merged, {
+            cors: corsEnabled,
+            delay: responseDelay,
+          });
+        });
         return;
       }
     }

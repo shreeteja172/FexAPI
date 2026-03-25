@@ -25,7 +25,7 @@ const isWatchedPath = (projectRoot: string, changedPath: string): boolean => {
   }
 
   return (
-    relativePath.startsWith("schemas/") &&
+    relativePath.startsWith("fexapi/schemas/") &&
     (relativePath.endsWith(".yaml") || relativePath.endsWith(".yml"))
   );
 };
@@ -108,7 +108,6 @@ export const runDevCommand = ({
 
   const watchTargets = [
     join(projectRoot, "fexapi"),
-    join(projectRoot, "schemas"),
     projectRoot,
   ];
 

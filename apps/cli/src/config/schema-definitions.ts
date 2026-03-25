@@ -29,7 +29,7 @@ const parseSchemaDefinition = (
 ): FexapiSchemaDefinition | undefined => {
   if (!isRecord(rawValue)) {
     console.error(
-      `Invalid schemas/${schemaName}.yaml: expected root object of field definitions.`,
+      `Invalid fexapi/schemas/${schemaName}.yaml: expected root object of field definitions.`,
     );
     return undefined;
   }
@@ -39,7 +39,7 @@ const parseSchemaDefinition = (
   for (const [fieldName, rawFieldConfig] of Object.entries(rawValue)) {
     if (!isRecord(rawFieldConfig)) {
       console.error(
-        `Invalid schemas/${schemaName}.yaml field \`${fieldName}\`: expected object with type/faker/min/max.`,
+        `Invalid fexapi/schemas/${schemaName}.yaml field \`${fieldName}\`: expected object with type/faker/min/max.`,
       );
       continue;
     }
@@ -47,7 +47,7 @@ const parseSchemaDefinition = (
     const rawType = rawFieldConfig.type;
     if (typeof rawType !== "string") {
       console.error(
-        `Invalid schemas/${schemaName}.yaml field \`${fieldName}\`: missing string \`type\`.`,
+        `Invalid fexapi/schemas/${schemaName}.yaml field \`${fieldName}\`: missing string \`type\`.`,
       );
       continue;
     }
@@ -55,7 +55,7 @@ const parseSchemaDefinition = (
     const normalizedType = rawType.trim().toLowerCase() as FexapiFieldValueType;
     if (!VALID_TYPES.has(normalizedType)) {
       console.error(
-        `Invalid schemas/${schemaName}.yaml field \`${fieldName}\`: unknown type \`${rawType}\`.`,
+        `Invalid fexapi/schemas/${schemaName}.yaml field \`${fieldName}\`: unknown type \`${rawType}\`.`,
       );
       continue;
     }
@@ -86,7 +86,7 @@ const parseSchemaDefinition = (
 export const loadSchemaDefinitions = (
   projectRoot: string,
 ): FexapiSchemaDefinitions => {
-  const schemasDirectoryPath = join(projectRoot, "schemas");
+  const schemasDirectoryPath = join(projectRoot, "fexapi", "schemas");
 
   if (!existsSync(schemasDirectoryPath)) {
     return {};

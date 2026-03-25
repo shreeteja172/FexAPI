@@ -33,7 +33,7 @@ export const printHelp = () => {
   console.log("  fexapi.config.json");
   console.log("  fexapi.config.js");
   console.log("  fexapi/schema.fexapi");
-  console.log("  schemas/*.yaml (optional, via wizard)");
+  console.log("  fexapi/schemas/*.yaml (optional, via wizard)");
   console.log("");
   console.log("Init wizard asks:");
   console.log("  What port? (default: 3000)");
