@@ -1,3 +1,9 @@
+const findDuplicateFlags = (args: string[], flags: string[]): string[] => {
+  return flags.filter(
+    (flag) => args.filter((value) => value === flag).length > 1,
+  );
+};
+
 export const parseInitOptions = (
   initArgs: string[],
 ): { force: boolean } | { error: string } => {
@@ -8,6 +14,11 @@ export const parseInitOptions = (
 
   if (invalidFlags.length > 0) {
     return { error: `Unknown option(s): ${invalidFlags.join(", ")}` };
+  }
+
+  const positionalArgs = initArgs.filter((value) => !value.startsWith("-"));
+  if (positionalArgs.length > 0) {
+    return { error: `Unexpected argument(s): ${positionalArgs.join(", ")}` };
   }
 
   return { force: initArgs.includes("--force") };
@@ -22,6 +33,11 @@ export const parseGenerateOptions = (
     return { error: `Unknown option(s): ${invalidFlags.join(", ")}` };
   }
 
+  const positionalArgs = generateArgs.filter((value) => !value.startsWith("-"));
+  if (positionalArgs.length > 0) {
+    return { error: `Unexpected argument(s): ${positionalArgs.join(", ")}` };
+  }
+
   return {};
 };
 
@@ -34,12 +50,26 @@ export const parseFormatOptions = (
     return { error: `Unknown option(s): ${invalidFlags.join(", ")}` };
   }
 
+  const positionalArgs = formatArgs.filter((value) => !value.startsWith("-"));
+  if (positionalArgs.length > 0) {
+    return { error: `Unexpected argument(s): ${positionalArgs.join(", ")}` };
+  }
+
   return {};
 };
 
 export const parseServeOptions = (
   serveArgs: string[],
 ): { host: string; port?: number; logEnabled: boolean } | { error: string } => {
+  const duplicateFlags = findDuplicateFlags(serveArgs, [
+    "--host",
+    "--port",
+    "--log",
+  ]);
+  if (duplicateFlags.length > 0) {
+    return { error: `Duplicate option(s): ${duplicateFlags.join(", ")}` };
+  }
+
   const getFlagValue = (
     flagName: "--host" | "--port",
   ): string | { error: string } | undefined => {
@@ -78,6 +108,24 @@ export const parseServeOptions = (
     return portValue;
   }
 
+  const consumedIndexes = new Set<number>();
+  serveArgs.forEach((value, index) => {
+    if (value === "--log") {
+      consumedIndexes.add(index);
+    }
+    if ((value === "--host" || value === "--port") && serveArgs[index + 1]) {
+      consumedIndexes.add(index);
+      consumedIndexes.add(index + 1);
+    }
+  });
+
+  const positionalArgs = serveArgs.filter(
+    (_value, index) => !consumedIndexes.has(index),
+  );
+  if (positionalArgs.length > 0) {
+    return { error: `Unexpected argument(s): ${positionalArgs.join(", ")}` };
+  }
+
   const host = hostValue ?? "127.0.0.1";
   const port = portValue ? Number(portValue) : undefined;
 
@@ -96,6 +144,16 @@ export const parseDevOptions = (
 ):
   | { host: string; port?: number; watchEnabled: boolean; logEnabled: boolean }
   | { error: string } => {
+  const duplicateFlags = findDuplicateFlags(devArgs, [
+    "--host",
+    "--port",
+    "--watch",
+    "--log",
+  ]);
+  if (duplicateFlags.length > 0) {
+    return { error: `Duplicate option(s): ${duplicateFlags.join(", ")}` };
+  }
+
   const getFlagValue = (
     flagName: "--host" | "--port",
   ): string | { error: string } | undefined => {
@@ -133,6 +191,24 @@ export const parseDevOptions = (
   const portValue = getFlagValue("--port");
   if (portValue && typeof portValue !== "string") {
     return portValue;
+  }
+
+  const consumedIndexes = new Set<number>();
+  devArgs.forEach((value, index) => {
+    if (value === "--watch" || value === "--log") {
+      consumedIndexes.add(index);
+    }
+    if ((value === "--host" || value === "--port") && devArgs[index + 1]) {
+      consumedIndexes.add(index);
+      consumedIndexes.add(index + 1);
+    }
+  });
+
+  const positionalArgs = devArgs.filter(
+    (_value, index) => !consumedIndexes.has(index),
+  );
+  if (positionalArgs.length > 0) {
+    return { error: `Unexpected argument(s): ${positionalArgs.join(", ")}` };
   }
 
   const host = hostValue ?? "127.0.0.1";

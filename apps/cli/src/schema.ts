@@ -37,12 +37,33 @@ const VALID_TYPES: FexapiFieldType[] = [
   "phone",
 ];
 
+const VALID_METHODS = new Set([
+  "GET",
+  "POST",
+  "PUT",
+  "PATCH",
+  "DELETE",
+  "HEAD",
+  "OPTIONS",
+]);
+
 const DEFAULT_PORT = 4000;
 const ROUTE_FORMAT_ERROR_MESSAGE =
   "Invalid route definition. Expected format: " +
   "METHOD /endpoint: field:type,field:type (or multiline fields under METHOD /endpoint:)";
 
+const FIELD_NAME_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/;
+
 const isPortLine = (line: string): boolean => /^port\s*:/i.test(line.trim());
+
+const stripInlineComment = (line: string): string => {
+  const commentIndex = line.indexOf("#");
+  if (commentIndex === -1) {
+    return line.trim();
+  }
+
+  return line.slice(0, commentIndex).trim();
+};
 
 const parseRouteHeader = (
   line: string,
@@ -77,12 +98,25 @@ const parseRouteHeader = (
 };
 
 const parseField = (rawField: string): FexapiField | { error: string } => {
-  const [rawName, rawType] = rawField.split(":");
+  const parts = rawField.split(":");
+  if (parts.length !== 2) {
+    return {
+      error: `Invalid field "${rawField}". Expected format name:type.`,
+    };
+  }
+
+  const [rawName, rawType] = parts;
   const name = rawName?.trim();
   const type = rawType?.trim().toLowerCase();
 
   if (!name) {
     return { error: `Invalid field "${rawField}". Missing field name.` };
+  }
+
+  if (!FIELD_NAME_PATTERN.test(name)) {
+    return {
+      error: `Invalid field name "${name}". Use letters, numbers, and underscore only (must not start with a number).`,
+    };
   }
 
   if (!type) {
@@ -116,10 +150,17 @@ const parseRoute = ({
     return { error: ROUTE_FORMAT_ERROR_MESSAGE };
   }
 
+  if (!VALID_METHODS.has(method)) {
+    return {
+      error: `Unsupported HTTP method "${method}" for route ${method} ${path}. Valid methods: ${Array.from(VALID_METHODS).join(", ")}`,
+    };
+  }
+
   const fields: FexapiField[] = [];
+  const seenFieldNames = new Set<string>();
   for (const rawFieldLine of rawFields) {
     for (const part of rawFieldLine.split(",")) {
-      const trimmedPart = part.trim();
+      const trimmedPart = stripInlineComment(part);
       if (!trimmedPart) {
         continue;
       }
@@ -129,6 +170,13 @@ const parseRoute = ({
         return { error: parsedField.error };
       }
 
+      if (seenFieldNames.has(parsedField.name)) {
+        return {
+          error: `Duplicate field "${parsedField.name}" in route ${method} ${path}.`,
+        };
+      }
+
+      seenFieldNames.add(parsedField.name);
       fields.push(parsedField);
     }
   }
@@ -148,10 +196,11 @@ export const parseFexapiSchema = (
   const errors: string[] = [];
 
   const lines = schemaText.split(/\r?\n/);
+  const seenRoutes = new Set<string>();
 
   for (let index = 0; index < lines.length; index += 1) {
     const rawLine = lines[index] ?? "";
-    const trimmedLine = rawLine.trim();
+    const trimmedLine = stripInlineComment(rawLine);
 
     if (!trimmedLine || trimmedLine.startsWith("#")) {
       continue;
@@ -176,13 +225,22 @@ export const parseFexapiSchema = (
 
     const header = parseRouteHeader(trimmedLine);
     if (!header) {
-      errors.push(ROUTE_FORMAT_ERROR_MESSAGE);
+      errors.push(`${ROUTE_FORMAT_ERROR_MESSAGE} (line ${index + 1})`);
+      continue;
+    }
+
+    const routeKey = `${header.method} ${header.path}`;
+    if (seenRoutes.has(routeKey)) {
+      errors.push(
+        `Duplicate route definition: ${routeKey} (line ${index + 1})`,
+      );
       continue;
     }
 
     const rawFields: string[] = [];
-    if (header.inlineFields.trim()) {
-      rawFields.push(header.inlineFields);
+    const inlineFields = stripInlineComment(header.inlineFields);
+    if (inlineFields) {
+      rawFields.push(inlineFields);
     }
 
     let lookaheadIndex = index + 1;
@@ -203,7 +261,12 @@ export const parseFexapiSchema = (
       }
 
       if (/^\s+/.test(lookaheadRawLine)) {
-        rawFields.push(lookaheadTrimmedLine.replace(/^-+\s*/, ""));
+        const normalizedFieldLine = stripInlineComment(
+          lookaheadTrimmedLine.replace(/^-+\s*/, ""),
+        );
+        if (normalizedFieldLine) {
+          rawFields.push(normalizedFieldLine);
+        }
         lookaheadIndex += 1;
         continue;
       }
@@ -218,10 +281,11 @@ export const parseFexapiSchema = (
     });
 
     if ("error" in parsedRoute) {
-      errors.push(parsedRoute.error);
+      errors.push(`${parsedRoute.error} (line ${index + 1})`);
       continue;
     }
 
+    seenRoutes.add(routeKey);
     routes.push(parsedRoute);
     index = lookaheadIndex - 1;
   }

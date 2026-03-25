@@ -50,6 +50,8 @@ METHOD /path:
 - **/path** — The endpoint path
 - **fields** — One or more `name:type` pairs
 
+Supported methods are: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`.
+
 ## Single-Line Format
 
 You can also write fields on a single line, comma-separated:
@@ -73,6 +75,23 @@ GET /users:
   id:uuid
   name:name
 ```
+
+Inline comments are also supported:
+
+```txt
+port: 4000 # local dev port
+
+GET /users:
+  id:uuid # primary key
+  name:name
+```
+
+## Validation Rules
+
+- Route definitions must be unique per `METHOD + /path`.
+- Field names must use letters, numbers, or `_` and cannot start with a number.
+- Field definitions must use strict `name:type` format.
+- Field names must be unique within a route.
 
 ## Multiple Routes
 
