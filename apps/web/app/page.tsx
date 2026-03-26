@@ -1,9 +1,9 @@
-import { Button } from "./components/button";
 import { Card } from "./components/card";
 import { CodeBlock } from "./components/code-block";
 import { Container } from "./components/container";
 import { Navbar } from "./components/navbar";
 import { Section } from "./components/section";
+import { UsageStackShowcase } from "./components/usage-stack-showcase";
 
 const trustItems = [
   "Atlas",
@@ -72,60 +72,96 @@ export default function Home() {
       />
 
       <main>
-        <section className="border-b border-[var(--line)] bg-[#0c0d10] py-20 text-white sm:py-28">
+        <section className="border-b border-[var(--line)] bg-[#07090d] py-20 text-white sm:py-28">
           <Container>
-            <div className="grid items-start gap-12 lg:grid-cols-[1.2fr_0.8fr]">
-              <div>
-                <p className="mb-5 text-xs font-semibold uppercase tracking-[0.12em] text-white/60">
-                  API Mocking Infrastructure
-                </p>
-                <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl lg:text-6xl">
-                  Build and ship APIs before the backend is ready.
-                </h1>
-                <p className="mt-6 max-w-xl text-base text-white/70 sm:text-lg">
-                  FexAPI gives product teams fast, deterministic API
-                  environments with the structure and control required for
-                  serious development workflows.
-                </p>
-                <div className="mt-10 flex flex-wrap items-center gap-4">
-                  <Button href="#usage" variant="primary">
-                    Start Building
-                  </Button>
-                  <Button href="#features" variant="secondary">
-                    Explore Features
-                  </Button>
-                </div>
+            <div className="mx-auto max-w-4xl text-center">
+              <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/70">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                Open Source CLI Tool
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_24px_60px_-36px_rgba(0,0,0,0.8)]">
-                <p className="text-sm font-medium text-white/80">
-                  Live System Preview
-                </p>
-                <div className="mt-5 space-y-4">
-                  <div className="rounded-xl border border-white/10 bg-[#111318] p-4">
-                    <p className="text-xs uppercase tracking-[0.08em] text-white/50">
-                      Latency Profile
-                    </p>
-                    <p className="mt-2 text-2xl font-semibold tracking-[-0.03em]">
-                      42 ms
-                    </p>
+              <h1 className="mt-8 text-4xl font-semibold leading-tight tracking-[-0.045em] sm:text-6xl">
+                Mock APIs for
+                <span className="block text-[#8a98ff]">
+                  frontend developers.
+                </span>
+              </h1>
+
+              <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-white/65 sm:text-[28px] sm:leading-10">
+                Define your endpoints in a schema file. Run one command. Get a
+                local server with realistic fake data powered by Faker.js.
+              </p>
+
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+                <a
+                  href="#usage"
+                  className="inline-flex items-center rounded-xl bg-[#8a98ff] px-8 py-3 text-base font-semibold text-[#0c1021] transition-colors duration-200 hover:bg-[#a0abff]"
+                >
+                  Get Started
+                </a>
+                <a
+                  href={docsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-8 py-3 text-base font-semibold text-white/85 transition-colors duration-200 hover:bg-white/10"
+                >
+                  View Docs
+                </a>
+              </div>
+
+              <div className="mt-14 overflow-hidden rounded-2xl border border-white/10 bg-[#06080d] text-left shadow-[0_30px_80px_-45px_rgba(0,0,0,0.9)]">
+                <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
                   </div>
-                  <div className="rounded-xl border border-white/10 bg-[#111318] p-4">
-                    <p className="text-xs uppercase tracking-[0.08em] text-white/50">
-                      Active Routes
-                    </p>
-                    <p className="mt-2 text-2xl font-semibold tracking-[-0.03em]">
-                      128
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-white/10 bg-[#111318] p-4">
-                    <p className="text-xs uppercase tracking-[0.08em] text-white/50">
-                      Environment Status
-                    </p>
-                    <p className="mt-2 text-sm text-white/75">
-                      Synchronized across local, preview, and CI.
-                    </p>
-                  </div>
+                  <span className="text-sm font-medium text-white/45">
+                    terminal
+                  </span>
+                  <span className="w-14" />
+                </div>
+                <div className="space-y-3 px-6 py-6 font-mono text-base leading-8 text-white/75">
+                  <p>
+                    <span className="text-white/45">$</span>{" "}
+                    <span className="font-semibold text-white/95">
+                      npx fexapi init
+                    </span>
+                  </p>
+                  <p>
+                    <span className="text-white/50">?</span> What port should
+                    the server run on?{" "}
+                    <span className="text-white/40">4000</span>
+                  </p>
+                  <p>
+                    <span className="text-white/50">?</span> Enable CORS?{" "}
+                    <span className="font-semibold text-emerald-400">Yes</span>
+                  </p>
+                  <p>
+                    <span className="text-white/50">?</span> Generate sample
+                    schemas?{" "}
+                    <span className="font-semibold text-emerald-400">Yes</span>
+                  </p>
+                  <p className="pt-2">
+                    <span className="font-semibold text-emerald-400">✓</span>{" "}
+                    Created fexapi/schema.fexapi
+                  </p>
+                  <p>
+                    <span className="font-semibold text-emerald-400">✓</span>{" "}
+                    Created schemas/user.yaml
+                  </p>
+                  <p className="pt-2">
+                    <span className="text-white/45">$</span>{" "}
+                    <span className="font-semibold text-white/95">
+                      npx fexapi dev --watch
+                    </span>
+                  </p>
+                  <p>
+                    Mock API running at{" "}
+                    <span className="font-semibold text-[#8a98ff]">
+                      http://localhost:4000
+                    </span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -163,8 +199,8 @@ export default function Home() {
         <Section
           id="usage"
           eyebrow="Usage"
-          title="Developer workflow with zero friction."
-          description="Move from schema definition to production-grade mocks in minutes with predictable, inspectable output."
+          title="Use FexAPI across your stack."
+          description="Run one mock server and plug it into React, Next.js, Express, Vue, or any client that speaks HTTP."
           className="border-y border-[var(--line)] bg-[#07080b] text-white"
         >
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -218,34 +254,7 @@ export default function Home() {
               ]}
             />
 
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-white/55">
-                  Runtime Command
-                </p>
-                <p className="mt-3 font-mono text-sm text-white/90">
-                  pnpm fexapi dev --watch --log
-                </p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-white/55">
-                  Output Shape
-                </p>
-                <p className="mt-3 text-sm leading-7 text-white/75">
-                  Every response follows route contracts, deterministic fields,
-                  and status handling for consistent frontend integration.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm font-semibold uppercase tracking-[0.08em] text-white/55">
-                  Scaling Strategy
-                </p>
-                <p className="mt-3 text-sm leading-7 text-white/75">
-                  Promote configs between local and CI without rewriting route
-                  logic or modifying consumer clients.
-                </p>
-              </div>
-            </div>
+            <UsageStackShowcase />
           </div>
         </Section>
 
