@@ -158,7 +158,7 @@ export function UsageStackShowcase() {
   );
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+    <div className="rounded-2xl border border-white/10 bg-[#0c0f15] p-5 shadow-[0_24px_44px_-32px_rgba(0,0,0,0.7)]">
       <div className="flex flex-wrap gap-2">
         {samples.map((sample) => {
           const active = sample.id === activeSample.id;
@@ -167,10 +167,10 @@ export function UsageStackShowcase() {
               key={sample.id}
               type="button"
               onClick={() => setActiveId(sample.id)}
-              className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-colors ${
+              className={`rounded-lg px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-colors ${
                 active
                   ? "bg-white text-[#0a0c10]"
-                  : "border border-white/10 bg-transparent text-white/65 hover:text-white"
+                  : "border border-white/10 bg-transparent text-white/60 hover:border-white/20 hover:text-white"
               }`}
             >
               {sample.label}
@@ -179,7 +179,7 @@ export function UsageStackShowcase() {
         })}
       </div>
 
-      <p className="mt-4 text-sm leading-7 text-white/75">
+      <p className="mt-5 text-sm leading-7 text-white/72">
         {activeSample.summary}
       </p>
 
@@ -187,7 +187,7 @@ export function UsageStackShowcase() {
         language={activeSample.language}
         filename={activeSample.filename}
         lines={toLines(activeSample.code)}
-        className="mt-4"
+        className="mt-5"
       />
     </div>
   );

@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0b;
-  --muted: #61646b;
-  --line: #e7e8ec;
-  --line-dark: #ffffff1a;
-  --accent: #2563eb;
+  --background: #f7f7f8;
+  --foreground: #101114;
+  --muted: #666b74;
+  --line: #dfe2e8;
+  --line-dark: #2b2f381f;
+  --accent: #5c6cf7;
 }
 
 * {
@@ -24,9 +24,16 @@ body {
 body {
   font-family: var(--font-geist-sans), sans-serif;
   line-height: 1.55;
+  letter-spacing: -0.01em;
+  text-rendering: optimizeLegibility;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+::selection {
+  background: #cfd5ff;
+  color: #101114;
 }

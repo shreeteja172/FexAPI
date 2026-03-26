@@ -72,30 +72,30 @@ export default function Home() {
       />
 
       <main>
-        <section className="border-b border-[var(--line)] bg-[#07090d] py-20 text-white sm:py-28">
+        <section className="border-b border-[#1d222c] bg-[#0b0e14] py-24 text-white sm:py-32">
           <Container>
             <div className="mx-auto max-w-4xl text-center">
-              <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/70">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#111723] px-4 py-2 text-sm font-medium text-white/70">
+                <span className="h-2 w-2 rounded-full bg-[#8ea0ff]" />
                 Open Source CLI Tool
               </div>
 
-              <h1 className="mt-8 text-4xl font-semibold leading-tight tracking-[-0.045em] sm:text-6xl">
+              <h1 className="mt-10 font-[family-name:var(--font-slabo)] text-5xl leading-[1.02] tracking-[-0.02em] sm:text-7xl">
                 Mock APIs for
-                <span className="block text-[#8a98ff]">
+                <span className="block text-[#8ea0ff]">
                   frontend developers.
                 </span>
               </h1>
 
-              <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-white/65 sm:text-[28px] sm:leading-10">
+              <p className="mx-auto mt-8 max-w-3xl text-lg leading-8 text-white/70 sm:text-2xl sm:leading-10">
                 Define your endpoints in a schema file. Run one command. Get a
                 local server with realistic fake data powered by Faker.js.
               </p>
 
-              <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
                 <a
                   href="#usage"
-                  className="inline-flex items-center rounded-xl bg-[#8a98ff] px-8 py-3 text-base font-semibold text-[#0c1021] transition-colors duration-200 hover:bg-[#a0abff]"
+                  className="inline-flex items-center rounded-xl border border-[#8ea0ff] bg-[#8ea0ff] px-8 py-3 text-base font-semibold text-[#0b1020] transition-colors duration-200 hover:bg-[#a4b2ff]"
                 >
                   Get Started
                 </a>
@@ -103,13 +103,13 @@ export default function Home() {
                   href={docsUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-8 py-3 text-base font-semibold text-white/85 transition-colors duration-200 hover:bg-white/10"
+                  className="inline-flex items-center rounded-xl border border-white/15 bg-transparent px-8 py-3 text-base font-semibold text-white/85 transition-colors duration-200 hover:border-white/30 hover:bg-white/5"
                 >
                   View Docs
                 </a>
               </div>
 
-              <div className="mt-14 overflow-hidden rounded-2xl border border-white/10 bg-[#06080d] text-left shadow-[0_30px_80px_-45px_rgba(0,0,0,0.9)]">
+              <div className="mt-16 overflow-hidden rounded-2xl border border-white/10 bg-[#090d15] text-left shadow-[0_36px_72px_-44px_rgba(0,0,0,0.88)]">
                 <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
@@ -158,7 +158,7 @@ export default function Home() {
                   </p>
                   <p>
                     Mock API running at{" "}
-                    <span className="font-semibold text-[#8a98ff]">
+                    <span className="font-semibold text-[#8ea0ff]">
                       http://localhost:4000
                     </span>
                   </p>
@@ -168,8 +168,8 @@ export default function Home() {
           </Container>
         </section>
 
-        <section className="border-b border-[var(--line)] py-8">
-          <Container className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm font-medium text-[#818793] sm:justify-between">
+        <section className="border-b border-[var(--line)] bg-white py-9">
+          <Container className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm font-semibold tracking-[0.02em] text-[#7b828f] sm:justify-between">
             {trustItems.map((item) => (
               <span key={item}>{item}</span>
             ))}
@@ -182,13 +182,13 @@ export default function Home() {
           title="Built for fast product iteration."
           description="A practical toolkit for teams that need high fidelity API behavior across development, design, and release pipelines."
         >
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-6 sm:grid-cols-2">
             {features.map((feature) => (
               <Card key={feature.title}>
-                <h3 className="text-xl font-semibold tracking-[-0.02em] text-[var(--foreground)]">
+                <h3 className="font-[family-name:var(--font-slabo)] text-3xl leading-tight text-[var(--foreground)]">
                   {feature.title}
                 </h3>
-                <p className="mt-3 text-[15px] text-[var(--muted)]">
+                <p className="mt-4 text-[15px] leading-8 text-[var(--muted)]">
                   {feature.description}
                 </p>
               </Card>
@@ -201,7 +201,7 @@ export default function Home() {
           eyebrow="Usage"
           title="Use FexAPI across your stack."
           description="Run one mock server and plug it into React, Next.js, Express, Vue, or any client that speaks HTTP."
-          className="border-y border-[var(--line)] bg-[#07080b] text-white"
+          className="border-y border-[var(--line)] bg-[#0a0d14] text-white"
         >
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
             <CodeBlock
@@ -264,13 +264,13 @@ export default function Home() {
           title="Engineered for secure, reliable delivery."
           description="Structured controls for teams that need confidence across security, speed, and deployment consistency."
         >
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-3">
             {platformBlocks.map((block) => (
               <Card key={block.title} className="bg-white">
                 <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[var(--accent)]">
                   {block.title}
                 </p>
-                <p className="mt-4 text-[15px] leading-7 text-[var(--muted)]">
+                <p className="mt-4 text-[15px] leading-8 text-[var(--muted)]">
                   {block.text}
                 </p>
               </Card>
@@ -279,9 +279,11 @@ export default function Home() {
         </Section>
       </main>
 
-      <footer className="border-t border-[var(--line)] py-10">
+      <footer className="border-t border-[var(--line)] bg-white py-12">
         <Container className="flex flex-col gap-4 text-sm text-[var(--muted)] sm:flex-row sm:items-center sm:justify-between">
-          <p>FexAPI</p>
+          <p className="font-[family-name:var(--font-slabo)] text-2xl leading-none text-[var(--foreground)]">
+            FexAPI
+          </p>
           <div className="flex items-center gap-6">
             <a
               className="transition-colors hover:text-[var(--foreground)]"
