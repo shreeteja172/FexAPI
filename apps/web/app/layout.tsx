@@ -12,8 +12,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "FexAPI Docs",
-  description: "Developer documentation UI for FexAPI mock API tooling",
+  title: "FexAPI",
+  description: "High-performance API mocking infrastructure for product teams.",
 };
 
 export default function RootLayout({
@@ -23,7 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} bg-[var(--background)] text-[var(--foreground)] antialiased`}
+      >
         {children}
       </body>
     </html>
