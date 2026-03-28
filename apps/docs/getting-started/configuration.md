@@ -84,5 +84,5 @@ CLI flags → schema.fexapi port → config file port → defaults
 
 ## Next Steps
 
-- [CLI Reference](/cli/overview) — all available commands and flags
-- [Custom Schemas](/schema/custom-schemas) — YAML schema definitions
+- [CLI Reference](../cli/overview.md) — all available commands and flags
+- [Custom Schemas](../schema/custom-schemas.md) — YAML schema definitions

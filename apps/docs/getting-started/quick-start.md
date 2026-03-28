@@ -97,6 +97,6 @@ For routes defined in `fexapi.config.js`, `count` query values override the rout
 
 ## What's Next
 
-- [Configuration](/getting-started/configuration) — customize ports, CORS, and delays
-- [Schema Guide](/schema/basics) — learn the full schema format
-- [CLI Reference](/cli/overview) — all available commands
+- [Configuration](./configuration.md) — customize ports, CORS, and delays
+- [Schema Guide](../schema/basics.md) — learn the full schema format
+- [CLI Reference](../cli/overview.md) — all available commands

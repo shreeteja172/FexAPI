@@ -50,6 +50,6 @@ your-project/
 
 ## Next Steps
 
-- [Install FexAPI](/getting-started/installation) to get started
-- [Quick Start](/getting-started/quick-start) for a 2-minute walkthrough
-- [Schema Guide](/schema/basics) to learn the schema format
+- [Install FexAPI](./installation.md) to get started
+- [Quick Start](./quick-start.md) for a 2-minute walkthrough
+- [Schema Guide](../schema/basics.md) to learn the schema format
