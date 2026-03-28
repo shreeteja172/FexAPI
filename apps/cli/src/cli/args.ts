@@ -126,7 +126,7 @@ export const parseServeOptions = (
     return { error: `Unexpected argument(s): ${positionalArgs.join(", ")}` };
   }
 
-  const host = hostValue ?? "127.0.0.1";
+  const host = hostValue ?? "localhost";
   const port = portValue ? Number(portValue) : undefined;
 
   if (
@@ -211,7 +211,7 @@ export const parseDevOptions = (
     return { error: `Unexpected argument(s): ${positionalArgs.join(", ")}` };
   }
 
-  const host = hostValue ?? "127.0.0.1";
+  const host = hostValue ?? "localhost";
   const port = portValue ? Number(portValue) : undefined;
 
   if (

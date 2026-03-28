@@ -23,7 +23,7 @@ export type GeneratedApiSpec = {
   routes: FexapiRoute[];
 };
 
-const DEFAULT_HOST = "127.0.0.1";
+const DEFAULT_HOST = "localhost";
 const DEFAULT_PORT = 4000;
 
 const sendJson = (

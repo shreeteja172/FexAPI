@@ -4,17 +4,22 @@ import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { GENERATED_SPEC_RELATIVE_PATH } from "../constants";
 import {
+  formatDuration,
   formatCommand,
   logError,
   logInfo,
   logSuccess,
   logWarn,
+  nowMs,
   printSpacer,
+  printSummaryCard,
+  startSpinner,
+  ui,
 } from "../cli/ui";
 import { detectProject, getSchemaTemplate } from "../project/detect";
 import { findClosestPackageJson } from "../project/paths";
 
-const DEFAULT_INIT_PORT = 3000;
+const DEFAULT_INIT_PORT = 4000;
 
 type InitWizardAnswers = {
   port: number;
@@ -197,6 +202,7 @@ export const initializeProject = async ({
 }: {
   force: boolean;
 }): Promise<number> => {
+  const initStartedAtMs = nowMs();
   const packageJsonPath = findClosestPackageJson(process.cwd());
 
   if (!packageJsonPath) {
@@ -218,6 +224,8 @@ export const initializeProject = async ({
 
   const wizardAnswers = await askInitWizardQuestions();
 
+  const initSpinner = startSpinner("Scaffolding fexapi project files");
+
   mkdirSync(fexapiDirectoryPath, { recursive: true });
 
   const configExists = existsSync(configPath);
@@ -236,10 +244,12 @@ export const initializeProject = async ({
   };
 
   if (!configExists || force) {
+    initSpinner.update("Writing fexapi.config.json");
     writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf-8");
   }
 
   if (!schemaExists || force) {
+    initSpinner.update("Writing fexapi/schema.fexapi");
     writeFileSync(
       schemaPath,
       `${getSchemaTemplate(detectedProject.primaryFramework, wizardAnswers.port)}\n`,
@@ -249,6 +259,7 @@ export const initializeProject = async ({
 
   const runtimeConfigExists = existsSync(runtimeConfigPath);
   if (!runtimeConfigExists || force) {
+    initSpinner.update("Writing fexapi.config.js");
     writeFileSync(
       runtimeConfigPath,
       `${getRuntimeConfigTemplate({
@@ -270,6 +281,7 @@ export const initializeProject = async ({
 
     const userSchemaExists = existsSync(userSchemaPath);
     if (!userSchemaExists || force) {
+      initSpinner.update("Writing sample user schema");
       writeFileSync(userSchemaPath, `${SAMPLE_USER_SCHEMA}\n`, "utf-8");
       userSchemaStatus = userSchemaExists ? "overwritten" : "created";
     } else {
@@ -278,12 +290,15 @@ export const initializeProject = async ({
 
     const postSchemaExists = existsSync(postSchemaPath);
     if (!postSchemaExists || force) {
+      initSpinner.update("Writing sample post schema");
       writeFileSync(postSchemaPath, `${SAMPLE_POST_SCHEMA}\n`, "utf-8");
       postSchemaStatus = postSchemaExists ? "overwritten" : "created";
     } else {
       postSchemaStatus = "exists";
     }
   }
+
+  initSpinner.succeed("Project scaffolding complete");
 
   logSuccess(`Initialized fexapi in ${projectRoot}`);
   logInfo(`Detected framework: ${detectedProject.primaryFramework}`);
@@ -343,6 +358,44 @@ export const initializeProject = async ({
       "No known framework dependency found. Update fexapi.config.json and schema.fexapi if needed.",
     );
   }
+
+  printSpacer();
+  const createdFiles = [
+    !configExists || force,
+    !schemaExists || force,
+    !runtimeConfigExists || force,
+    userSchemaStatus === "created" || userSchemaStatus === "overwritten",
+    postSchemaStatus === "created" || postSchemaStatus === "overwritten",
+  ].filter(Boolean).length;
+
+  printSummaryCard("Init Summary", [
+    {
+      label: "framework",
+      value: detectedProject.primaryFramework,
+    },
+    {
+      label: "port",
+      value: ui.cyan(String(wizardAnswers.port)),
+    },
+    {
+      label: "cors",
+      value: wizardAnswers.cors ? ui.green("enabled") : ui.gray("disabled"),
+    },
+    {
+      label: "sample schemas",
+      value: wizardAnswers.generateSampleSchemas
+        ? ui.green("enabled")
+        : ui.gray("disabled"),
+    },
+    {
+      label: "files changed",
+      value: ui.bold(String(createdFiles)),
+    },
+    {
+      label: "time",
+      value: ui.bold(formatDuration(initStartedAtMs)),
+    },
+  ]);
 
   printSpacer();
   logInfo(
