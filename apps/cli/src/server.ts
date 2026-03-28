@@ -190,19 +190,26 @@ const createRecordFromSchemaName = (
   };
 };
 
-const getCountFromUrl = (urlText: string | undefined, fallback = 5): number => {
+const getCountOverrideFromUrl = (
+  urlText: string | undefined,
+): number | undefined => {
   if (!urlText) {
-    return fallback;
+    return undefined;
   }
 
   const url = new URL(urlText, "http://localhost");
-  const rawCount = Number(url.searchParams.get("count") ?? fallback);
+  const rawCount = url.searchParams.get("count");
 
-  if (!Number.isFinite(rawCount)) {
-    return fallback;
+  if (rawCount === null) {
+    return undefined;
   }
 
-  return Math.min(Math.max(Math.floor(rawCount), 1), 50);
+  const parsedCount = Number(rawCount);
+  if (!Number.isFinite(parsedCount)) {
+    return undefined;
+  }
+
+  return Math.min(Math.max(Math.floor(parsedCount), 1), 50);
 };
 
 export const startServer = ({
@@ -254,12 +261,14 @@ export const startServer = ({
     if (request.method === "GET") {
       const configuredRoute = configuredRoutes[pathname];
       if (configuredRoute) {
+        const count =
+          getCountOverrideFromUrl(request.url) ?? configuredRoute.count;
         const payloadKey = toCollectionKey(pathname);
         sendJson(
           response,
           200,
           {
-            [payloadKey]: Array.from({ length: configuredRoute.count }, () =>
+            [payloadKey]: Array.from({ length: count }, () =>
               createRecordFromSchemaName(
                 configuredRoute.schema,
                 schemaDefinitions,
@@ -281,7 +290,7 @@ export const startServer = ({
         const method = request.method ?? "GET";
 
         if (method === "GET") {
-          const count = getCountFromUrl(request.url, 5);
+          const count = getCountOverrideFromUrl(request.url) ?? 5;
           const payloadKey = toCollectionKey(matchedRoute.path);
 
           sendJson(
@@ -315,8 +324,7 @@ export const startServer = ({
             if (raw.trim()) {
               requestBody = JSON.parse(raw) as Record<string, unknown>;
             }
-          } catch {
-          }
+          } catch {}
 
           const generatedRecord = createRecordFromRoute(matchedRoute);
           const merged = { ...generatedRecord, ...requestBody };

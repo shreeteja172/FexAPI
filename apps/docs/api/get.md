@@ -31,7 +31,6 @@ Response:
     }
   ]
 }
-
 ```
 
 ## Config-Based GET
@@ -43,10 +42,10 @@ module.exports = {
   routes: {
     "/users": { count: 20, schema: "user" },
   },
-}
+};
 ```
 
-This maps `/users` to `schemas/user.yaml` and returns 20 records.
+This maps `/users` to `fexapi/schemas/user.yaml` and returns 20 records.
 
 ## Record Count
 
@@ -60,12 +59,14 @@ curl http://localhost:4000/users?count=10
 - Minimum: `1`
 - Maximum: `50`
 
+For config-based routes, adding `?count=<n>` overrides the configured route count for that request.
+
 ## Response Key
 
 The response wraps records in a key derived from the last path segment:
 
-| Path | Response Key |
-|------|-------------|
-| `/users` | `users` |
-| `/api/products` | `products` |
-| `/` | `data` |
+| Path            | Response Key |
+| --------------- | ------------ |
+| `/users`        | `users`      |
+| `/api/products` | `products`   |
+| `/`             | `data`       |

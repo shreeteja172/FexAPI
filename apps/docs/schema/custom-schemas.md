@@ -5,7 +5,7 @@ For more control over data generation, define custom schemas as YAML files.
 ## File Location
 
 ```
-schemas/<name>.yaml
+fexapi/schemas/<name>.yaml
 ```
 
 Reference them in `fexapi.config.js` by filename (without extension):
@@ -15,10 +15,10 @@ module.exports = {
   routes: {
     "/users": { count: 50, schema: "user" },
   },
-}
+};
 ```
 
-`schema: "user"` resolves to `schemas/user.yaml`.
+`schema: "user"` resolves to `fexapi/schemas/user.yaml`.
 
 ## Schema Format
 
@@ -44,12 +44,12 @@ active:
 
 ## Field Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `type` | `string` | Field type — `string`, `number`, `boolean`, `date`, `uuid`, `email`, `url`, `name`, `phone` |
-| `faker` | `string` | Faker.js method path. Overrides default generation for the type. |
-| `min` | `number` | Minimum value (for `number` type) |
-| `max` | `number` | Maximum value (for `number` type) |
+| Property | Type     | Description                                                                                 |
+| -------- | -------- | ------------------------------------------------------------------------------------------- |
+| `type`   | `string` | Field type — `string`, `number`, `boolean`, `date`, `uuid`, `email`, `url`, `name`, `phone` |
+| `faker`  | `string` | Faker.js method path. Overrides default generation for the type.                            |
+| `min`    | `number` | Minimum value (for `number` type)                                                           |
+| `max`    | `number` | Maximum value (for `number` type)                                                           |
 
 ## Supported Extensions
 
@@ -58,7 +58,7 @@ active:
 
 ## Fallback Behavior
 
-If a schema name in `fexapi.config.js` doesn't match any file in `schemas/`, FexAPI generates a fallback record:
+If a schema name in `fexapi.config.js` doesn't match any file in `fexapi/schemas/`, FexAPI generates a fallback record:
 
 ```json
 {

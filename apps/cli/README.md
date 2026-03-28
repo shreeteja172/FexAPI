@@ -33,7 +33,7 @@ Creates:
 - `fexapi/schema.fexapi`
 - `fexapi.config.json`
 - `fexapi.config.js`
-- `schemas/user.yaml` and `schemas/post.yaml` (if sample schemas are enabled)
+- `fexapi/schemas/user.yaml` and `fexapi/schemas/post.yaml` (if sample schemas are enabled)
 
 ### 2) Edit schema file
 
@@ -141,16 +141,16 @@ Notes:
 
 - `port` sets the default server port (CLI `--port` still has priority).
 - `routes` maps endpoint paths to generated payload settings.
-- `schema` maps to files under `schemas/` (for example `schema: "user"` -> `schemas/user.yaml`); unknown names fall back to a generic record.
+- `schema` maps to files under `fexapi/schemas/` (for example `schema: "user"` -> `fexapi/schemas/user.yaml`); unknown names fall back to a generic record.
 - `cors: true` enables CORS headers and OPTIONS preflight handling.
 - `delay` adds response latency in milliseconds.
 
 ## Custom Schema Definitions
 
-You can define custom schemas in YAML files under `schemas/`.
+You can define custom schemas in YAML files under `fexapi/schemas/`.
 
 ```yaml
-# schemas/user.yaml
+# fexapi/schemas/user.yaml
 name:
   type: string
   faker: person.fullName
@@ -174,7 +174,7 @@ routes: {
 Notes:
 
 - Supported file extensions: `.yaml`, `.yml`
-- Schema name is taken from filename (for example `schemas/user.yaml` -> `schema: "user"`)
+- Schema name is taken from filename (for example `fexapi/schemas/user.yaml` -> `schema: "user"`)
 - `faker` values map to Faker paths like `person.fullName`, `internet.email`
 
 ## Features

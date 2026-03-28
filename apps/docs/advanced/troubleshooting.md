@@ -7,6 +7,7 @@ Common issues and how to fix them.
 **Cause:** The requested path doesn't match any defined route.
 
 **Fix:**
+
 1. Check the 404 response — it lists all available routes
 2. Make sure you ran `fexapi generate` after editing your schema
 3. Verify the HTTP method matches (`GET /users` won't match `POST /users`)
@@ -16,6 +17,7 @@ Common issues and how to fix them.
 **Cause:** The schema file exists but has no valid route definitions.
 
 **Fix:**
+
 1. Check the syntax of `fexapi/schema.fexapi`
 2. Each route needs: `METHOD /path: field:type`
 3. Run `fexapi format` to normalize the file
@@ -25,6 +27,7 @@ Common issues and how to fix them.
 **Cause:** Another process is using the same port.
 
 **Fix:**
+
 ```bash
 fexapi serve --port 5000
 ```
@@ -40,7 +43,7 @@ Or stop the other process using that port.
 ```js
 module.exports = {
   cors: true,
-}
+};
 ```
 
 ## Schema type errors
@@ -60,6 +63,7 @@ GET /users:
 **Cause:** FexAPI can't find `fexapi.config.js` or `fexapi.config.json`.
 
 **Fix:**
+
 1. Make sure the config file is in the project root (where you run the command)
 2. Check file naming — it must be `fexapi.config.js` or `fexapi.config.json`
 
@@ -68,10 +72,11 @@ GET /users:
 **Cause:** The changed file isn't in the watched file list.
 
 **Watched files:**
+
 - `fexapi/schema.fexapi`
 - `fexapi/generated.api.json`
 - `fexapi.config.js`
 - `fexapi.config.json`
-- `schemas/*.yaml`
+- `fexapi/schemas/*.yaml`
 
 Make sure you're using `fexapi dev --watch` (not `fexapi serve`).

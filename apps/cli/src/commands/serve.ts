@@ -45,7 +45,7 @@ export const createProjectServer = ({
 
   if (Object.keys(schemaDefinitions).length > 0) {
     console.log(
-      `Loaded custom schemas from /schemas (${Object.keys(schemaDefinitions).length})`,
+      `Loaded custom schemas from fexapi/schemas (${Object.keys(schemaDefinitions).length})`,
     );
   }
 

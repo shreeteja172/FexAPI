@@ -26,10 +26,10 @@ Your frontend can now fetch from `http://localhost:4000/users` and get back stru
 
 FexAPI reads your `schema.fexapi` file and produces:
 
-| File | Purpose |
-|------|---------|
-| `fexapi/generated.api.json` | The compiled API spec used by the server |
-| `fexapi/migrations/schema.json` | Migration snapshot of your schema |
+| File                            | Purpose                                  |
+| ------------------------------- | ---------------------------------------- |
+| `fexapi/generated.api.json`     | The compiled API spec used by the server |
+| `fexapi/migrations/schema.json` | Migration snapshot of your schema        |
 
 The server uses these files to respond to HTTP requests with dynamically generated fake data.
 
@@ -41,9 +41,9 @@ After running `fexapi init`, your project will contain:
 your-project/
 ├── fexapi/
 │   └── schema.fexapi         # your endpoint definitions
-├── schemas/
-│   ├── user.yaml              # custom schema (optional)
-│   └── post.yaml              # custom schema (optional)
+│   └── schemas/
+│       ├── user.yaml          # custom schema (optional)
+│       └── post.yaml          # custom schema (optional)
 ├── fexapi.config.json         # JSON config
 └── fexapi.config.js           # JS config (route mappings, CORS, delay)
 ```

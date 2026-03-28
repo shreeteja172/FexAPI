@@ -10,11 +10,11 @@ npx fexapi init
 
 The wizard will ask:
 
-| Prompt | Default |
-|--------|---------|
-| Port number | `3000` |
-| Enable CORS? | `Yes` |
-| Generate sample schemas? | `Yes` |
+| Prompt                   | Default |
+| ------------------------ | ------- |
+| Port number              | `3000`  |
+| Enable CORS?             | `Yes`   |
+| Generate sample schemas? | `Yes`   |
 
 This creates your project files:
 
@@ -22,8 +22,8 @@ This creates your project files:
 fexapi/schema.fexapi
 fexapi.config.json
 fexapi.config.js
-schemas/user.yaml
-schemas/post.yaml
+fexapi/schemas/user.yaml
+fexapi/schemas/post.yaml
 ```
 
 ## 2. Define Your Schema
@@ -92,6 +92,8 @@ curl http://localhost:4000/users?count=20
 ```
 
 Returns 20 user records. Maximum is 50.
+
+For routes defined in `fexapi.config.js`, `count` query values override the route `count` (still clamped to `1-50`).
 
 ## What's Next
 

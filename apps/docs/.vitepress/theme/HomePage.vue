@@ -1,6 +1,6 @@
 <script setup>
-import { useData } from 'vitepress'
-const { isDark } = useData()
+import { useData } from "vitepress";
+const { isDark } = useData();
 </script>
 
 <template>
@@ -21,11 +21,35 @@ const { isDark } = useData()
       <div class="hero-actions">
         <a href="/getting-started/introduction" class="btn-primary">
           Get Started
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
         </a>
         <div class="install-cmd" @click="copyInstall">
           <code>npx fexapi init</code>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+          </svg>
         </div>
       </div>
       <div class="hero-terminal">
@@ -42,7 +66,7 @@ const { isDark } = useData()
             <span class="terminal-cmd">npx fexapi init</span>
           </div>
           <div class="terminal-line terminal-output">
-            <span>? What port should the server run on?</span>
+            <span>What port? (default: 3000)</span>
             <span class="terminal-dim">4000</span>
           </div>
           <div class="terminal-line terminal-output">
@@ -60,7 +84,7 @@ const { isDark } = useData()
           </div>
           <div class="terminal-line terminal-output">
             <span class="terminal-success">✓</span>
-            <span>Created schemas/user.yaml</span>
+            <span>Created fexapi/schemas/user.yaml</span>
           </div>
           <div class="terminal-line terminal-output terminal-gap"></div>
           <div class="terminal-line">
@@ -79,52 +103,145 @@ const { isDark } = useData()
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
           </div>
           <h3>Zero Config</h3>
-          <p>One command to scaffold. One command to serve. No Express, no database, no boilerplate.</p>
+          <p>
+            One command to scaffold. One command to serve. No Express, no
+            database, no boilerplate.
+          </p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+              />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
           </div>
           <h3>Schema-Driven</h3>
-          <p>Define endpoints in a readable <code>.fexapi</code> schema file or YAML. Generates data from your definitions.</p>
+          <p>
+            Define endpoints in a readable <code>.fexapi</code> schema file or
+            YAML. Generates data from your definitions.
+          </p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
           </div>
           <h3>Faker.js Built-in</h3>
-          <p>Realistic names, emails, UUIDs, dates. Use any Faker.js method path in your custom schemas.</p>
+          <p>
+            Realistic names, emails, UUIDs, dates. Use any Faker.js method path
+            in your custom schemas.
+          </p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
           </div>
           <h3>Watch Mode</h3>
-          <p>Edit your schema, see changes instantly. The dev server auto-reloads when files change.</p>
+          <p>
+            Edit your schema, see changes instantly. The dev server auto-reloads
+            when files change.
+          </p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+            </svg>
           </div>
           <h3>CORS Ready</h3>
-          <p>Single config flag enables CORS headers. Works with React, Vue, Angular — any frontend.</p>
+          <p>
+            Single config flag enables CORS headers. Works with React, Vue,
+            Angular — any frontend.
+          </p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <line x1="3" y1="9" x2="21" y2="9" />
+              <line x1="9" y1="21" x2="9" y2="9" />
+            </svg>
           </div>
           <h3>REST Endpoints</h3>
-          <p>GET, POST, PUT, DELETE. Define any HTTP method with typed fields and get structured JSON back.</p>
+          <p>
+            GET, POST, PUT, DELETE. Define any HTTP method with typed fields and
+            get structured JSON back.
+          </p>
         </div>
       </div>
     </section>
 
     <section class="workflow">
       <h2 class="section-title">How it works</h2>
-      <p class="section-subtitle">Four steps from zero to a working mock API.</p>
+      <p class="section-subtitle">
+        Four steps from zero to a working mock API.
+      </p>
       <div class="workflow-steps">
         <div class="workflow-step">
           <div class="step-number">1</div>
@@ -171,18 +288,54 @@ const { isDark } = useData()
         <div class="cta-actions">
           <a href="/getting-started/quick-start" class="btn-primary">
             Quick Start Guide
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
           </a>
-          <a href="https://github.com/shreeteja172/fexapi" class="btn-secondary" target="_blank">
+          <a
+            href="https://github.com/shreeteja172/fexapi"
+            class="btn-secondary"
+            target="_blank"
+          >
             GitHub
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+              />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
           </a>
         </div>
       </div>
     </section>
 
     <footer class="home-footer">
-      <p>Released under the MIT License. Built by <a href="https://github.com/shreeteja172" target="_blank">Shreeteja Mutukundu</a>.</p>
+      <p>
+        Released under the MIT License. Built by
+        <a href="https://github.com/shreeteja172" target="_blank"
+          >Shreeteja Mutukundu</a
+        >.
+      </p>
     </footer>
   </div>
 </template>
@@ -192,11 +345,11 @@ export default {
   methods: {
     async copyInstall() {
       try {
-        await navigator.clipboard.writeText('npx fexapi init')
+        await navigator.clipboard.writeText("npx fexapi init");
       } catch {}
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
