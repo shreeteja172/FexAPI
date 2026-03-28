@@ -2,12 +2,12 @@ import { defineConfig } from "vitepress";
 
 export default defineConfig({
   title: "FexAPI",
-  description: "Mock API generation CLI for frontend development",
+  description: "Schema-first mock API CLI for frontend development",
   cleanUrls: true,
   appearance: true,
 
   head: [
-    ["meta", { name: "theme-color", content: "#0a0a0a" }],
+    ["meta", { name: "theme-color", content: "#0b1220" }],
     ["meta", { name: "color-scheme", content: "dark light" }],
     ["meta", { property: "og:type", content: "website" }],
     ["meta", { property: "og:title", content: "FexAPI Documentation" }],
@@ -15,7 +15,7 @@ export default defineConfig({
       "meta",
       {
         property: "og:description",
-        content: "Mock API generation CLI for frontend development",
+        content: "Schema-first mock API CLI for frontend development",
       },
     ],
     ["meta", { property: "og:url", content: "https://docs.fexapi.dev" }],
@@ -28,7 +28,7 @@ export default defineConfig({
       "link",
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap",
       },
     ],
   ],
@@ -38,10 +38,11 @@ export default defineConfig({
     siteTitle: "FexAPI",
 
     nav: [
+      { text: "Home", link: "/" },
       { text: "Guide", link: "/getting-started/introduction" },
       { text: "CLI Reference", link: "/cli/overview" },
       { text: "Schema", link: "/schema/basics" },
-      { text: "Examples", link: "/examples/react" },
+      { text: "Troubleshooting", link: "/advanced/troubleshooting" },
     ],
 
     sidebar: [
@@ -76,17 +77,6 @@ export default defineConfig({
           { text: "Faker Methods", link: "/schema/faker-methods" },
           { text: "Custom Schemas", link: "/schema/custom-schemas" },
           { text: "Example Schemas", link: "/schema/examples" },
-        ],
-      },
-      {
-        text: "API Endpoints",
-        collapsed: false,
-        items: [
-          { text: "GET Requests", link: "/api/get" },
-          { text: "POST Requests", link: "/api/post" },
-          { text: "PUT Requests", link: "/api/put" },
-          { text: "DELETE Requests", link: "/api/delete" },
-          { text: "Response Format", link: "/api/response-format" },
         ],
       },
       {

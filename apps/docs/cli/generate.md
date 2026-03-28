@@ -13,14 +13,12 @@ fexapi generate
 1. Reads `fexapi/schema.fexapi`
 2. Parses routes and field definitions
 3. Outputs `fexapi/generated.api.json`
-4. Updates `fexapi/migrations/schema.json`
 
 ## Output Files
 
-| File | Purpose |
-|------|---------|
+| File                        | Purpose                                   |
+| --------------------------- | ----------------------------------------- |
 | `fexapi/generated.api.json` | Compiled API spec — the server reads this |
-| `fexapi/migrations/schema.json` | Snapshot of the current schema state |
 
 ## When to Run
 
@@ -33,7 +31,7 @@ fexapi serve
 ```
 
 ::: tip
-If you use `fexapi dev --watch`, generation happens automatically when the schema file changes.
+If you use `fexapi dev --watch`, generation runs automatically when watched schema files change.
 :::
 
 ## Errors

@@ -17,7 +17,7 @@ Add scripts that generate artifacts, start the server, wait for readiness, and r
   "scripts": {
     "mock:generate": "fexapi generate",
     "mock:start": "fexapi serve --port 4100",
-    "test:integration": "start-server-and-test \"npm run mock:start\" http://127.0.0.1:4100/unknown \"vitest run\"",
+    "test:integration": "start-server-and-test \"npm run mock:start\" http://localhost:4100/unknown \"vitest run\"",
     "test": "npm run mock:generate && npm run test:integration"
   }
 }
@@ -34,7 +34,7 @@ Why this is better than `fexapi serve &`:
 ```js
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
-const API_URL = "http://127.0.0.1:4100";
+const API_URL = "http://localhost:4100";
 
 describe("User API", () => {
   it("should return users", async () => {

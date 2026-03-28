@@ -13,7 +13,7 @@ fexapi dev [--watch] [--host <host>] [--port <number>] [--log]
 | Flag              | Default               | Description                                    |
 | ----------------- | --------------------- | ---------------------------------------------- |
 | `--watch`         | `false`               | Auto-reload when config or schema files change |
-| `--host <host>`   | `127.0.0.1`           | Host to bind to                                |
+| `--host <host>`   | `localhost`           | Host to bind to                                |
 | `--port <number>` | Schema port or `4000` | Port to listen on                              |
 | `--log`           | `false`               | Print request/response logs                    |
 
@@ -24,8 +24,9 @@ When `--watch` is enabled, the server reloads on changes to:
 - `fexapi/schema.fexapi`
 - `fexapi/generated.api.json`
 - `fexapi.config.js`
-- `fexapi.config.json`
 - `fexapi/schemas/*.yaml`
+
+When schema-related files change, `dev --watch` regenerates `generated.api.json` before reloading the server.
 
 ## Examples
 

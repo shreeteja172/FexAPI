@@ -8,22 +8,18 @@ Get a mock API running in under 2 minutes.
 npx fexapi init
 ```
 
-The wizard will ask:
+The wizard asks:
 
-| Prompt                   | Default |
-| ------------------------ | ------- |
-| Port number              | `3000`  |
-| Enable CORS?             | `Yes`   |
-| Generate sample schemas? | `Yes`   |
+| Prompt       | Default |
+| ------------ | ------- |
+| Port number  | `4000`  |
+| Enable CORS? | `Yes`   |
 
 This creates your project files:
 
 ```
 fexapi/schema.fexapi
-fexapi.config.json
 fexapi.config.js
-fexapi/schemas/user.yaml
-fexapi/schemas/post.yaml
 ```
 
 ## 2. Define Your Schema
@@ -61,6 +57,8 @@ This reads your schema and outputs `fexapi/generated.api.json`.
 ```bash
 npx fexapi dev --watch
 ```
+
+`dev --watch` will regenerate and reload when `fexapi/schema.fexapi`, `fexapi.config.js`, or custom schema YAML files change.
 
 Your mock API is now running. Try it:
 

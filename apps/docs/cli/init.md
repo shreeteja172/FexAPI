@@ -18,22 +18,15 @@ fexapi init [--force]
 
 The init command runs an interactive wizard that asks:
 
-| Prompt                   | Default | Description                           |
-| ------------------------ | ------- | ------------------------------------- |
-| Port number              | `3000`  | The port your mock server will run on |
-| Enable CORS?             | `Yes`   | Adds CORS headers to all responses    |
-| Generate sample schemas? | `Yes`   | Creates example YAML schema files     |
+| Prompt       | Default | Description                           |
+| ------------ | ------- | ------------------------------------- |
+| Port number  | `4000`  | The port your mock server will run on |
+| Enable CORS? | `Yes`   | Adds CORS headers to all responses    |
 
 ## Generated Files
 
 ```
-fexapi/
-├── schema.fexapi          # endpoint definitions
-└── schemas/
-	├── user.yaml          # sample user schema (if selected)
-	└── post.yaml          # sample post schema (if selected)
-
-fexapi.config.json         # JSON configuration
+fexapi/schema.fexapi       # endpoint definitions
 fexapi.config.js           # JavaScript configuration
 ```
 
@@ -44,15 +37,11 @@ npx fexapi init
 ```
 
 ```
-What port? (default: 3000) 4000
+What port? (default: 4000) 4000
 ? Enable CORS? Yes
-? Generate sample schemas? Yes
 
 Created fexapi/schema.fexapi
-Created fexapi.config.json
 Created fexapi.config.js
-Created fexapi/schemas/user.yaml
-Created fexapi/schemas/post.yaml
 ```
 
 To overwrite existing files:

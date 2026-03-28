@@ -27,7 +27,7 @@ port: 4100
 ```js
 module.exports = {
   port: 3000,
-}
+};
 ```
 
 ## Priority Order
@@ -44,4 +44,4 @@ You can also bind to a specific host:
 fexapi serve --host 0.0.0.0 --port 4000
 ```
 
-The default host is `127.0.0.1` (localhost only). Use `0.0.0.0` to accept connections from other devices on your network.
+The default host is `localhost`. Use `0.0.0.0` to accept connections from other devices on your network.

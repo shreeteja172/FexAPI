@@ -9,10 +9,10 @@ Run these in order when something feels off:
 ```bash
 fexapi --help
 fexapi generate
-fexapi serve --log
+fexapi dev --watch --log
 ```
 
-If `generate` fails, fix schema errors first. If `serve` starts but responses are not what you expect, check route source priority in the logs.
+If `generate` fails, fix schema errors first. If the server starts but responses are unexpected, check route source and watch logs.
 
 ## "Could not find package.json"
 
@@ -64,13 +64,15 @@ Then restart the server.
 
 ## "Expected schema routes, but config routes are being used"
 
-**Cause:** `fexapi.config.js` routes take precedence when present.
+**Cause:** Route overlap between generated schema routes and `fexapi.config.js`.
 
 **Fix:**
 
-1. Remove or adjust the `routes` object in `fexapi.config.js`
-2. Keep only schema-driven routes if you want generated routes exclusively
-3. Restart `serve`/`dev`
+1. Keep your source-of-truth route in `fexapi/schema.fexapi`
+2. Remove overlapping path entries in `fexapi.config.js` routes
+3. Regenerate and restart
+
+Schema-generated routes are prioritized when overlaps exist.
 
 ## "No routes defined in schema.fexapi"
 
@@ -134,12 +136,12 @@ GET /users:
 
 ## Config file not loading
 
-**Cause:** FexAPI can't find `fexapi.config.js` or `fexapi.config.json`.
+**Cause:** FexAPI can't find `fexapi.config.js` from the current project root.
 
 **Fix:**
 
 1. Make sure the config file is in the project root (where you run the command)
-2. Check file naming — it must be `fexapi.config.js` or `fexapi.config.json`
+2. Check file naming — it must be `fexapi.config.js`
 
 ## Watch mode not reloading
 
@@ -150,10 +152,11 @@ GET /users:
 - `fexapi/schema.fexapi`
 - `fexapi/generated.api.json`
 - `fexapi.config.js`
-- `fexapi.config.json`
 - `fexapi/schemas/*.yaml`
 
 Make sure you're using `fexapi dev --watch` (not `fexapi serve`).
+
+If schema parsing fails while watching, the server keeps running with the last valid generated state. Fix the schema and save again.
 
 ## Faker method not applied
 

@@ -1,38 +1,20 @@
 # Configuration
 
-FexAPI supports configuration through both JSON and JavaScript files.
+FexAPI configuration is loaded from `fexapi.config.js` in your project root.
 
-## Config Files
+CLI flags override file values at runtime.
 
-FexAPI looks for configuration in this order:
-
-1. `fexapi.config.js` — JavaScript config (recommended)
-2. `fexapi.config.json` — JSON config
-
-CLI flags always take priority over config file values.
-
-## JavaScript Config
+## Config File
 
 ```js
 module.exports = {
-  port: 3000,
+  port: 4000,
   cors: true,
   delay: 200,
   routes: {
-    "/users": { count: 50, schema: "user" },
-    "/posts": { count: 100, schema: "post" },
+    "/users": { count: 20, schema: "user" },
   },
 };
-```
-
-## JSON Config
-
-```json
-{
-  "port": 3000,
-  "cors": true,
-  "delay": 0
-}
 ```
 
 ## Options Reference
@@ -42,7 +24,7 @@ module.exports = {
 | `port`   | `number`  | `4000`  | Server port. CLI `--port` overrides this.  |
 | `cors`   | `boolean` | `false` | Enable CORS headers and OPTIONS preflight. |
 | `delay`  | `number`  | `0`     | Response delay in milliseconds.            |
-| `routes` | `object`  | `{}`    | Route-to-schema mappings.                  |
+| `routes` | `object`  | `{}`    | Optional route-level overrides.            |
 
 ## Routes Config
 
@@ -57,24 +39,24 @@ routes: {
 }
 ```
 
-| Property | Type     | Description                                        |
-| -------- | -------- | -------------------------------------------------- |
-| `count`  | `number` | Number of records to return                        |
-| `schema` | `string` | Schema name — maps to `fexapi/schemas/<name>.yaml` |
+| Property | Type     | Description                                               |
+| -------- | -------- | --------------------------------------------------------- |
+| `count`  | `number` | Number of records to return (`1-50`)                      |
+| `schema` | `string` | Schema name that resolves to `fexapi/schemas/<name>.yaml` |
 
 If the schema name doesn't match any file in `fexapi/schemas/`, FexAPI falls back to a generic record structure.
 
-## Schema File vs Config File
+## Schema File vs Config Routes
 
 FexAPI supports two ways to define routes:
 
-|                 | `schema.fexapi`       | `fexapi.config.js`                 |
-| --------------- | --------------------- | ---------------------------------- |
-| **Format**      | Custom DSL            | JavaScript                         |
-| **Field types** | Inline (`name:email`) | YAML schema files                  |
-| **Best for**    | Quick prototyping     | Complex schemas with Faker methods |
+|                 | `schema.fexapi`      | `fexapi.config.js` routes |
+| --------------- | -------------------- | ------------------------- |
+| **Format**      | DSL                  | JavaScript                |
+| **Best for**    | Primary API contract | Count/schema overrides    |
+| **Data source** | Generated API spec   | Runtime route config      |
 
-Both can be used together. Config routes and schema routes are merged at startup.
+Both can be used together. If the same path appears in both, schema-generated routes take precedence.
 
 ## Priority Order
 

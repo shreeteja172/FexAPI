@@ -35,7 +35,7 @@ jobs:
       - name: Wait for server readiness
         run: |
           for i in {1..30}; do
-            curl -s http://127.0.0.1:4000/unknown > /dev/null && break
+            curl -s http://localhost:4000/unknown > /dev/null && break
             sleep 1
           done
 
@@ -54,7 +54,7 @@ test:
     - npx fexapi serve --port 4000 &
     - |
       for i in $(seq 1 30); do
-        curl -s http://127.0.0.1:4000/unknown > /dev/null && break
+        curl -s http://localhost:4000/unknown > /dev/null && break
         sleep 1
       done
     - npm test
@@ -71,7 +71,7 @@ npm install -D start-server-and-test
 ```json
 {
   "scripts": {
-    "ci:mock:test": "start-server-and-test \"fexapi serve --port 4000\" http://127.0.0.1:4000/unknown \"npm test\""
+    "ci:mock:test": "start-server-and-test \"fexapi serve --port 4000\" http://localhost:4000/unknown \"npm test\""
   }
 }
 ```

@@ -19,11 +19,11 @@ All three forms are equivalent.
 
 ## Flags
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--host <host>` | `127.0.0.1` | Host to bind the server to |
-| `--port <number>` | Schema port or `4000` | Port to listen on |
-| `--log` | `false` | Print request/response logs |
+| Flag              | Default               | Description                 |
+| ----------------- | --------------------- | --------------------------- |
+| `--host <host>`   | `localhost`           | Host to bind the server to  |
+| `--port <number>` | Schema port or `4000` | Port to listen on           |
+| `--log`           | `false`               | Print request/response logs |
 
 ## Port Priority
 

@@ -1,55 +1,47 @@
 # Introduction
 
-FexAPI is a CLI tool that generates mock API endpoints for frontend development. Define your data shape in a schema file, run one command, and get a local server with realistic fake data.
+FexAPI is a schema-first CLI for generating and serving mock APIs during frontend development.
 
-## Why FexAPI?
+You define routes once in `fexapi/schema.fexapi`, compile them to `fexapi/generated.api.json`, and run a local API server with realistic fake data.
 
-When building frontends, you need API data before the backend is ready. FexAPI solves this by letting you:
+## Why Teams Use FexAPI
 
-- **Define endpoints declaratively** using a simple schema format
-- **Generate realistic data** powered by Faker.js
-- **Run a local server** with zero configuration
-- **Watch for changes** and auto-reload during development
+- Fast local API setup without spinning up backend services
+- Clear mock contracts in versioned schema files
+- Repeatable output generated from one source of truth
+- Watch mode that regenerates and reloads automatically
 
-## How It Works
+## Mental Model
 
-```
-1. fexapi init          → scaffolds config + schema files
-2. edit schema.fexapi   → define your endpoints and fields
-3. fexapi generate      → generates the API spec from your schema
-4. fexapi dev --watch   → starts the server with hot reload
+```txt
+schema.fexapi -> fexapi generate -> generated.api.json -> fexapi serve/dev
 ```
 
-Your frontend can now fetch from `http://localhost:4000/users` and get back structured, realistic mock data.
+## Startup Workflow
 
-## What Gets Generated
-
-FexAPI reads your `schema.fexapi` file and produces:
-
-| File                            | Purpose                                  |
-| ------------------------------- | ---------------------------------------- |
-| `fexapi/generated.api.json`     | The compiled API spec used by the server |
-| `fexapi/migrations/schema.json` | Migration snapshot of your schema        |
-
-The server uses these files to respond to HTTP requests with dynamically generated fake data.
-
-## Project Structure
-
-After running `fexapi init`, your project will contain:
-
+```bash
+fexapi init
+# edit fexapi/schema.fexapi
+fexapi generate
+fexapi dev --watch
 ```
-your-project/
-├── fexapi/
-│   └── schema.fexapi         # your endpoint definitions
-│   └── schemas/
-│       ├── user.yaml          # custom schema (optional)
-│       └── post.yaml          # custom schema (optional)
-├── fexapi.config.json         # JSON config
-└── fexapi.config.js           # JS config (route mappings, CORS, delay)
+
+## Files You Actually Need
+
+```txt
+fexapi/schema.fexapi
+fexapi/generated.api.json
+fexapi.config.js
 ```
+
+`fexapi.config.js` is optional but recommended when you want runtime options like `cors`, `delay`, or route-level overrides.
+
+## Route Precedence
+
+If both schema routes and `fexapi.config.js` routes define the same path, schema-generated routes are used first.
 
 ## Next Steps
 
-- [Install FexAPI](./installation.md) to get started
-- [Quick Start](./quick-start.md) for a 2-minute walkthrough
-- [Schema Guide](../schema/basics.md) to learn the schema format
+- [Installation](./installation.md)
+- [Quick Start](./quick-start.md)
+- [CLI Commands](../cli/overview.md)

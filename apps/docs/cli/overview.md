@@ -1,27 +1,23 @@
 # Commands Overview
 
-FexAPI provides a small set of focused commands.
+FexAPI keeps the command surface intentionally small and composable.
 
-## Pick the Right Command
+## Core Commands
 
-| Goal                                           | Command              |
-| ---------------------------------------------- | -------------------- |
-| Set up files in a new project                  | `fexapi init`        |
-| Rebuild generated artifacts after schema edits | `fexapi generate`    |
-| Reformat `schema.fexapi` for readability       | `fexapi format`      |
-| Run server once (no auto-reload)               | `fexapi serve`       |
-| Run server with auto-reload during development | `fexapi dev --watch` |
+| Command              | Use it for                                                    |
+| -------------------- | ------------------------------------------------------------- |
+| `fexapi init`        | Scaffold project files (`schema.fexapi` + `fexapi.config.js`) |
+| `fexapi generate`    | Compile schema routes into `generated.api.json`               |
+| `fexapi format`      | Normalize and reformat `schema.fexapi`                        |
+| `fexapi serve`       | Start server once without watch                               |
+| `fexapi dev --watch` | Auto-generate and auto-reload during development              |
 
-## Command Reference
+## Aliases and Global Commands
 
-| Command           | Description                      |
-| ----------------- | -------------------------------- |
-| `fexapi init`     | Scaffold config and schema files |
-| `fexapi generate` | Compile schema into API spec     |
-| `fexapi format`   | Auto-format your schema file     |
-| `fexapi serve`    | Start the mock server            |
-| `fexapi dev`      | Start the server with watch mode |
-| `fexapi --help`   | Show help                        |
+- `fexapi run` is an alias for `fexapi serve`
+- `fexapi` (no subcommand) behaves like `fexapi serve`
+- `fexapi --version` and `fexapi version` print the installed version
+- `fexapi --help` prints full command help
 
 Detailed pages:
 
@@ -48,6 +44,8 @@ Active frontend development:
 fexapi dev --watch --log
 ```
 
+Watch mode reacts to schema/config changes and explains what it did (detected change, generated output, reload status).
+
 Before pushing changes:
 
 ```bash
@@ -57,12 +55,9 @@ fexapi generate
 
 ## Global Flags
 
-| Flag           | Description               |
-| -------------- | ------------------------- |
-| `--help`, `-h` | Show help for any command |
+| Flag              | Description               |
+| ----------------- | ------------------------- |
+| `--help`, `-h`    | Show help for any command |
+| `--version`, `-v` | Print CLI version         |
 
 Commands reject unexpected positional arguments and duplicate flags.
-
-## Aliases
-
-`fexapi run` is an alias for `fexapi serve`. Running `fexapi` without a command also starts the server.
