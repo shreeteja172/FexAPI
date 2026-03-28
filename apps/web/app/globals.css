@@ -3,12 +3,68 @@
 @tailwind utilities;
 
 :root {
-  --background: #f7f7f8;
-  --foreground: #101114;
-  --muted: #666b74;
-  --line: #dfe2e8;
-  --line-dark: #2b2f381f;
-  --accent: #5c6cf7;
+  --background: #f6f7fb;
+  --foreground: #0f172a;
+  --muted: #51607c;
+  --line: #d7deed;
+  --line-dark: #1a2742;
+  --accent: #0891b2;
+
+  --fx-brand-1: #0e7490;
+  --fx-brand-2: #22d3ee;
+  --fx-orange: #f97316;
+  --fx-bg: #f6f7fb;
+  --fx-bg-soft: #eef1f8;
+  --fx-surface: rgba(255, 255, 255, 0.78);
+  --fx-surface-solid: #ffffff;
+  --fx-text-1: #0f172a;
+  --fx-text-2: #253047;
+  --fx-text-3: #51607c;
+  --fx-border: #d7deed;
+}
+
+:root[data-theme="dark"] {
+  --background: #05070d;
+  --foreground: #e4ebff;
+  --muted: #9eb0cf;
+  --line: #1a2742;
+  --line-dark: #1a2742;
+  --accent: #22d3ee;
+
+  --fx-brand-1: #22d3ee;
+  --fx-brand-2: #67e8f9;
+  --fx-orange: #fb923c;
+  --fx-bg: #05070d;
+  --fx-bg-soft: #0b1220;
+  --fx-surface: rgba(16, 26, 45, 0.82);
+  --fx-surface-solid: #0b1220;
+  --fx-text-1: #e4ebff;
+  --fx-text-2: #b7c4de;
+  --fx-text-3: #8596b6;
+  --fx-border: #1a2742;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #05070d;
+    --foreground: #e4ebff;
+    --muted: #9eb0cf;
+    --line: #1a2742;
+    --line-dark: #1a2742;
+    --accent: #22d3ee;
+
+    --fx-brand-1: #22d3ee;
+    --fx-brand-2: #67e8f9;
+    --fx-orange: #fb923c;
+    --fx-bg: #05070d;
+    --fx-bg-soft: #0b1220;
+    --fx-surface: rgba(16, 26, 45, 0.82);
+    --fx-surface-solid: #0b1220;
+    --fx-text-1: #e4ebff;
+    --fx-text-2: #b7c4de;
+    --fx-text-3: #8596b6;
+    --fx-border: #1a2742;
+  }
 }
 
 * {
@@ -26,6 +82,8 @@ body {
   line-height: 1.55;
   letter-spacing: -0.01em;
   text-rendering: optimizeLegibility;
+  background: var(--fx-bg);
+  color: var(--fx-text-1);
 }
 
 a {
@@ -34,6 +92,13 @@ a {
 }
 
 ::selection {
-  background: #cfd5ff;
-  color: #101114;
+  background: rgba(34, 211, 238, 0.3);
+  color: var(--fx-text-1);
+}
+
+.fx-page-bg {
+  background:
+    radial-gradient(1000px 420px at 92% -8%, rgba(34, 211, 238, 0.16), transparent 64%),
+    radial-gradient(920px 460px at -10% 0%, rgba(249, 115, 22, 0.12), transparent 70%),
+    var(--fx-bg);
 }

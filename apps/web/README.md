@@ -2,7 +2,9 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, create your local env file by copying `.env.local.example` to `.env.local`.
+
+Then run the development server:
 
 ```bash
 npm run dev
@@ -15,6 +17,11 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Environment Variables
+
+- `NEXT_PUBLIC_DOCS_URL`: docs site origin used by landing navigation/CTAs
+- `NEXT_PUBLIC_API_URL`: API origin shown in usage examples
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

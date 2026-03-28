@@ -38,7 +38,6 @@ export default defineConfig({
     siteTitle: "FexAPI",
 
     nav: [
-      { text: "Home", link: "/" },
       { text: "Guide", link: "/getting-started/introduction" },
       { text: "CLI Reference", link: "/cli/overview" },
       { text: "Schema", link: "/schema/basics" },
