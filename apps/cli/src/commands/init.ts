@@ -24,7 +24,6 @@ const DEFAULT_INIT_PORT = 4000;
 type InitWizardAnswers = {
   port: number;
   cors: boolean;
-  generateSampleSchemas: boolean;
 };
 
 const parseYesNo = (
@@ -53,12 +52,11 @@ const askInitWizardQuestions = async (): Promise<InitWizardAnswers> => {
     return {
       port: DEFAULT_INIT_PORT,
       cors: true,
-      generateSampleSchemas: true,
     };
   }
 
   const questionInterface = createInterface({ input, output });
-  const totalSteps = 3;
+  const totalSteps = 2;
   const formatWizardPrompt = (
     step: number,
     question: string,
@@ -128,33 +126,11 @@ const askInitWizardQuestions = async (): Promise<InitWizardAnswers> => {
       `${ui.green("✓")} ${ui.dim("CORS")}: ${cors ? ui.green("enabled") : ui.gray("disabled")}`,
     );
 
-    let generateSampleSchemas = true;
-    while (true) {
-      const answer = await questionInterface.question(
-        formatWizardPrompt(3, "Generate sample schemas?", "Y/n", "Y"),
-      );
-      const parsed = parseYesNo(answer, true);
-
-      if (parsed !== undefined) {
-        generateSampleSchemas = parsed;
-        break;
-      }
-
-      console.log(
-        `${ui.red("✕")} ${ui.white("Please answer with Y/Yes or N/No.")}`,
-      );
-      printSpacer();
-    }
-    console.log(
-      `${ui.green("✓")} ${ui.dim("Sample schemas")}: ${generateSampleSchemas ? ui.green("enabled") : ui.gray("disabled")}`,
-    );
-
     printSpacer();
 
     return {
       port,
       cors,
-      generateSampleSchemas,
     };
   } finally {
     questionInterface.close();
@@ -177,51 +153,6 @@ const getRuntimeConfigTemplate = ({
   ].join("\n");
 };
 
-const SAMPLE_USER_SCHEMA = [
-  "id:",
-  "  type: uuid",
-  "fullName:",
-  "  type: name",
-  "  faker: person.fullName",
-  "username:",
-  "  type: string",
-  "  faker: internet.username",
-  "email:",
-  "  type: email",
-  "  faker: internet.email",
-  "avatarUrl:",
-  "  type: url",
-  "  faker: image.avatar",
-  "bio:",
-  "  type: string",
-  "  faker: lorem.sentence",
-  "isActive:",
-  "  type: boolean",
-  "joinedAt:",
-  "  type: date",
-].join("\n");
-
-const SAMPLE_POST_SCHEMA = [
-  "id:",
-  "  type: uuid",
-  "title:",
-  "  type: string",
-  "  faker: lorem.sentence",
-  "body:",
-  "  type: string",
-  "  faker: lorem.paragraphs",
-  "authorId:",
-  "  type: uuid",
-  "published:",
-  "  type: boolean",
-  "likes:",
-  "  type: number",
-  "  min: 0",
-  "  max: 500",
-  "createdAt:",
-  "  type: date",
-].join("\n");
-
 export const initializeProject = async ({
   force,
 }: {
@@ -242,9 +173,6 @@ export const initializeProject = async ({
   const fexapiDirectoryPath = join(projectRoot, "fexapi");
   const schemaPath = join(fexapiDirectoryPath, "schema.fexapi");
   const runtimeConfigPath = join(projectRoot, "fexapi.config.js");
-  const schemasDirectoryPath = join(projectRoot, "fexapi", "schemas");
-  const userSchemaPath = join(schemasDirectoryPath, "user.yaml");
-  const postSchemaPath = join(schemasDirectoryPath, "post.yaml");
 
   const wizardAnswers = await askInitWizardQuestions();
 
@@ -277,33 +205,6 @@ export const initializeProject = async ({
     );
   }
 
-  let userSchemaStatus: "created" | "overwritten" | "exists" | "skipped" =
-    "skipped";
-  let postSchemaStatus: "created" | "overwritten" | "exists" | "skipped" =
-    "skipped";
-
-  if (wizardAnswers.generateSampleSchemas) {
-    mkdirSync(schemasDirectoryPath, { recursive: true });
-
-    const userSchemaExists = existsSync(userSchemaPath);
-    if (!userSchemaExists || force) {
-      initSpinner.update("Writing sample user schema");
-      writeFileSync(userSchemaPath, `${SAMPLE_USER_SCHEMA}\n`, "utf-8");
-      userSchemaStatus = userSchemaExists ? "overwritten" : "created";
-    } else {
-      userSchemaStatus = "exists";
-    }
-
-    const postSchemaExists = existsSync(postSchemaPath);
-    if (!postSchemaExists || force) {
-      initSpinner.update("Writing sample post schema");
-      writeFileSync(postSchemaPath, `${SAMPLE_POST_SCHEMA}\n`, "utf-8");
-      postSchemaStatus = postSchemaExists ? "overwritten" : "created";
-    } else {
-      postSchemaStatus = "exists";
-    }
-  }
-
   initSpinner.succeed("Project scaffolding complete");
 
   logSuccess(`Initialized fexapi in ${projectRoot}`);
@@ -332,26 +233,6 @@ export const initializeProject = async ({
     logSuccess(`Created ${runtimeConfigPath}`);
   }
 
-  if (wizardAnswers.generateSampleSchemas) {
-    if (userSchemaStatus === "exists") {
-      logWarn(`Exists ${userSchemaPath}`);
-    } else if (userSchemaStatus === "overwritten") {
-      logSuccess(`Overwritten ${userSchemaPath}`);
-    } else if (userSchemaStatus === "created") {
-      logSuccess(`Created ${userSchemaPath}`);
-    }
-
-    if (postSchemaStatus === "exists") {
-      logWarn(`Exists ${postSchemaPath}`);
-    } else if (postSchemaStatus === "overwritten") {
-      logSuccess(`Overwritten ${postSchemaPath}`);
-    } else if (postSchemaStatus === "created") {
-      logSuccess(`Created ${postSchemaPath}`);
-    }
-  } else {
-    logWarn("Sample schemas were skipped.");
-  }
-
   if (detectedProject.primaryFramework === "unknown") {
     logWarn(
       "No known framework dependency found. Update fexapi.config.js and schema.fexapi if needed.",
@@ -363,8 +244,6 @@ export const initializeProject = async ({
   const createdFiles = [
     !schemaExists || force,
     !runtimeConfigExists || force,
-    userSchemaStatus === "created" || userSchemaStatus === "overwritten",
-    postSchemaStatus === "created" || postSchemaStatus === "overwritten",
   ].filter(Boolean).length;
 
   printSummaryCard("Init Summary", [
@@ -379,10 +258,6 @@ export const initializeProject = async ({
     {
       label: "cors",
       value: wizardAnswers.cors ? "enabled" : "disabled",
-    },
-    {
-      label: "sample schemas",
-      value: wizardAnswers.generateSampleSchemas ? "enabled" : "disabled",
     },
     {
       label: "files changed",

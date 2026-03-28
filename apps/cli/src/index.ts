@@ -27,8 +27,6 @@ const [firstArg, ...restArgs] = args;
 
 const main = async () => {
   if (firstArg === "--version" || firstArg === "-v" || firstArg === "version") {
-    printBanner();
-    printSpacer();
     console.log(getCliVersion());
     process.exit(0);
   }

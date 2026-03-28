@@ -28,6 +28,7 @@ export const printHelp = () => {
     `  ${formatCommand("fexapi [--host <host>] [--port <number>] [--log]")}`,
   );
   console.log(`  ${formatCommand("fexapi --version")}`);
+  console.log(`  ${formatCommand("fexapi version")}`);
   console.log(`  ${formatCommand("fexapi --help")}`);
   printSpacer();
 
@@ -54,13 +55,11 @@ export const printHelp = () => {
   console.log(ui.bold("fexapi init creates"));
   console.log(`  ${ui.dim("fexapi.config.js")}`);
   console.log(`  ${ui.dim("fexapi/schema.fexapi")}`);
-  console.log(`  ${ui.dim("fexapi/schemas/*.yaml (optional, via wizard)")}`);
   printSpacer();
 
   console.log(ui.bold("Init wizard asks"));
   console.log(`  ${ui.dim("What port? (default: 4000)")}`);
   console.log(`  ${ui.dim("Enable CORS? (Y/n)")}`);
-  console.log(`  ${ui.dim("Generate sample schemas? (Y/n)")}`);
   printSpacer();
 
   console.log(ui.bold("Then run"));

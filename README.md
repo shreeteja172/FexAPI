@@ -293,7 +293,7 @@ See [development setup](./apps/docs/contributing/setup.md) for detailed instruct
 
 ## License
 
-MIT — See [LICENSE](./LICENSE) for details.
+MIT.
 
 ---
 
