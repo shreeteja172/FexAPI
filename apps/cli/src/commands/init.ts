@@ -3,6 +3,14 @@ import { dirname, join } from "node:path";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { GENERATED_SPEC_RELATIVE_PATH } from "../constants";
+import {
+  formatCommand,
+  logError,
+  logInfo,
+  logSuccess,
+  logWarn,
+  printSpacer,
+} from "../cli/ui";
 import { detectProject, getSchemaTemplate } from "../project/detect";
 import { findClosestPackageJson } from "../project/paths";
 
@@ -192,7 +200,7 @@ export const initializeProject = async ({
   const packageJsonPath = findClosestPackageJson(process.cwd());
 
   if (!packageJsonPath) {
-    console.error(
+    logError(
       "Could not find package.json in this directory or parent directories.",
     );
     return 1;
@@ -277,62 +285,69 @@ export const initializeProject = async ({
     }
   }
 
-  console.log(`Initialized Fexapi in ${projectRoot}`);
-  console.log(`Detected framework: ${detectedProject.primaryFramework}`);
-  console.log(`Detected frameworks: ${detectedProject.frameworks.join(", ")}`);
+  logSuccess(`Initialized fexapi in ${projectRoot}`);
+  logInfo(`Detected framework: ${detectedProject.primaryFramework}`);
+  logInfo(`Detected frameworks: ${detectedProject.frameworks.join(", ")}`);
   if (detectedProject.tooling.length > 0) {
-    console.log(`Detected tooling: ${detectedProject.tooling.join(", ")}`);
+    logInfo(`Detected tooling: ${detectedProject.tooling.join(", ")}`);
   }
 
+  printSpacer();
+
   if (configExists && !force) {
-    console.log(`Exists ${configPath}`);
+    logWarn(`Exists ${configPath}`);
   } else if (configExists && force) {
-    console.log(`Overwritten ${configPath}`);
+    logSuccess(`Overwritten ${configPath}`);
   } else {
-    console.log(`Created ${configPath}`);
+    logSuccess(`Created ${configPath}`);
   }
 
   if (schemaExists && !force) {
-    console.log(`Exists ${schemaPath}`);
+    logWarn(`Exists ${schemaPath}`);
   } else if (schemaExists && force) {
-    console.log(`Overwritten ${schemaPath}`);
+    logSuccess(`Overwritten ${schemaPath}`);
   } else {
-    console.log(`Created ${schemaPath}`);
+    logSuccess(`Created ${schemaPath}`);
   }
 
   if (runtimeConfigExists && !force) {
-    console.log(`Exists ${runtimeConfigPath}`);
+    logWarn(`Exists ${runtimeConfigPath}`);
   } else if (runtimeConfigExists && force) {
-    console.log(`Overwritten ${runtimeConfigPath}`);
+    logSuccess(`Overwritten ${runtimeConfigPath}`);
   } else {
-    console.log(`Created ${runtimeConfigPath}`);
+    logSuccess(`Created ${runtimeConfigPath}`);
   }
 
   if (wizardAnswers.generateSampleSchemas) {
     if (userSchemaStatus === "exists") {
-      console.log(`Exists ${userSchemaPath}`);
+      logWarn(`Exists ${userSchemaPath}`);
     } else if (userSchemaStatus === "overwritten") {
-      console.log(`Overwritten ${userSchemaPath}`);
+      logSuccess(`Overwritten ${userSchemaPath}`);
     } else if (userSchemaStatus === "created") {
-      console.log(`Created ${userSchemaPath}`);
+      logSuccess(`Created ${userSchemaPath}`);
     }
 
     if (postSchemaStatus === "exists") {
-      console.log(`Exists ${postSchemaPath}`);
+      logWarn(`Exists ${postSchemaPath}`);
     } else if (postSchemaStatus === "overwritten") {
-      console.log(`Overwritten ${postSchemaPath}`);
+      logSuccess(`Overwritten ${postSchemaPath}`);
     } else if (postSchemaStatus === "created") {
-      console.log(`Created ${postSchemaPath}`);
+      logSuccess(`Created ${postSchemaPath}`);
     }
   } else {
-    console.log("Sample schemas were skipped.");
+    logWarn("Sample schemas were skipped.");
   }
 
   if (detectedProject.primaryFramework === "unknown") {
-    console.log(
+    logWarn(
       "No known framework dependency found. Update fexapi.config.json and schema.fexapi if needed.",
     );
   }
+
+  printSpacer();
+  logInfo(
+    `Next: ${formatCommand("fexapi generate")} then ${formatCommand("fexapi serve")}`,
+  );
 
   return 0;
 };

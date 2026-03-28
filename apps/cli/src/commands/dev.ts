@@ -1,6 +1,7 @@
 import { existsSync, watch } from "node:fs";
 import type { FSWatcher } from "node:fs";
 import { join, relative } from "node:path";
+import { logError, logInfo } from "../cli/ui";
 import { resolveProjectRoot } from "../project/paths";
 import { createProjectServer, serveProject } from "./serve";
 
@@ -48,7 +49,7 @@ export const runDevCommand = ({
   const projectRoot = resolveProjectRoot();
 
   if (!projectRoot) {
-    console.error(
+    logError(
       "Could not find package.json in this directory or parent directories.",
     );
     return 1;
@@ -59,7 +60,7 @@ export const runDevCommand = ({
     return 1;
   }
 
-  console.log("Watch mode enabled. Restarting on config/schema changes...");
+  logInfo("Watch mode enabled. Restarting on config/schema changes...");
 
   let restartTimer: NodeJS.Timeout | undefined;
   let restartQueued = false;
@@ -77,7 +78,7 @@ export const runDevCommand = ({
 
     restartInProgress = true;
 
-    console.log(`\n[watch] change detected (${reason})`);
+    logInfo(`[watch] change detected (${reason})`);
     await new Promise<void>((resolve) => {
       currentServer?.close(() => {
         resolve();
@@ -106,10 +107,7 @@ export const runDevCommand = ({
 
   const activeWatchers: FSWatcher[] = [];
 
-  const watchTargets = [
-    join(projectRoot, "fexapi"),
-    projectRoot,
-  ];
+  const watchTargets = [join(projectRoot, "fexapi"), projectRoot];
 
   for (const watchTarget of watchTargets) {
     if (!existsSync(watchTarget)) {

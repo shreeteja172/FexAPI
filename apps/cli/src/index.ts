@@ -9,6 +9,13 @@ import {
 } from "./cli/args";
 import { runDevCommand } from "./commands/dev";
 import { printHelp } from "./cli/help";
+import {
+  formatCommand,
+  logError,
+  logInfo,
+  printBanner,
+  printSpacer,
+} from "./cli/ui";
 import { formatSchema } from "./commands/format";
 import { generateFromSchema } from "./commands/generate";
 import { initializeProject } from "./commands/init";
@@ -20,7 +27,9 @@ const [firstArg, ...restArgs] = args;
 const main = async () => {
   if (firstArg === "init") {
     if (restArgs.includes("--help") || restArgs.includes("-h")) {
-      console.log("Usage: fexapi init [--force]");
+      printBanner();
+      printSpacer();
+      logInfo(`Usage: ${formatCommand("fexapi init [--force]")}`);
       console.log(
         "Runs an interactive setup wizard and creates fexapi config/schema files.",
       );
@@ -30,16 +39,18 @@ const main = async () => {
 
     const initOptions = parseInitOptions(restArgs);
     if ("error" in initOptions) {
-      console.error(initOptions.error);
-      console.log("");
-      console.log("Usage: fexapi init [--force]");
+      logError(initOptions.error);
+      printSpacer();
+      logInfo(`Usage: ${formatCommand("fexapi init [--force]")}`);
       process.exit(1);
     }
 
     process.exit(await initializeProject({ force: initOptions.force }));
   } else if (firstArg === "generate") {
     if (restArgs.includes("--help") || restArgs.includes("-h")) {
-      console.log("Usage: fexapi generate");
+      printBanner();
+      printSpacer();
+      logInfo(`Usage: ${formatCommand("fexapi generate")}`);
       console.log(
         "Reads fexapi/schema.fexapi and updates generated API artifacts + migration.",
       );
@@ -48,16 +59,18 @@ const main = async () => {
 
     const generateOptions = parseGenerateOptions(restArgs);
     if (generateOptions.error) {
-      console.error(generateOptions.error);
-      console.log("");
-      console.log("Usage: fexapi generate");
+      logError(generateOptions.error);
+      printSpacer();
+      logInfo(`Usage: ${formatCommand("fexapi generate")}`);
       process.exit(1);
     }
 
     process.exit(generateFromSchema());
   } else if (firstArg === "format") {
     if (restArgs.includes("--help") || restArgs.includes("-h")) {
-      console.log("Usage: fexapi format");
+      printBanner();
+      printSpacer();
+      logInfo(`Usage: ${formatCommand("fexapi format")}`);
       console.log(
         "Reformats fexapi/schema.fexapi to use readable multi-line field formatting.",
       );
@@ -66,17 +79,19 @@ const main = async () => {
 
     const formatOptions = parseFormatOptions(restArgs);
     if (formatOptions.error) {
-      console.error(formatOptions.error);
-      console.log("");
-      console.log("Usage: fexapi format");
+      logError(formatOptions.error);
+      printSpacer();
+      logInfo(`Usage: ${formatCommand("fexapi format")}`);
       process.exit(1);
     }
 
     process.exit(formatSchema());
   } else if (firstArg === "dev") {
     if (restArgs.includes("--help") || restArgs.includes("-h")) {
-      console.log(
-        "Usage: fexapi dev [--watch] [--host <host>] [--port <number>] [--log]",
+      printBanner();
+      printSpacer();
+      logInfo(
+        `Usage: ${formatCommand("fexapi dev [--watch] [--host <host>] [--port <number>] [--log]")}`,
       );
       console.log(
         "Starts development server and optionally auto-reloads when config/schema files change.",
@@ -86,10 +101,10 @@ const main = async () => {
 
     const devOptions = parseDevOptions(restArgs);
     if ("error" in devOptions) {
-      console.error(devOptions.error);
-      console.log("");
-      console.log(
-        "Usage: fexapi dev [--watch] [--host <host>] [--port <number>] [--log]",
+      logError(devOptions.error);
+      printSpacer();
+      logInfo(
+        `Usage: ${formatCommand("fexapi dev [--watch] [--host <host>] [--port <number>] [--log]")}`,
       );
       process.exit(1);
     }
@@ -115,8 +130,8 @@ const main = async () => {
     const options = parseServeOptions(serveArgs);
 
     if ("error" in options) {
-      console.error(options.error);
-      console.log("");
+      logError(options.error);
+      printSpacer();
       printHelp();
       process.exit(1);
     }
@@ -129,8 +144,8 @@ const main = async () => {
     printHelp();
     process.exit(0);
   } else {
-    console.error(`Unknown command: ${firstArg}`);
-    console.log("");
+    logError(`Unknown command: ${firstArg}`);
+    printSpacer();
     printHelp();
     process.exit(1);
   }
@@ -138,6 +153,6 @@ const main = async () => {
 
 void main().catch((error) => {
   const message = error instanceof Error ? error.message : String(error);
-  console.error(`Unexpected error: ${message}`);
+  logError(`Unexpected error: ${message}`);
   process.exit(1);
 });

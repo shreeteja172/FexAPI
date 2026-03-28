@@ -7,6 +7,7 @@ import type {
   FexapiSchemaDefinitions,
   FexapiSchemaFieldDefinition,
 } from "./types/config";
+import { ui } from "./cli/ui";
 
 export type ServerOptions = {
   host?: string;
@@ -242,8 +243,22 @@ export const startServer = ({
         const method = request.method ?? "UNKNOWN";
         const durationMs = Date.now() - requestStartedAt;
         const statusCode = response.statusCode;
+        const statusLabel =
+          statusCode >= 500
+            ? ui.red(String(statusCode))
+            : statusCode >= 400
+              ? ui.yellow(String(statusCode))
+              : ui.green(String(statusCode));
+        const methodLabel =
+          method === "GET"
+            ? ui.cyan(method)
+            : method === "POST"
+              ? ui.green(method)
+              : method === "DELETE"
+                ? ui.red(method)
+                : ui.blue(method);
         console.log(
-          `[${method}] ${pathname} → ${statusCode} (${durationMs}ms)`,
+          `${ui.gray("req")} ${methodLabel} ${pathname} ${statusLabel} ${ui.dim(`(${durationMs}ms)`)}`,
         );
       });
     }
@@ -351,7 +366,9 @@ export const startServer = ({
   });
 
   server.listen(port, host, () => {
-    console.log(`Mock API running at http://${host}:${port}`);
+    console.log(
+      `${ui.green("ready")} Mock API running at ${ui.bold(`http://${host}:${port}`)}`,
+    );
   });
 
   return server;

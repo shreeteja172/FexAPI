@@ -8,6 +8,7 @@ import {
 } from "node:fs";
 import { join } from "node:path";
 import { GENERATED_SPEC_RELATIVE_PATH } from "../constants";
+import { logError, logInfo, logSuccess, printSpacer } from "../cli/ui";
 import { resolveProjectRoot } from "../project/paths";
 import { parseFexapiSchema } from "../schema";
 
@@ -15,7 +16,7 @@ export const generateFromSchema = (): number => {
   const projectRoot = resolveProjectRoot();
 
   if (!projectRoot) {
-    console.error(
+    logError(
       "Could not find package.json in this directory or parent directories.",
     );
     return 1;
@@ -27,8 +28,8 @@ export const generateFromSchema = (): number => {
   const configPath = join(projectRoot, "fexapi.config.json");
 
   if (!existsSync(schemaPath)) {
-    console.error(`Schema file not found: ${schemaPath}`);
-    console.error("Run `fexapi init` first.");
+    logError(`Schema file not found: ${schemaPath}`);
+    logInfo("Run `fexapi init` first.");
     return 1;
   }
 
@@ -36,9 +37,9 @@ export const generateFromSchema = (): number => {
   const parsed = parseFexapiSchema(schemaText);
 
   if (parsed.errors.length > 0 || !parsed.schema) {
-    console.error("Failed to generate API from schema.fexapi");
+    logError("Failed to generate API from schema.fexapi");
     for (const error of parsed.errors) {
-      console.error(`- ${error}`);
+      logError(`- ${error}`);
     }
 
     return 1;
@@ -110,10 +111,11 @@ export const generateFromSchema = (): number => {
     "utf-8",
   );
 
-  console.log(`Generated API spec at ${generatedPath}`);
-  console.log(`Migration updated at ${migrationPath}`);
-  console.log(`Routes generated: ${parsed.schema.routes.length}`);
-  console.log(`Configured server port: ${parsed.schema.port}`);
+  logSuccess(`Generated API spec at ${generatedPath}`);
+  logSuccess(`Migration updated at ${migrationPath}`);
+  printSpacer();
+  logInfo(`Routes generated: ${parsed.schema.routes.length}`);
+  logInfo(`Configured server port: ${parsed.schema.port}`);
 
   return 0;
 };

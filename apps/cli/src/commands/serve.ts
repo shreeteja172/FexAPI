@@ -1,4 +1,5 @@
 import type { Server } from "node:http";
+import { logError, logInfo, logWarn } from "../cli/ui";
 import { GENERATED_SPEC_RELATIVE_PATH } from "../constants";
 import { loadGeneratedApiSpec } from "../config/generated-spec";
 import { loadFexapiRuntimeConfig } from "../config/runtime-config";
@@ -18,7 +19,7 @@ export const createProjectServer = ({
   const projectRoot = resolveProjectRoot();
 
   if (!projectRoot) {
-    console.error(
+    logError(
       "Could not find package.json in this directory or parent directories.",
     );
     return undefined;
@@ -38,13 +39,13 @@ export const createProjectServer = ({
     port ?? runtimeConfig?.port ?? generatedSpec?.port ?? 4000;
 
   if (runtimeConfig?.routes && Object.keys(runtimeConfig.routes).length > 0) {
-    console.log(
+    logInfo(
       `Using routes from fexapi.config.js (${Object.keys(runtimeConfig.routes).length})`,
     );
   }
 
   if (Object.keys(schemaDefinitions).length > 0) {
-    console.log(
+    logInfo(
       `Loaded custom schemas from fexapi/schemas (${Object.keys(schemaDefinitions).length})`,
     );
   }
@@ -53,14 +54,14 @@ export const createProjectServer = ({
     generatedSpec &&
     !(runtimeConfig?.routes && Object.keys(runtimeConfig.routes).length > 0)
   ) {
-    console.log(
+    logInfo(
       `Using generated schema routes (${generatedSpec.routes.length}) from ${GENERATED_SPEC_RELATIVE_PATH}`,
     );
   } else if (
     !runtimeConfig?.routes ||
     Object.keys(runtimeConfig.routes).length === 0
   ) {
-    console.log(
+    logWarn(
       "No generated schema found. Run `fexapi generate` to serve schema-defined endpoints.",
     );
   }
@@ -93,7 +94,7 @@ export const serveProject = ({
   const shutdown = () => {
     server.close((error) => {
       if (error) {
-        console.error("Error while shutting down server", error);
+        logError(`Error while shutting down server: ${String(error)}`);
         process.exit(1);
       }
 

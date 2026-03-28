@@ -1,6 +1,6 @@
 {
   "name": "fexapi",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Mock API generation CLI tool for local development and testing",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
