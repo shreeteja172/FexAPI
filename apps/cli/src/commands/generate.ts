@@ -5,10 +5,10 @@ import {
   formatDuration,
   logError,
   nowMs,
+  printGroupHeader,
   printSpacer,
   printSummaryCard,
   startSpinner,
-  ui,
 } from "../cli/ui";
 import { resolveProjectRoot } from "../project/paths";
 import { parseFexapiSchema } from "../schema";
@@ -45,6 +45,7 @@ export const generateFromSchema = (): number => {
     return 1;
   }
 
+  printGroupHeader("Generate");
   const generationSpinner = startSpinner("Reading schema");
 
   const schemaText = readFileSync(schemaPath, "utf-8");
@@ -162,14 +163,15 @@ export const generateFromSchema = (): number => {
   );
 
   printSpacer();
+  printGroupHeader("Summary");
   printSummaryCard("Generate Summary", [
     {
       label: "routes",
-      value: ui.cyan(String(parsed.schema.routes.length)),
+      value: String(parsed.schema.routes.length),
     },
     {
       label: "port",
-      value: ui.cyan(String(parsed.schema.port)),
+      value: String(parsed.schema.port),
     },
     {
       label: "schema source",
@@ -177,22 +179,19 @@ export const generateFromSchema = (): number => {
     },
     {
       label: "generated.api.json",
-      value:
-        generatedStatus === "changed" ? ui.green("changed") : ui.gray("cached"),
+      value: generatedStatus,
     },
     {
       label: "migration",
-      value:
-        migrationStatus === "changed" ? ui.green("changed") : ui.gray("cached"),
+      value: migrationStatus,
     },
     {
       label: "config",
-      value:
-        configStatus === "changed" ? ui.green("changed") : ui.gray("cached"),
+      value: configStatus,
     },
     {
       label: "time",
-      value: ui.bold(formatDuration(startedAtMs)),
+      value: formatDuration(startedAtMs),
     },
   ]);
 

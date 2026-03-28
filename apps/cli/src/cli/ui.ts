@@ -4,6 +4,7 @@ const shouldUseColor = (): boolean => {
 
 const colorEnabled = shouldUseColor();
 const interactive = Boolean(process.stdout.isTTY);
+const DEFAULT_TERMINAL_WIDTH = 80;
 
 const paint = (code: string, text: string): string => {
   if (!colorEnabled) {
@@ -23,9 +24,58 @@ export const ui = {
   yellow: (text: string): string => paint("33", text),
   red: (text: string): string => paint("31", text),
   gray: (text: string): string => paint("90", text),
+  white: (text: string): string => paint("97", text),
 };
 
-const SPINNER_FRAMES = ["-", "\\", "|", "/"];
+const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+const ANSI_REGEX = /\u001b\[[0-9;]*m/g;
+
+const stripAnsi = (text: string): string => text.replace(ANSI_REGEX, "");
+
+const visibleLength = (text: string): number => stripAnsi(text).length;
+
+const getTerminalWidth = (): number => {
+  const columns = process.stdout.columns;
+  if (!columns || Number.isNaN(columns)) {
+    return DEFAULT_TERMINAL_WIDTH;
+  }
+
+  return Math.max(40, columns);
+};
+
+const truncateText = (text: string, maxLength: number): string => {
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  if (maxLength <= 1) {
+    return text.slice(0, maxLength);
+  }
+
+  return `${text.slice(0, maxLength - 1)}…`;
+};
+
+const styleCardValue = (value: string): string => {
+  const normalized = value.trim().toLowerCase();
+
+  if (
+    normalized === "changed" ||
+    normalized === "enabled" ||
+    normalized === "running"
+  ) {
+    return ui.green(ui.bold(value));
+  }
+
+  if (normalized === "cached" || normalized === "disabled") {
+    return ui.gray(value);
+  }
+
+  if (normalized === "stopped" || normalized === "failed") {
+    return ui.red(ui.bold(value));
+  }
+
+  return ui.white(ui.bold(value));
+};
 
 const clearCurrentLine = (): void => {
   if (!interactive) {
@@ -59,7 +109,7 @@ export const startSpinner = (initialText: string): SpinnerController => {
   const render = () => {
     const frame = SPINNER_FRAMES[frameIndex % SPINNER_FRAMES.length] ?? "-";
     frameIndex += 1;
-    process.stdout.write(`\r${ui.cyan(frame)} ${ui.bold(text)}`);
+    process.stdout.write(`\r${ui.cyan(frame)} ${ui.white(ui.bold(text))}`);
   };
 
   render();
@@ -72,12 +122,12 @@ export const startSpinner = (initialText: string): SpinnerController => {
     succeed: (finalText: string) => {
       clearInterval(timer);
       clearCurrentLine();
-      console.log(`${ui.green("ok")} ${finalText}`);
+      console.log(`${ui.green("✓")} ${ui.white(finalText)}`);
     },
     fail: (finalText: string) => {
       clearInterval(timer);
       clearCurrentLine();
-      console.log(`${ui.red("err")} ${finalText}`);
+      console.log(`${ui.red("✕")} ${ui.white(finalText)}`);
     },
     stop: () => {
       clearInterval(timer);
@@ -102,30 +152,68 @@ export const printSummaryCard = (
   title: string,
   rows: Array<{ label: string; value: string }>,
 ): void => {
-  const contentRows = [{ label: "", value: title }, ...rows];
+  const terminalWidth = getTerminalWidth();
+  const compactMode = terminalWidth < 64;
 
-  const maxLabel = Math.max(...contentRows.map((row) => row.label.length));
-  const maxValue = Math.max(...contentRows.map((row) => row.value.length));
-  const cardWidth = Math.max(40, maxLabel + maxValue + 7);
-
-  const border = `+${"-".repeat(cardWidth - 2)}+`;
-  console.log(ui.gray(border));
-
-  const titleText = ui.bold(ui.cyan(title));
-  const titleLine = `| ${titleText}${" ".repeat(Math.max(0, cardWidth - 4 - title.length))} |`;
-  console.log(titleLine);
-  console.log(ui.gray(`|${"-".repeat(cardWidth - 2)}|`));
-
-  for (const row of rows) {
-    const label = row.label.padEnd(maxLabel, " ");
-    const value = row.value;
-    const spaces = " ".repeat(
-      Math.max(1, cardWidth - 4 - label.length - 3 - value.length),
-    );
-    console.log(`| ${ui.dim(label)} : ${ui.bold(value)}${spaces}|`);
+  if (compactMode) {
+    console.log(ui.gray(`--- ${title} ---`));
+    for (const row of rows) {
+      console.log(`${ui.dim(row.label)}: ${row.value}`);
+    }
+    console.log(ui.gray("---------------"));
+    return;
   }
 
-  console.log(ui.gray(border));
+  const safeRows = rows.map((row) => ({
+    label: row.label,
+    value: row.value,
+  }));
+
+  const cardWidth = terminalWidth - 2;
+  const innerWidth = cardWidth - 2;
+  const labelWidth = Math.min(
+    20,
+    Math.max(10, ...safeRows.map((row) => visibleLength(row.label))),
+  );
+  const valueSpace = Math.max(8, innerWidth - 3 - labelWidth - 3);
+
+  const topBorder = `┌${"─".repeat(innerWidth)}┐`;
+  const divider = `├${"─".repeat(innerWidth)}┤`;
+  const bottomBorder = `└${"─".repeat(innerWidth)}┘`;
+  console.log(ui.gray(topBorder));
+
+  const renderedTitle = truncateText(title, innerWidth - 2);
+  const titlePadding = " ".repeat(
+    Math.max(0, innerWidth - 2 - visibleLength(renderedTitle)),
+  );
+  console.log(`│ ${ui.bold(ui.cyan(renderedTitle))}${titlePadding} │`);
+  console.log(ui.gray(divider));
+
+  for (const row of safeRows) {
+    const rawValue = stripAnsi(row.value);
+    const value = truncateText(rawValue, valueSpace);
+    const label = row.label.padEnd(labelWidth, " ");
+    const styledValue = styleCardValue(value);
+    const spaces = " ".repeat(
+      Math.max(
+        1,
+        innerWidth - 3 - visibleLength(label) - 3 - visibleLength(value),
+      ),
+    );
+    console.log(`│ ${ui.dim(label)} ${ui.gray("::")} ${styledValue}${spaces}│`);
+  }
+
+  console.log(ui.gray(bottomBorder));
+};
+
+export const printGroupHeader = (title: string): void => {
+  const terminalWidth = getTerminalWidth();
+  const marker = ui.gray("──");
+  const text = ` ${ui.bold(title)} `;
+  const lineLength = Math.max(0, terminalWidth - visibleLength(title) - 4);
+  const left = marker;
+  const right = ui.gray("─".repeat(Math.max(0, lineLength - 2)));
+  console.log(`${left}${text}${right}`);
 };
 
 export const printBanner = (): void => {
@@ -142,23 +230,23 @@ export const printSpacer = (): void => {
 };
 
 export const logInfo = (message: string): void => {
-  console.log(`${ui.blue("info")} ${message}`);
+  console.log(`${ui.blue("•")} ${ui.blue("info")} ${ui.white(message)}`);
 };
 
 export const logSuccess = (message: string): void => {
-  console.log(`${ui.green("ok  ")} ${message}`);
+  console.log(`${ui.green("✓")} ${ui.green("ok  ")} ${ui.white(message)}`);
 };
 
 export const logWarn = (message: string): void => {
-  console.log(`${ui.yellow("warn")} ${message}`);
+  console.log(`${ui.yellow("!")} ${ui.yellow("warn")} ${ui.white(message)}`);
 };
 
 export const logError = (message: string): void => {
-  console.error(`${ui.red("err ")} ${message}`);
+  console.error(`${ui.red("✕")} ${ui.red("err ")} ${ui.white(message)}`);
 };
 
 export const logStep = (message: string): void => {
-  console.log(`${ui.cyan("->")} ${message}`);
+  console.log(`${ui.cyan("›")} ${ui.white(message)}`);
 };
 
 export const formatCommand = (command: string): string => {

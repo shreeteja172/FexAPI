@@ -11,10 +11,10 @@ import {
   logSuccess,
   logWarn,
   nowMs,
+  printGroupHeader,
   printSpacer,
   printSummaryCard,
   startSpinner,
-  ui,
 } from "../cli/ui";
 import { detectProject, getSchemaTemplate } from "../project/detect";
 import { findClosestPackageJson } from "../project/paths";
@@ -224,6 +224,7 @@ export const initializeProject = async ({
 
   const wizardAnswers = await askInitWizardQuestions();
 
+  printGroupHeader("Init");
   const initSpinner = startSpinner("Scaffolding fexapi project files");
 
   mkdirSync(fexapiDirectoryPath, { recursive: true });
@@ -308,6 +309,7 @@ export const initializeProject = async ({
   }
 
   printSpacer();
+  printGroupHeader("Files");
 
   if (configExists && !force) {
     logWarn(`Exists ${configPath}`);
@@ -360,6 +362,7 @@ export const initializeProject = async ({
   }
 
   printSpacer();
+  printGroupHeader("Summary");
   const createdFiles = [
     !configExists || force,
     !schemaExists || force,
@@ -375,25 +378,23 @@ export const initializeProject = async ({
     },
     {
       label: "port",
-      value: ui.cyan(String(wizardAnswers.port)),
+      value: String(wizardAnswers.port),
     },
     {
       label: "cors",
-      value: wizardAnswers.cors ? ui.green("enabled") : ui.gray("disabled"),
+      value: wizardAnswers.cors ? "enabled" : "disabled",
     },
     {
       label: "sample schemas",
-      value: wizardAnswers.generateSampleSchemas
-        ? ui.green("enabled")
-        : ui.gray("disabled"),
+      value: wizardAnswers.generateSampleSchemas ? "enabled" : "disabled",
     },
     {
       label: "files changed",
-      value: ui.bold(String(createdFiles)),
+      value: String(createdFiles),
     },
     {
       label: "time",
-      value: ui.bold(formatDuration(initStartedAtMs)),
+      value: formatDuration(initStartedAtMs),
     },
   ]);
 
