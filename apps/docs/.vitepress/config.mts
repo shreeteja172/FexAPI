@@ -1,130 +1,148 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from "vitepress";
 
 export default defineConfig({
-  title: 'FexAPI',
-  description: 'Mock API generation CLI for frontend development',
+  title: "FexAPI",
+  description: "Mock API generation CLI for frontend development",
   cleanUrls: true,
+  appearance: true,
 
   head: [
-    ['meta', { name: 'theme-color', content: '#1a1a1a' }],
-    ['meta', { property: 'og:type', content: 'website' }],
-    ['meta', { property: 'og:title', content: 'FexAPI Documentation' }],
-    ['meta', { property: 'og:description', content: 'Mock API generation CLI for frontend development' }],
-    ['meta', { property: 'og:url', content: 'https://docs.fexapi.dev' }],
-    ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
-    ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
-    ['link', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap' }],
+    ["meta", { name: "theme-color", content: "#0a0a0a" }],
+    ["meta", { name: "color-scheme", content: "dark light" }],
+    ["meta", { property: "og:type", content: "website" }],
+    ["meta", { property: "og:title", content: "FexAPI Documentation" }],
+    [
+      "meta",
+      {
+        property: "og:description",
+        content: "Mock API generation CLI for frontend development",
+      },
+    ],
+    ["meta", { property: "og:url", content: "https://docs.fexapi.dev" }],
+    ["link", { rel: "preconnect", href: "https://fonts.googleapis.com" }],
+    [
+      "link",
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
+    ],
+    [
+      "link",
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+      },
+    ],
   ],
 
   themeConfig: {
     logo: undefined,
-    siteTitle: 'FexAPI',
+    siteTitle: "FexAPI",
 
     nav: [
-      { text: 'Guide', link: '/getting-started/introduction' },
-      { text: 'CLI Reference', link: '/cli/overview' },
-      { text: 'Schema', link: '/schema/basics' },
-      { text: 'Examples', link: '/examples/react' },
+      { text: "Guide", link: "/getting-started/introduction" },
+      { text: "CLI Reference", link: "/cli/overview" },
+      { text: "Schema", link: "/schema/basics" },
+      { text: "Examples", link: "/examples/react" },
     ],
 
     sidebar: [
       {
-        text: 'Getting Started',
+        text: "Getting Started",
         collapsed: false,
         items: [
-          { text: 'Introduction', link: '/getting-started/introduction' },
-          { text: 'Installation', link: '/getting-started/installation' },
-          { text: 'Quick Start', link: '/getting-started/quick-start' },
-          { text: 'Configuration', link: '/getting-started/configuration' },
+          { text: "Introduction", link: "/getting-started/introduction" },
+          { text: "Installation", link: "/getting-started/installation" },
+          { text: "Quick Start", link: "/getting-started/quick-start" },
+          { text: "Configuration", link: "/getting-started/configuration" },
         ],
       },
       {
-        text: 'CLI Reference',
+        text: "CLI Reference",
         collapsed: false,
         items: [
-          { text: 'Commands Overview', link: '/cli/overview' },
-          { text: 'fexapi init', link: '/cli/init' },
-          { text: 'fexapi generate', link: '/cli/generate' },
-          { text: 'fexapi serve', link: '/cli/serve' },
-          { text: 'fexapi dev', link: '/cli/dev' },
-          { text: 'fexapi format', link: '/cli/format' },
+          { text: "Commands Overview", link: "/cli/overview" },
+          { text: "fexapi init", link: "/cli/init" },
+          { text: "fexapi generate", link: "/cli/generate" },
+          { text: "fexapi serve", link: "/cli/serve" },
+          { text: "fexapi dev", link: "/cli/dev" },
+          { text: "fexapi format", link: "/cli/format" },
         ],
       },
       {
-        text: 'Schema Guide',
+        text: "Schema Guide",
         collapsed: false,
         items: [
-          { text: 'Schema Basics', link: '/schema/basics' },
-          { text: 'Field Types', link: '/schema/field-types' },
-          { text: 'Faker Methods', link: '/schema/faker-methods' },
-          { text: 'Custom Schemas', link: '/schema/custom-schemas' },
-          { text: 'Example Schemas', link: '/schema/examples' },
+          { text: "Schema Basics", link: "/schema/basics" },
+          { text: "Field Types", link: "/schema/field-types" },
+          { text: "Faker Methods", link: "/schema/faker-methods" },
+          { text: "Custom Schemas", link: "/schema/custom-schemas" },
+          { text: "Example Schemas", link: "/schema/examples" },
         ],
       },
       {
-        text: 'API Endpoints',
+        text: "API Endpoints",
         collapsed: false,
         items: [
-          { text: 'GET Requests', link: '/api/get' },
-          { text: 'POST Requests', link: '/api/post' },
-          { text: 'PUT Requests', link: '/api/put' },
-          { text: 'DELETE Requests', link: '/api/delete' },
-          { text: 'Response Format', link: '/api/response-format' },
+          { text: "GET Requests", link: "/api/get" },
+          { text: "POST Requests", link: "/api/post" },
+          { text: "PUT Requests", link: "/api/put" },
+          { text: "DELETE Requests", link: "/api/delete" },
+          { text: "Response Format", link: "/api/response-format" },
         ],
       },
       {
-        text: 'Advanced',
+        text: "Advanced",
         collapsed: true,
         items: [
-          { text: 'CORS Configuration', link: '/advanced/cors' },
-          { text: 'Custom Port', link: '/advanced/custom-port' },
-          { text: 'Request Logging', link: '/advanced/logging' },
-          { text: 'Troubleshooting', link: '/advanced/troubleshooting' },
+          { text: "CORS Configuration", link: "/advanced/cors" },
+          { text: "Custom Port", link: "/advanced/custom-port" },
+          { text: "Request Logging", link: "/advanced/logging" },
+          { text: "Troubleshooting", link: "/advanced/troubleshooting" },
         ],
       },
       {
-        text: 'Examples',
+        text: "Examples",
         collapsed: true,
         items: [
-          { text: 'React + FexAPI', link: '/examples/react' },
-          { text: 'Vue + FexAPI', link: '/examples/vue' },
-          { text: 'Testing with FexAPI', link: '/examples/testing' },
-          { text: 'CI/CD Integration', link: '/examples/cicd' },
+          { text: "React + FexAPI", link: "/examples/react" },
+          { text: "Vue + FexAPI", link: "/examples/vue" },
+          { text: "Testing with FexAPI", link: "/examples/testing" },
+          { text: "CI/CD Integration", link: "/examples/cicd" },
         ],
       },
       {
-        text: 'Contributing',
+        text: "Contributing",
         collapsed: true,
         items: [
-          { text: 'Development Setup', link: '/contributing/setup' },
-          { text: 'Contribution Guide', link: '/contributing/guide' },
-          { text: 'Code of Conduct', link: '/contributing/code-of-conduct' },
+          { text: "Development Setup", link: "/contributing/setup" },
+          { text: "Contribution Guide", link: "/contributing/guide" },
+          { text: "Code of Conduct", link: "/contributing/code-of-conduct" },
         ],
       },
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/shreeteja172/fexapi' },
-      { icon: 'npm', link: 'https://www.npmjs.com/package/fexapi' },
+      { icon: "github", link: "https://github.com/shreeteja172/fexapi" },
+      { icon: "npm", link: "https://www.npmjs.com/package/fexapi" },
     ],
 
     editLink: {
-      pattern: 'https://github.com/shreeteja172/fexapi/edit/main/apps/docs/:path',
-      text: 'Edit this page on GitHub',
+      pattern:
+        "https://github.com/shreeteja172/fexapi/edit/main/apps/docs/:path",
+      text: "Edit this page on GitHub",
     },
 
     search: {
-      provider: 'local',
+      provider: "local",
     },
 
     footer: {
-      message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2024-present Shreeteja Mutukundu',
+      message: "Released under the MIT License.",
+      copyright: "Copyright © 2024-present Shreeteja Mutukundu",
     },
 
     outline: {
       level: [2, 3],
-      label: 'On this page',
+      label: "On this page",
     },
   },
-})
+});
