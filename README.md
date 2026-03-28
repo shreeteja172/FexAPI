@@ -1,162 +1,302 @@
-# Turborepo starter
+# FexAPI
 
-This Turborepo starter is maintained by the Turborepo core team.
+Mock APIs for frontend developers.
 
-## Using this example
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/shreeteja172/fexapi/ci.yml?branch=main)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=flat)
+![Node Version](https://img.shields.io/badge/node-%3E%3D%2018.0.0-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-Run the following command:
+Define endpoints in a schema file. Run one command. Get a local server with realistic, deterministic mock data powered by [Faker.js](https://fakerjs.dev).
 
-```sh
-npx create-turbo@latest
+[Documentation](https://fex-api-docs.vercel.app) · [GitHub](https://github.com/shreeteja172/fexapi) · [NPM](https://www.npmjs.com/package/fexapi)
+
+---
+
+## The Problem
+
+Frontend teams waste cycles waiting for backend APIs. Design teams need stable, realistic data for reviews. QA needs consistent responses for test reliability. Current solutions are either too rigid or don't scale.
+
+## The Solution
+
+FexAPI is a zero-config mock server. You describe your API shape once. The CLI generates a running server with seeded data that stays consistent across runs. No database setup. No API mocking library overhead. Just `npx fexapi init` and start building.
+
+---
+
+## Features
+
+- **Schema-first design** — Define endpoints once, generate stable payloads across all environments
+- **Deterministic output** — Seeded data ensures consistent responses for design reviews, snapshots, and test stability
+- **Runtime controls** — Tune latency, response size, and route behavior without rebuilding your tooling
+- **Production parity** — Headers, status codes, pagination, and error branches mirror real APIs
+- **Zero config** — Smart defaults adapt to your project structure; override with one config file if needed
+- **Watch mode** — Edit your schema and see changes live; development doesn't require restart cycles
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm, yarn, or pnpm
+
+### Installation
+
+```bash
+npm install -D fexapi
+npx fexapi init
 ```
 
-## What's inside?
+The `init` command scaffolds three files in your project:
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `cli`: a TypeScr![alt text](image.png)ipt CLI/server app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-- `@repo/schema`: shared schema definitions
-- `@repo/generator`: code generation utilities
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```
+fexapi/
+  ├── schema.fexapi       # Your API blueprint
+  ├── fexapi.config.js    # Runtime configuration
+  └── schemas/
+      └── user.yaml       # Custom schema definitions
 ```
 
-Without global `turbo`, use your package manager:
+### Define Your Schema
 
-```sh
-cd my-turborepo
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+Edit `fexapi/schema.fexapi`:
+
+```
+route GET /users count=10
+route GET /users/{id}
+route POST /users
+route DELETE /users/{id}
+
+route GET /posts @user
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### Generate and Run
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+```bash
+# Compile schema into an API spec
+npx fexapi generate
 
-```sh
-turbo build --filter=docs
+# Start the mock server
+npx fexapi serve
+
+# Or run with auto-reload during development
+npx fexapi dev --watch --log
 ```
 
-Without global `turbo`:
+Your API is live at `http://localhost:4000`.
 
-```sh
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```bash
+curl http://localhost:4000/users
 ```
 
-### Develop
+Response:
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```json
+{
+  "users": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "Emma Johnson",
+      "email": "emma.johnson@example.com",
+      "createdAt": "2024-01-15T08:23:14.000Z"
+    },
+    ...
+  ]
+}
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+## Configuration
+
+Create `fexapi.config.js` to override defaults:
+
+```javascript
+import { defineConfig } from "fexapi";
+
+export default defineConfig({
+  port: 4100,
+  host: "0.0.0.0",
+  latency: 50,
+  cors: true,
+  routes: {
+    "GET /projects": {
+      schema: "project",
+      count: 12,
+      status: 200,
+    },
+    "POST /projects": {
+      status: 201,
+      latency: 100,
+    },
+  },
+});
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+See the [configuration guide](https://fexapi.dev/docs/getting-started/configuration) for all options.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+---
 
-```sh
-turbo dev --filter=web
+## Usage Examples
+
+### React
+
+```jsx
+import { useEffect, useState } from "react";
+
+export default function Users() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:4000/users?count=5")
+      .then((res) => res.json())
+      .then((data) => setUsers(data.users));
+  }, []);
+
+  return (
+    <ul>
+      {users.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
 ```
 
-Without global `turbo`:
+### Testing with Vitest
 
-```sh
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```javascript
+import { describe, it, expect, beforeAll } from "vitest";
+
+const API_URL = "http://localhost:4000";
+
+describe("User API", () => {
+  it("returns users", async () => {
+    const res = await fetch(`${API_URL}/users?count=5`);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.users).toHaveLength(5);
+    expect(data.users[0]).toHaveProperty("email");
+  });
+});
 ```
 
-### Remote Caching
+See [examples](https://fexapi.dev/docs/examples) for Next.js, Vue, Express, and CI/CD setups.
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+---
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+## Tech Stack
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+**Core**
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+- [Node.js](https://nodejs.org) — Runtime
+- [TypeScript](https://www.typescriptlang.org) — Language
+- [Faker.js](https://fakerjs.dev) — Data generation
 
-```sh
-cd my-turborepo
-turbo login
+**Tooling**
+
+- [Turborepo](https://turborepo.dev) — Monorepo management
+- [VitePress](https://vitepress.dev) — Documentation site
+- [ESLint](https://eslint.org) — Code linting
+- [Vitest](https://vitest.dev) — Testing framework
+
+---
+
+## Architecture
+
+```
+┌──────────────────────────────────────┐
+│  fexapi.config.js / schema.fexapi   │  Input
+└──────────────┬───────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────┐
+│  Schema Compiler                     │  Parse & compile
+│  - Route extraction                  │
+│  - Type resolution                   │
+└──────────────┬───────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────┐
+│  generated.api.json                │  Output artifact
+│  - Routes & validators              │
+│  - Seed configurations              │
+└──────────────┬───────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────┐
+│  HTTP Server                         │  Runtime
+│  - Request routing                   │
+│  - Data generation (seeded)          │
+│  - Response formatting               │
+└──────────────────────────────────────┘
 ```
 
-Without global `turbo`, use your package manager:
+When you run `fexapi serve`, the server reads `generated.api.json` and uses your seed configuration to generate identical responses on every call. Change a seed, get different data. Restart, get the same data again.
 
-```sh
-cd my-turborepo
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+---
+
+## Commands
+
+| Command                  | Purpose                                |
+| ------------------------ | -------------------------------------- |
+| `npx fexapi init`        | Scaffold config and schema files       |
+| `npx fexapi generate`    | Compile schema into API spec           |
+| `npx fexapi serve`       | Start the mock server                  |
+| `npx fexapi dev --watch` | Start with auto-reload on file changes |
+| `npx fexapi format`      | Auto-format your schema file           |
+
+---
+
+## Roadmap
+
+- [x] Base schema compiler and HTTP server
+- [x] Watch mode for development
+- [x] Configuration file support
+- [x] Custom schema definitions
+- [ ] Database seeding output
+- [ ] GraphQL schema support
+- [ ] OpenAPI export
+- [ ] Request recording and playback
+- [ ] Multi-environment profiles
+
+---
+
+## Contributing
+
+We welcome contributions. Please read our [code of conduct](./apps/docs/contributing/code-of-conduct.md) and [contribution guide](./apps/docs/contributing/guide.md).
+
+### Development Setup
+
+```bash
+git clone https://github.com/shreeteja172/fexapi.git
+cd fexapi
+
+# Install dependencies
+npm install
+
+# Start development
+npm run dev
+
+# Run tests
+npm run test
+
+# Build for production
+npm run build
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+See [development setup](./apps/docs/contributing/setup.md) for detailed instructions.
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## License
 
-```sh
-turbo link
-```
+MIT — See [LICENSE](./LICENSE) for details.
 
-Without global `turbo`:
+---
 
-```sh
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+## Author
 
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Built and maintained by [shreeteja172](https://github.com/shreeteja172).
