@@ -2,6 +2,14 @@
 
 Run FexAPI in CI pipelines to provide mock data for automated tests.
 
+## Recommended Pipeline Order
+
+1. Install dependencies
+2. Generate API artifacts (`fexapi generate`)
+3. Start mock server on a fixed port
+4. Wait for readiness (health probe)
+5. Run test suite
+
 ## GitHub Actions
 
 ```yaml
@@ -24,8 +32,12 @@ jobs:
       - name: Start mock server
         run: npx fexapi serve --port 4000 &
 
-      - name: Wait for server
-        run: sleep 2
+      - name: Wait for server readiness
+        run: |
+          for i in {1..30}; do
+            curl -s http://127.0.0.1:4000/unknown > /dev/null && break
+            sleep 1
+          done
 
       - name: Run tests
         run: npm test
@@ -40,15 +52,35 @@ test:
     - npm install
     - npx fexapi generate
     - npx fexapi serve --port 4000 &
-    - sleep 2
+    - |
+      for i in $(seq 1 30); do
+        curl -s http://127.0.0.1:4000/unknown > /dev/null && break
+        sleep 1
+      done
     - npm test
+```
+
+## Optional: Use start-server-and-test
+
+If your project already uses npm scripts:
+
+```bash
+npm install -D start-server-and-test
+```
+
+```json
+{
+  "scripts": {
+    "ci:mock:test": "start-server-and-test \"fexapi serve --port 4000\" http://127.0.0.1:4000/unknown \"npm test\""
+  }
+}
 ```
 
 ## Tips
 
 - Always run `fexapi generate` before starting the server in CI
 - Use `&` to start the server in the background
-- Add a `sleep` or health check before running tests
+- Prefer a health check loop over fixed `sleep`
 - Use a fixed port to avoid conflicts
 - Commit your `schema.fexapi` file to version control
 - Don't commit `fexapi/generated.api.json` — generate it in CI

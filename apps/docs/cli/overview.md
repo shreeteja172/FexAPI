@@ -2,7 +2,17 @@
 
 FexAPI provides a small set of focused commands.
 
-## Command Summary
+## Pick the Right Command
+
+| Goal                                           | Command              |
+| ---------------------------------------------- | -------------------- |
+| Set up files in a new project                  | `fexapi init`        |
+| Rebuild generated artifacts after schema edits | `fexapi generate`    |
+| Reformat `schema.fexapi` for readability       | `fexapi format`      |
+| Run server once (no auto-reload)               | `fexapi serve`       |
+| Run server with auto-reload during development | `fexapi dev --watch` |
+
+## Command Reference
 
 | Command           | Description                      |
 | ----------------- | -------------------------------- |
@@ -13,13 +23,36 @@ FexAPI provides a small set of focused commands.
 | `fexapi dev`      | Start the server with watch mode |
 | `fexapi --help`   | Show help                        |
 
-## Typical Workflow
+Detailed pages:
+
+- [`init`](./init.md)
+- [`generate`](./generate.md)
+- [`format`](./format.md)
+- [`serve`](./serve.md)
+- [`dev`](./dev.md)
+
+## Common Workflows
+
+New project:
 
 ```bash
 fexapi init
 # edit fexapi/schema.fexapi
 fexapi generate
-fexapi dev --watch
+fexapi serve
+```
+
+Active frontend development:
+
+```bash
+fexapi dev --watch --log
+```
+
+Before pushing changes:
+
+```bash
+fexapi format
+fexapi generate
 ```
 
 ## Global Flags
