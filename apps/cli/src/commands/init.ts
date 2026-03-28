@@ -164,27 +164,15 @@ const askInitWizardQuestions = async (): Promise<InitWizardAnswers> => {
 const getRuntimeConfigTemplate = ({
   port,
   cors,
-  includeSampleRoutes,
 }: {
   port: number;
   cors: boolean;
-  includeSampleRoutes: boolean;
 }): string => {
-  const routeSection = includeSampleRoutes
-    ? [
-        "  routes: {",
-        '    "/users": { count: 10, schema: "user" },',
-        '    "/posts": { count: 20, schema: "post" },',
-        "  },",
-      ]
-    : [];
-
   return [
     "module.exports = {",
     `  port: ${port},`,
     `  cors: ${cors},`,
     "  delay: 0,",
-    ...routeSection,
     "};",
   ].join("\n");
 };
@@ -284,7 +272,6 @@ export const initializeProject = async ({
       `${getRuntimeConfigTemplate({
         port: wizardAnswers.port,
         cors: wizardAnswers.cors,
-        includeSampleRoutes: wizardAnswers.generateSampleSchemas,
       })}\n`,
       "utf-8",
     );

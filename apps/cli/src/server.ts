@@ -273,29 +273,6 @@ export const startServer = ({
       return;
     }
 
-    if (request.method === "GET") {
-      const configuredRoute = configuredRoutes[pathname];
-      if (configuredRoute) {
-        const count =
-          getCountOverrideFromUrl(request.url) ?? configuredRoute.count;
-        const payloadKey = toCollectionKey(pathname);
-        sendJson(
-          response,
-          200,
-          {
-            [payloadKey]: Array.from({ length: count }, () =>
-              createRecordFromSchemaName(
-                configuredRoute.schema,
-                schemaDefinitions,
-              ),
-            ),
-          },
-          { cors: corsEnabled, delay: responseDelay },
-        );
-        return;
-      }
-    }
-
     if (apiSpec) {
       const matchedRoute = apiSpec.routes.find(
         (route) => route.method === request.method && route.path === pathname,
@@ -339,7 +316,9 @@ export const startServer = ({
             if (raw.trim()) {
               requestBody = JSON.parse(raw) as Record<string, unknown>;
             }
-          } catch {}
+          } catch {
+            requestBody = {};
+          }
 
           const generatedRecord = createRecordFromRoute(matchedRoute);
           const merged = { ...generatedRecord, ...requestBody };
@@ -350,6 +329,29 @@ export const startServer = ({
             delay: responseDelay,
           });
         });
+        return;
+      }
+    }
+
+    if (request.method === "GET") {
+      const configuredRoute = configuredRoutes[pathname];
+      if (configuredRoute) {
+        const count =
+          getCountOverrideFromUrl(request.url) ?? configuredRoute.count;
+        const payloadKey = toCollectionKey(pathname);
+        sendJson(
+          response,
+          200,
+          {
+            [payloadKey]: Array.from({ length: count }, () =>
+              createRecordFromSchemaName(
+                configuredRoute.schema,
+                schemaDefinitions,
+              ),
+            ),
+          },
+          { cors: corsEnabled, delay: responseDelay },
+        );
         return;
       }
     }

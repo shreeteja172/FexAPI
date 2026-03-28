@@ -59,8 +59,8 @@ export const createProjectServer = ({
         ? ` (+${overlappingPaths.length - 5} more)`
         : "";
 
-    logWarn(
-      `Config routes override generated schema routes for: ${sample}${more}. Remove or edit fexapi.config.js routes if you want schema.fexapi changes to appear.`,
+    logInfo(
+      `Both schema and config define: ${sample}${more}. Schema routes take precedence; remove duplicates in fexapi.config.js to keep behavior clear.`,
     );
   }
 

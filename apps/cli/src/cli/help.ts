@@ -1,7 +1,15 @@
-import { formatCommand, printBanner, printSpacer, ui } from "./ui";
+import {
+  formatCommand,
+  getCliVersion,
+  printBanner,
+  printSpacer,
+  ui,
+} from "./ui";
 
 export const printHelp = () => {
+  const version = getCliVersion();
   printBanner();
+  console.log(ui.dim(`version ${version}`));
   printSpacer();
   console.log(ui.bold("Usage"));
   console.log(`  ${formatCommand("fexapi init [--force]")}`);
@@ -19,6 +27,7 @@ export const printHelp = () => {
   console.log(
     `  ${formatCommand("fexapi [--host <host>] [--port <number>] [--log]")}`,
   );
+  console.log(`  ${formatCommand("fexapi --version")}`);
   console.log(`  ${formatCommand("fexapi --help")}`);
   printSpacer();
 

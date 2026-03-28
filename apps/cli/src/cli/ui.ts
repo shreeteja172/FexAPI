@@ -1,3 +1,6 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+
 const shouldUseColor = (): boolean => {
   return Boolean(process.stdout.isTTY);
 };
@@ -28,7 +31,7 @@ export const ui = {
 };
 
 const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
-const ANSI_REGEX = /\u001b\[[0-9;]*m/g;
+const ANSI_REGEX = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, "g");
 
 const stripAnsi = (text: string): string => text.replace(ANSI_REGEX, "");
 
@@ -272,4 +275,31 @@ export const logStep = (message: string): void => {
 
 export const formatCommand = (command: string): string => {
   return ui.bold(command);
+};
+
+export const getCliVersion = (): string => {
+  const packageCandidates = [
+    join(__dirname, "..", "..", "package.json"),
+    join(__dirname, "..", "package.json"),
+  ];
+
+  for (const packagePath of packageCandidates) {
+    if (!existsSync(packagePath)) {
+      continue;
+    }
+
+    try {
+      const packageJson = JSON.parse(readFileSync(packagePath, "utf-8")) as {
+        version?: string;
+      };
+
+      if (packageJson.version) {
+        return packageJson.version;
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return "unknown";
 };

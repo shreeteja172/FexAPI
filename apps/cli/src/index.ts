@@ -11,6 +11,7 @@ import { runDevCommand } from "./commands/dev";
 import { printHelp } from "./cli/help";
 import {
   formatCommand,
+  getCliVersion,
   logError,
   logInfo,
   printBanner,
@@ -25,6 +26,13 @@ const args = process.argv.slice(2);
 const [firstArg, ...restArgs] = args;
 
 const main = async () => {
+  if (firstArg === "--version" || firstArg === "-v" || firstArg === "version") {
+    printBanner();
+    printSpacer();
+    console.log(getCliVersion());
+    process.exit(0);
+  }
+
   if (firstArg === "init") {
     if (restArgs.includes("--help") || restArgs.includes("-h")) {
       printBanner();
