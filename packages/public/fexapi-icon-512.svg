@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Schema Flow Monogram - optimized for icon size -->
+  <defs>
+    <style>
+      .primary-cyan { fill: #06B6D4; }
+      .dark-cyan { fill: #0891B2; }
+    </style>
+  </defs>
+  
+  <!-- Top horizontal bar -->
+  <rect class="primary-cyan" x="140" y="140" width="110" height="30" rx="6"/>
+  <rect class="primary-cyan" x="260" y="140" width="60" height="30" rx="6"/>
+  
+  <!-- Middle horizontal bar -->
+  <rect class="primary-cyan" x="140" y="220" width="85" height="30" rx="6"/>
+  
+  <!-- Vertical bar -->
+  <rect class="dark-cyan" x="140" y="140" width="30" height="140" rx="6"/>
+  
+  <!-- Bottom block -->
+  <rect class="primary-cyan" x="140" y="320" width="30" height="30" rx="6"/>
+</svg>

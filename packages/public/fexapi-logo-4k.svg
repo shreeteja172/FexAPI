@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4000 4000" width="4000" height="4000">
+  <!-- Schema Flow Monogram - F shaped blocks design -->
+  <defs>
+    <style>
+      .primary-cyan { fill: #06B6D4; }
+      .dark-cyan { fill: #0891B2; }
+    </style>
+  </defs>
+  
+  <!-- Top horizontal bar -->
+  <rect class="primary-cyan" x="1200" y="1200" width="800" height="200" rx="40"/>
+  <rect class="primary-cyan" x="2020" y="1200" width="400" height="200" rx="40"/>
+  
+  <!-- Middle horizontal bar -->
+  <rect class="primary-cyan" x="1200" y="1800" width="600" height="200" rx="40"/>
+  
+  <!-- Vertical bar -->
+  <rect class="dark-cyan" x="1200" y="1200" width="200" height="1000" rx="40"/>
+  
+  <!-- Bottom block -->
+  <rect class="primary-cyan" x="1200" y="2400" width="200" height="200" rx="40"/>
+</svg>

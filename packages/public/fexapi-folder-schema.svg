@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <defs>
+    <linearGradient id="folderBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0891B2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Folder shape -->
+  <path fill="url(#folderBg)" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+  
+  <!-- F-shaped blocks icon on folder -->
+  <g opacity="0.95">
+    <!-- Top bar -->
+    <rect fill="white" x="7" y="10.5" width="5" height="1.2" rx="0.3"/>
+    <rect fill="white" x="12.5" y="10.5" width="2.5" height="1.2" rx="0.3"/>
+    
+    <!-- Middle bar -->
+    <rect fill="white" x="7" y="13" width="4" height="1.2" rx="0.3"/>
+    
+    <!-- Vertical bar -->
+    <rect fill="white" x="7" y="10.5" width="1.2" height="5.5" rx="0.3"/>
+    
+    <!-- Bottom block -->
+    <rect fill="white" x="7" y="15.5" width="1.2" height="1.2" rx="0.3"/>
+  </g>
+</svg>

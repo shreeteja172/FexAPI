@@ -53,9 +53,18 @@ const platformBlocks = [
 ];
 
 const navItems = [
-  { label: "Features", href: "#features" },
-  { label: "Usage", href: "#usage" },
-  { label: "Platform", href: "#platform" },
+  {
+    label: "Features",
+    href: `${process.env.NEXT_PUBLIC_DOCS_URL ?? "http://localhost:5173"}/getting-started/introduction`,
+  },
+  {
+    label: "Usage",
+    href: `${process.env.NEXT_PUBLIC_DOCS_URL ?? "http://localhost:5173"}/getting-started/quick-start`,
+  },
+  {
+    label: "Platform",
+    href: `${process.env.NEXT_PUBLIC_DOCS_URL ?? "http://localhost:5173"}/contributing/setup`,
+  },
 ];
 
 const docsUrl = process.env.NEXT_PUBLIC_DOCS_URL ?? "http://localhost:5173";
@@ -68,7 +77,10 @@ export default function Home() {
         productTag="Mock Runtime"
         items={navItems}
         secondaryAction={{ label: "View Docs", href: docsUrl }}
-        primaryAction={{ label: "Start Building", href: "#usage" }}
+        primaryAction={{
+          label: "Start Building",
+          href: `${docsUrl}/getting-started/installation`,
+        }}
       />
 
       <main>
@@ -94,7 +106,9 @@ export default function Home() {
 
               <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
                 <a
-                  href="#usage"
+                  href={`${docsUrl}/getting-started/quick-start`}
+                  target="_blank"
+                  rel="noreferrer"
                   className="inline-flex items-center rounded-xl border border-[#8ea0ff] bg-[#8ea0ff] px-8 py-3 text-base font-semibold text-[#0b1020] transition-colors duration-200 hover:bg-[#a4b2ff]"
                 >
                   Get Started
@@ -287,19 +301,25 @@ export default function Home() {
           <div className="flex items-center gap-6">
             <a
               className="transition-colors hover:text-[var(--foreground)]"
-              href="#features"
+              href={`${docsUrl}/getting-started/introduction`}
+              target="_blank"
+              rel="noreferrer"
             >
               Features
             </a>
             <a
               className="transition-colors hover:text-[var(--foreground)]"
-              href="#usage"
+              href={`${docsUrl}/getting-started/quick-start`}
+              target="_blank"
+              rel="noreferrer"
             >
               Usage
             </a>
             <a
               className="transition-colors hover:text-[var(--foreground)]"
-              href="#platform"
+              href={`${docsUrl}/contributing/setup`}
+              target="_blank"
+              rel="noreferrer"
             >
               Platform
             </a>
