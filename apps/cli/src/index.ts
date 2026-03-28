@@ -52,7 +52,7 @@ const main = async () => {
       printSpacer();
       logInfo(`Usage: ${formatCommand("fexapi generate")}`);
       console.log(
-        "Reads fexapi/schema.fexapi and updates generated API artifacts + migration.",
+        "Reads fexapi/schema.fexapi and updates generated API artifacts.",
       );
       process.exit(0);
     }

@@ -31,7 +31,7 @@ export const printHelp = () => {
   console.log(`  ${formatCommand("fexapi dev --watch --log")}`);
   console.log(`  ${formatCommand("fexapi serve --log")}`);
   console.log(
-    `  ${formatCommand("fexapi serve --host 127.0.0.1 --port 5000")}`,
+    `  ${formatCommand("fexapi serve --host localhost --port 5000")}`,
   );
   console.log(`  ${formatCommand("fexapi --port 4000")}`);
   printSpacer();
@@ -43,14 +43,13 @@ export const printHelp = () => {
   printSpacer();
 
   console.log(ui.bold("fexapi init creates"));
-  console.log(`  ${ui.dim("fexapi.config.json")}`);
   console.log(`  ${ui.dim("fexapi.config.js")}`);
   console.log(`  ${ui.dim("fexapi/schema.fexapi")}`);
   console.log(`  ${ui.dim("fexapi/schemas/*.yaml (optional, via wizard)")}`);
   printSpacer();
 
   console.log(ui.bold("Init wizard asks"));
-  console.log(`  ${ui.dim("What port? (default: 3000)")}`);
+  console.log(`  ${ui.dim("What port? (default: 4000)")}`);
   console.log(`  ${ui.dim("Enable CORS? (Y/n)")}`);
   console.log(`  ${ui.dim("Generate sample schemas? (Y/n)")}`);
   printSpacer();
@@ -63,5 +62,4 @@ export const printHelp = () => {
 
   console.log(ui.bold("Generate output"));
   console.log(`  ${ui.dim("fexapi/generated.api.json")}`);
-  console.log(`  ${ui.dim("fexapi/migrations/schema.json")}`);
 };

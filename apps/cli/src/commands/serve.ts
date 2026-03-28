@@ -38,9 +38,29 @@ export const createProjectServer = ({
   const effectivePort =
     port ?? runtimeConfig?.port ?? generatedSpec?.port ?? 4000;
 
+  const configuredRoutePaths = Object.keys(runtimeConfig?.routes ?? {});
+  const generatedRoutePaths = new Set(
+    (generatedSpec?.routes ?? []).map((route) => route.path),
+  );
+  const overlappingPaths = configuredRoutePaths.filter((path) =>
+    generatedRoutePaths.has(path),
+  );
+
   if (runtimeConfig?.routes && Object.keys(runtimeConfig.routes).length > 0) {
     logInfo(
       `Using routes from fexapi.config.js (${Object.keys(runtimeConfig.routes).length})`,
+    );
+  }
+
+  if (overlappingPaths.length > 0) {
+    const sample = overlappingPaths.slice(0, 5).join(", ");
+    const more =
+      overlappingPaths.length > 5
+        ? ` (+${overlappingPaths.length - 5} more)`
+        : "";
+
+    logWarn(
+      `Config routes override generated schema routes for: ${sample}${more}. Remove or edit fexapi.config.js routes if you want schema.fexapi changes to appear.`,
     );
   }
 

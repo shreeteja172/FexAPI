@@ -1,6 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { GENERATED_SPEC_RELATIVE_PATH } from "../constants";
 import {
   formatDuration,
   logError,
@@ -36,8 +35,6 @@ export const generateFromSchema = (): number => {
 
   const schemaPath = join(projectRoot, "fexapi", "schema.fexapi");
   const generatedPath = join(projectRoot, "fexapi", "generated.api.json");
-  const migrationsDirectoryPath = join(projectRoot, "fexapi", "migrations");
-  const configPath = join(projectRoot, "fexapi.config.json");
 
   if (!existsSync(schemaPath)) {
     logError(`Schema file not found: ${schemaPath}`);
@@ -93,19 +90,7 @@ export const generateFromSchema = (): number => {
     routes: parsed.schema.routes,
   };
 
-  mkdirSync(migrationsDirectoryPath, { recursive: true });
-
-  const migrationPath = join(migrationsDirectoryPath, "schema.json");
-  const migration = {
-    migrationId: new Date().toISOString().replace(/[.:]/g, "-"),
-    sourceSchema: "fexapi/schema.fexapi",
-    createdAt: generated.generatedAt,
-    port: parsed.schema.port,
-    routes: parsed.schema.routes,
-  };
-
   let generatedStatus: "changed" | "cached" = "cached";
-  let migrationStatus: "changed" | "cached" = "cached";
 
   if (schemaChanged || !existsSync(generatedPath)) {
     generationSpinner.update("Writing generated API spec");
@@ -115,47 +100,6 @@ export const generateFromSchema = (): number => {
       "utf-8",
     );
     generatedStatus = "changed";
-  }
-
-  if (schemaChanged || !existsSync(migrationPath)) {
-    generationSpinner.update("Updating migration snapshot");
-    writeFileSync(
-      migrationPath,
-      `${JSON.stringify(migration, null, 2)}\n`,
-      "utf-8",
-    );
-    migrationStatus = "changed";
-  }
-
-  let existingConfig: Record<string, unknown> = {};
-  if (existsSync(configPath)) {
-    try {
-      existingConfig = JSON.parse(readFileSync(configPath, "utf-8")) as Record<
-        string,
-        unknown
-      >;
-    } catch {
-      existingConfig = {};
-    }
-  }
-
-  const updatedConfig = {
-    ...existingConfig,
-    schemaPath: "fexapi/schema.fexapi",
-    generatedPath: GENERATED_SPEC_RELATIVE_PATH,
-    ...(schemaChanged ? { lastGeneratedAt: new Date().toISOString() } : {}),
-  };
-
-  generationSpinner.update("Syncing project config");
-  const nextConfigText = `${JSON.stringify(updatedConfig, null, 2)}\n`;
-  const previousConfigText = existsSync(configPath)
-    ? readFileSync(configPath, "utf-8")
-    : undefined;
-  let configStatus: "changed" | "cached" = "cached";
-
-  if (previousConfigText !== nextConfigText) {
-    writeFileSync(configPath, nextConfigText, "utf-8");
-    configStatus = "changed";
   }
 
   generationSpinner.succeed(
@@ -180,14 +124,6 @@ export const generateFromSchema = (): number => {
     {
       label: "generated.api.json",
       value: generatedStatus,
-    },
-    {
-      label: "migration",
-      value: migrationStatus,
-    },
-    {
-      label: "config",
-      value: configStatus,
     },
     {
       label: "time",

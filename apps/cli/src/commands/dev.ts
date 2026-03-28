@@ -14,10 +14,7 @@ const normalizePath = (pathValue: string): string => {
 const isWatchedPath = (projectRoot: string, changedPath: string): boolean => {
   const relativePath = normalizePath(relative(projectRoot, changedPath));
 
-  if (
-    relativePath === "fexapi.config.js" ||
-    relativePath === "fexapi.config.json"
-  ) {
+  if (relativePath === "fexapi.config.js") {
     return true;
   }
 

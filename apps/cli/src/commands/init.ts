@@ -2,7 +2,6 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
-import { GENERATED_SPEC_RELATIVE_PATH } from "../constants";
 import {
   formatDuration,
   formatCommand,
@@ -15,6 +14,7 @@ import {
   printSpacer,
   printSummaryCard,
   startSpinner,
+  ui,
 } from "../cli/ui";
 import { detectProject, getSchemaTemplate } from "../project/detect";
 import { findClosestPackageJson } from "../project/paths";
@@ -58,13 +58,32 @@ const askInitWizardQuestions = async (): Promise<InitWizardAnswers> => {
   }
 
   const questionInterface = createInterface({ input, output });
+  const totalSteps = 3;
+  const formatWizardPrompt = (
+    step: number,
+    question: string,
+    hint: string,
+    defaultValue: string,
+  ): string => {
+    return `${ui.cyan("?")} ${ui.bold(`[${step}/${totalSteps}]`)} ${ui.white(question)} ${ui.gray(`(${hint})`)} ${ui.dim(`default: ${defaultValue}`)} ${ui.gray("› ")}`;
+  };
 
   try {
+    printSpacer();
+    printGroupHeader("Setup Wizard");
+    console.log(ui.dim("Press Enter to accept defaults."));
+    printSpacer();
+
     let port = DEFAULT_INIT_PORT;
 
     while (true) {
       const answer = await questionInterface.question(
-        `What port? (default: ${DEFAULT_INIT_PORT}) `,
+        formatWizardPrompt(
+          1,
+          "What port should FexAPI use?",
+          "1-65535",
+          String(DEFAULT_INIT_PORT),
+        ),
       );
 
       if (!answer.trim()) {
@@ -81,12 +100,18 @@ const askInitWizardQuestions = async (): Promise<InitWizardAnswers> => {
         break;
       }
 
-      console.log("Please enter a valid port (1-65535).\n");
+      console.log(
+        `${ui.red("✕")} ${ui.white("Please enter a valid port between 1 and 65535.")}`,
+      );
+      printSpacer();
     }
+    console.log(`${ui.green("✓")} ${ui.dim("Port")}: ${ui.bold(String(port))}`);
 
     let cors = true;
     while (true) {
-      const answer = await questionInterface.question("Enable CORS? (Y/n) ");
+      const answer = await questionInterface.question(
+        formatWizardPrompt(2, "Enable CORS?", "Y/n", "Y"),
+      );
       const parsed = parseYesNo(answer, true);
 
       if (parsed !== undefined) {
@@ -94,13 +119,19 @@ const askInitWizardQuestions = async (): Promise<InitWizardAnswers> => {
         break;
       }
 
-      console.log("Please answer with Y/Yes or N/No.\n");
+      console.log(
+        `${ui.red("✕")} ${ui.white("Please answer with Y/Yes or N/No.")}`,
+      );
+      printSpacer();
     }
+    console.log(
+      `${ui.green("✓")} ${ui.dim("CORS")}: ${cors ? ui.green("enabled") : ui.gray("disabled")}`,
+    );
 
     let generateSampleSchemas = true;
     while (true) {
       const answer = await questionInterface.question(
-        "Generate sample schemas? (Y/n) ",
+        formatWizardPrompt(3, "Generate sample schemas?", "Y/n", "Y"),
       );
       const parsed = parseYesNo(answer, true);
 
@@ -109,10 +140,16 @@ const askInitWizardQuestions = async (): Promise<InitWizardAnswers> => {
         break;
       }
 
-      console.log("Please answer with Y/Yes or N/No.\n");
+      console.log(
+        `${ui.red("✕")} ${ui.white("Please answer with Y/Yes or N/No.")}`,
+      );
+      printSpacer();
     }
+    console.log(
+      `${ui.green("✓")} ${ui.dim("Sample schemas")}: ${generateSampleSchemas ? ui.green("enabled") : ui.gray("disabled")}`,
+    );
 
-    console.log("");
+    printSpacer();
 
     return {
       port,
@@ -216,7 +253,6 @@ export const initializeProject = async ({
   const detectedProject = detectProject(packageJsonPath, projectRoot);
   const fexapiDirectoryPath = join(projectRoot, "fexapi");
   const schemaPath = join(fexapiDirectoryPath, "schema.fexapi");
-  const configPath = join(projectRoot, "fexapi.config.json");
   const runtimeConfigPath = join(projectRoot, "fexapi.config.js");
   const schemasDirectoryPath = join(projectRoot, "fexapi", "schemas");
   const userSchemaPath = join(schemasDirectoryPath, "user.yaml");
@@ -229,25 +265,7 @@ export const initializeProject = async ({
 
   mkdirSync(fexapiDirectoryPath, { recursive: true });
 
-  const configExists = existsSync(configPath);
   const schemaExists = existsSync(schemaPath);
-
-  const config = {
-    framework: detectedProject.primaryFramework,
-    frameworks: detectedProject.frameworks,
-    tooling: detectedProject.tooling,
-    schemaPath: "fexapi/schema.fexapi",
-    generatedPath: GENERATED_SPEC_RELATIVE_PATH,
-    defaultPort: wizardAnswers.port,
-    corsEnabled: wizardAnswers.cors,
-    sampleSchemasGenerated: wizardAnswers.generateSampleSchemas,
-    createdAt: new Date().toISOString(),
-  };
-
-  if (!configExists || force) {
-    initSpinner.update("Writing fexapi.config.json");
-    writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf-8");
-  }
 
   if (!schemaExists || force) {
     initSpinner.update("Writing fexapi/schema.fexapi");
@@ -311,14 +329,6 @@ export const initializeProject = async ({
   printSpacer();
   printGroupHeader("Files");
 
-  if (configExists && !force) {
-    logWarn(`Exists ${configPath}`);
-  } else if (configExists && force) {
-    logSuccess(`Overwritten ${configPath}`);
-  } else {
-    logSuccess(`Created ${configPath}`);
-  }
-
   if (schemaExists && !force) {
     logWarn(`Exists ${schemaPath}`);
   } else if (schemaExists && force) {
@@ -357,14 +367,13 @@ export const initializeProject = async ({
 
   if (detectedProject.primaryFramework === "unknown") {
     logWarn(
-      "No known framework dependency found. Update fexapi.config.json and schema.fexapi if needed.",
+      "No known framework dependency found. Update fexapi.config.js and schema.fexapi if needed.",
     );
   }
 
   printSpacer();
   printGroupHeader("Summary");
   const createdFiles = [
-    !configExists || force,
     !schemaExists || force,
     !runtimeConfigExists || force,
     userSchemaStatus === "created" || userSchemaStatus === "overwritten",

@@ -156,11 +156,13 @@ export const printSummaryCard = (
   const compactMode = terminalWidth < 64;
 
   if (compactMode) {
-    console.log(ui.gray(`--- ${title} ---`));
+    console.log(ui.gray(`+-- ${title} --+`));
     for (const row of rows) {
-      console.log(`${ui.dim(row.label)}: ${row.value}`);
+      console.log(
+        `${ui.dim(row.label)} ${ui.gray("::")} ${styleCardValue(row.value)}`,
+      );
     }
-    console.log(ui.gray("---------------"));
+    console.log(ui.gray("+----------------+"));
     return;
   }
 
@@ -169,13 +171,29 @@ export const printSummaryCard = (
     value: row.value,
   }));
 
-  const cardWidth = terminalWidth - 2;
+  const maxCardWidth = 96;
+  const naturalInnerWidth = Math.max(
+    36,
+    visibleLength(title) + 2,
+    ...safeRows.map(
+      (row) => visibleLength(row.label) + visibleLength(row.value) + 7,
+    ),
+  );
+  const cardWidth = Math.max(
+    40,
+    Math.min(maxCardWidth, terminalWidth - 2, naturalInnerWidth + 2),
+  );
   const innerWidth = cardWidth - 2;
   const labelWidth = Math.min(
     20,
     Math.max(10, ...safeRows.map((row) => visibleLength(row.label))),
   );
-  const valueSpace = Math.max(8, innerWidth - 3 - labelWidth - 3);
+  const valueSpace = Math.max(8, innerWidth - 7 - labelWidth);
+
+  const renderBoxLine = (content: string): string => {
+    const remaining = Math.max(0, innerWidth - 2 - visibleLength(content));
+    return `│ ${content}${" ".repeat(remaining)} │`;
+  };
 
   const topBorder = `┌${"─".repeat(innerWidth)}┐`;
   const divider = `├${"─".repeat(innerWidth)}┤`;
@@ -183,10 +201,7 @@ export const printSummaryCard = (
   console.log(ui.gray(topBorder));
 
   const renderedTitle = truncateText(title, innerWidth - 2);
-  const titlePadding = " ".repeat(
-    Math.max(0, innerWidth - 2 - visibleLength(renderedTitle)),
-  );
-  console.log(`│ ${ui.bold(ui.cyan(renderedTitle))}${titlePadding} │`);
+  console.log(renderBoxLine(ui.bold(ui.cyan(renderedTitle))));
   console.log(ui.gray(divider));
 
   for (const row of safeRows) {
@@ -194,13 +209,9 @@ export const printSummaryCard = (
     const value = truncateText(rawValue, valueSpace);
     const label = row.label.padEnd(labelWidth, " ");
     const styledValue = styleCardValue(value);
-    const spaces = " ".repeat(
-      Math.max(
-        1,
-        innerWidth - 3 - visibleLength(label) - 3 - visibleLength(value),
-      ),
+    console.log(
+      renderBoxLine(`${ui.dim(label)} ${ui.gray("::")} ${styledValue}`),
     );
-    console.log(`│ ${ui.dim(label)} ${ui.gray("::")} ${styledValue}${spaces}│`);
   }
 
   console.log(ui.gray(bottomBorder));
@@ -208,12 +219,22 @@ export const printSummaryCard = (
 
 export const printGroupHeader = (title: string): void => {
   const terminalWidth = getTerminalWidth();
-  const marker = ui.gray("──");
-  const text = ` ${ui.bold(title)} `;
-  const lineLength = Math.max(0, terminalWidth - visibleLength(title) - 4);
-  const left = marker;
-  const right = ui.gray("─".repeat(Math.max(0, lineLength - 2)));
-  console.log(`${left}${text}${right}`);
+  const compactMode = terminalWidth < 64;
+
+  if (compactMode) {
+    console.log(ui.gray(`-- ${title} --`));
+    return;
+  }
+
+  const innerWidth = terminalWidth - 2;
+  const renderedTitle = truncateText(title, Math.max(1, innerWidth - 6));
+  const rawPrefix = `── ${renderedTitle} `;
+  const fill = Math.max(0, innerWidth - visibleLength(rawPrefix));
+
+  const prefix = `${ui.gray("── ")}${ui.bold(ui.cyan(renderedTitle))} `;
+  console.log(
+    `${ui.gray("┌")}${prefix}${ui.gray("─".repeat(fill))}${ui.gray("┐")}`,
+  );
 };
 
 export const printBanner = (): void => {
