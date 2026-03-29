@@ -1,9 +1,3 @@
-<script>
-  if (typeof window !== "undefined") {
-    window.location.replace("/getting-started/introduction");
-  }
-</script>
+# Documentation Home
 
-# Redirecting to Introduction
-
-Continue to [Getting Started Introduction](./getting-started/introduction.md).
+Start here: [Getting Started Introduction](./getting-started/introduction.md).
