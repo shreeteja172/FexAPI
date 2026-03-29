@@ -57,7 +57,7 @@ export default defineConfig({
       },
       {
         text: "CLI Reference",
-        collapsed: false,
+        collapsed: true,
         items: [
           { text: "Commands Overview", link: "/cli/overview" },
           { text: "fexapi init", link: "/cli/init" },
@@ -69,7 +69,7 @@ export default defineConfig({
       },
       {
         text: "Schema Guide",
-        collapsed: false,
+        collapsed: true,
         items: [
           { text: "Schema Basics", link: "/schema/basics" },
           { text: "Field Types", link: "/schema/field-types" },
