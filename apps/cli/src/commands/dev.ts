@@ -155,7 +155,7 @@ export const runDevCommand = ({
     if (shouldRegenerate) {
       printSpacer();
       logInfo("[watch] regenerating generated.api.json from schema changes...");
-      const generationExitCode = generateFromSchema();
+      const generationExitCode = generateFromSchema({ quiet: true });
 
       if (generationExitCode !== 0) {
         logError("[watch] generation failed; keeping previous server state.");

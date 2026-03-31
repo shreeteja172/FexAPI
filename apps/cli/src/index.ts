@@ -26,7 +26,12 @@ const args = process.argv.slice(2);
 const [firstArg, ...restArgs] = args;
 
 const main = async () => {
-  if (firstArg === "--version" || firstArg === "-v" || firstArg === "version") {
+  if (
+    firstArg === "--version" ||
+    firstArg === "-version" ||
+    firstArg === "-v" ||
+    firstArg === "version"
+  ) {
     console.log(getCliVersion());
     process.exit(0);
   }

@@ -6,72 +6,60 @@ import {
   ui,
 } from "./ui";
 
+type HelpEntry = readonly [command: string, description: string];
+type ShortcutEntry = readonly [command: string, label: string];
+
+const data = {
+  commands: [
+    ["init [--force]", "create config + schema"],
+    ["generate", "build generated.api.json"],
+    ["dev [--watch] [--log]", "start dev server"],
+    ["serve [--host <host>] [--port <number>] [--log]", "run once (no watch)"],
+    ["format", "format schema"],
+  ] as HelpEntry[],
+  flags: [
+    ["--help", "Show this help"],
+    ["--version", "Print installed version"],
+  ] as HelpEntry[],
+  shortcuts: [
+    ["npx fexapi@latest dev --watch", "No install"],
+    ["pnpm exec fexapi dev --watch", "Installed in project"],
+  ] as ShortcutEntry[],
+  quickStart: ["init", "generate", "dev --watch"],
+};
+
+const fmt = (cmd: string, desc: string, prefix = "fexapi") =>
+  `  ${formatCommand(`${prefix} ${cmd}`)} ${ui.dim(desc)}`;
+
+const section = (title: string, lines: string[]) => {
+  console.log(ui.bold(title));
+  lines.forEach((l) => console.log(l));
+  printSpacer();
+};
+
 export const printHelp = () => {
-  const version = getCliVersion();
   printBanner();
-  console.log(ui.dim(`version ${version}`));
+  console.log(ui.dim(`version ${getCliVersion()}`));
   printSpacer();
 
-  console.log(ui.bold("Quick Start"));
-  console.log(`  1. ${formatCommand("fexapi init")}`);
-  console.log(`  2. ${formatCommand("fexapi generate")}`);
-  console.log(`  3. ${formatCommand("fexapi dev --watch")}`);
-  printSpacer();
-
-  console.log(ui.bold("Core Commands"));
-  const commandRows: Array<{ command: string; description: string }> = [
-    {
-      command: "fexapi init [--force]",
-      description: "Scaffold config + schema files",
-    },
-    {
-      command: "fexapi generate",
-      description: "Build fexapi/generated.api.json from schema",
-    },
-    {
-      command: "fexapi dev [--watch] [--log]",
-      description: "Start dev server (watch reloads on changes)",
-    },
-    {
-      command: "fexapi serve [--host <host>] [--port <number>] [--log]",
-      description: "Run server once (no watch)",
-    },
-    {
-      command: "fexapi format",
-      description: "Reformat fexapi/schema.fexapi",
-    },
-  ];
-  const commandColumnWidth = Math.max(
-    ...commandRows.map((row) => row.command.length),
+  section(
+    "Quick Start",
+    data.quickStart.map(
+      (s, i) => `  ${i + 1}. ${formatCommand(`fexapi ${s}`)}`,
+    ),
   );
-  for (const row of commandRows) {
-    console.log(
-      `  ${formatCommand(row.command.padEnd(commandColumnWidth, " "))} ${ui.dim(row.description)}`,
-    );
-  }
-  printSpacer();
-
-  console.log(ui.bold("Package Manager Dev Watch"));
-  console.log(`  ${ui.dim("One-off (no install):")}`);
-  console.log(`  ${formatCommand("npx fexapi@latest dev --watch")}`);
-  console.log(`  ${formatCommand("pnpm dlx fexapi@latest dev --watch")}`);
-  console.log(`  ${formatCommand("npm exec fexapi@latest -- dev --watch")}`);
-  console.log(
-    `  ${ui.dim("@latest keeps npm/pnpm/yarn/bun on the same CLI version")}`,
+  section(
+    "Commands",
+    data.commands.map(([c, d]) => fmt(c, d)),
   );
-  printSpacer();
-  console.log(`  ${ui.dim("Project-local (installed dependency):")}`);
-  console.log(`  ${formatCommand("pnpm exec fexapi dev --watch")}`);
-  console.log(
-    `  ${ui.dim("Optional shortcut via scripts: pnpm run mock:dev (if defined)")}`,
+  section(
+    "Dev Watch Shortcuts",
+    data.shortcuts.map(
+      ([c, d]) => `  ${ui.dim(`${d}:`)}\n  ${formatCommand(c)}`,
+    ),
   );
-  printSpacer();
-
-  console.log(ui.bold("Global Flags"));
-  console.log(
-    `  ${formatCommand("fexapi --help")} ${ui.dim("Show this help")}`,
-  );
-  console.log(
-    `  ${formatCommand("fexapi --version")} ${ui.dim("Print installed version")}`,
+  section(
+    "Global Flags",
+    data.flags.map(([c, d]) => fmt(c, d, "fexapi")),
   );
 };

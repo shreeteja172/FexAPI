@@ -243,9 +243,9 @@ export const printGroupHeader = (title: string): void => {
 export const printBanner = (): void => {
   console.log(
     ui.bold(ui.cyan("fexapi")) +
-      ui.gray("  ") +
+      ui.gray(" -> ") +
       ui.magenta("mock") +
-      ui.gray(" api toolkit"),
+      ui.gray(" api toolkit"),  
   );
 };
 

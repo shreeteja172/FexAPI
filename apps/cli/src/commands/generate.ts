@@ -12,6 +12,10 @@ import {
 import { resolveProjectRoot } from "../project/paths";
 import { parseFexapiSchema } from "../schema";
 
+type GenerateOptions = {
+  quiet?: boolean;
+};
+
 const createRouteSignature = (value: {
   port: number;
   routes: unknown;
@@ -22,7 +26,9 @@ const createRouteSignature = (value: {
   });
 };
 
-export const generateFromSchema = (): number => {
+export const generateFromSchema = ({
+  quiet = false,
+}: GenerateOptions = {}): number => {
   const startedAtMs = nowMs();
   const projectRoot = resolveProjectRoot();
 
@@ -42,15 +48,17 @@ export const generateFromSchema = (): number => {
     return 1;
   }
 
-  printGroupHeader("Generate");
-  const generationSpinner = startSpinner("Reading schema");
+  if (!quiet) {
+    printGroupHeader("Generate");
+  }
+  const generationSpinner = quiet ? undefined : startSpinner("Reading schema");
 
   const schemaText = readFileSync(schemaPath, "utf-8");
-  generationSpinner.update("Parsing schema routes");
+  generationSpinner?.update("Parsing schema routes");
   const parsed = parseFexapiSchema(schemaText);
 
   if (parsed.errors.length > 0 || !parsed.schema) {
-    generationSpinner.fail("Schema parsing failed");
+    generationSpinner?.fail("Schema parsing failed");
     logError("Failed to generate API from schema.fexapi");
     for (const error of parsed.errors) {
       logError(`- ${error}`);
@@ -59,7 +67,7 @@ export const generateFromSchema = (): number => {
     return 1;
   }
 
-  generationSpinner.update("Resolving cache state");
+  generationSpinner?.update("Resolving cache state");
 
   const previousGenerated = existsSync(generatedPath)
     ? (() => {
@@ -93,7 +101,7 @@ export const generateFromSchema = (): number => {
   let generatedStatus: "changed" | "cached" = "cached";
 
   if (schemaChanged || !existsSync(generatedPath)) {
-    generationSpinner.update("Writing generated API spec");
+    generationSpinner?.update("Writing generated API spec");
     writeFileSync(
       generatedPath,
       `${JSON.stringify(generated, null, 2)}\n`,
@@ -102,34 +110,36 @@ export const generateFromSchema = (): number => {
     generatedStatus = "changed";
   }
 
-  generationSpinner.succeed(
-    `Generate complete (${schemaChanged ? "changed" : "cached"})`,
-  );
+  if (!quiet) {
+    generationSpinner?.succeed(
+      `Generate complete (${schemaChanged ? "changed" : "cached"})`,
+    );
 
-  printSpacer();
-  printGroupHeader("Summary");
-  printSummaryCard("Generate Summary", [
-    {
-      label: "routes",
-      value: String(parsed.schema.routes.length),
-    },
-    {
-      label: "port",
-      value: String(parsed.schema.port),
-    },
-    {
-      label: "schema source",
-      value: "fexapi/schema.fexapi",
-    },
-    {
-      label: "generated.api.json",
-      value: generatedStatus,
-    },
-    {
-      label: "time",
-      value: formatDuration(startedAtMs),
-    },
-  ]);
+    printSpacer();
+    printGroupHeader("Summary");
+    printSummaryCard("Generate Summary", [
+      {
+        label: "routes",
+        value: String(parsed.schema.routes.length),
+      },
+      {
+        label: "port",
+        value: String(parsed.schema.port),
+      },
+      {
+        label: "schema source",
+        value: "fexapi/schema.fexapi",
+      },
+      {
+        label: "generated.api.json",
+        value: generatedStatus,
+      },
+      {
+        label: "time",
+        value: formatDuration(startedAtMs),
+      },
+    ]);
+  }
 
   return 0;
 };
