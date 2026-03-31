@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
@@ -173,6 +173,7 @@ export const initializeProject = async ({
   const fexapiDirectoryPath = join(projectRoot, "fexapi");
   const schemaPath = join(fexapiDirectoryPath, "schema.fexapi");
   const runtimeConfigPath = join(projectRoot, "fexapi.config.js");
+  const gitignorePath = join(projectRoot, ".gitignore");
 
   const wizardAnswers = await askInitWizardQuestions();
 
@@ -207,6 +208,23 @@ export const initializeProject = async ({
 
   initSpinner.succeed("Project scaffolding complete");
 
+  let gitignoreUpdated = false;
+  if (existsSync(gitignorePath)) {
+    const gitignoreContent = readFileSync(gitignorePath, "utf-8");
+    if (!gitignoreContent.includes("fexapi/.cache")) {
+      const newLine = gitignoreContent.endsWith("\n") || gitignoreContent.length === 0 ? "" : "\n";
+      writeFileSync(
+        gitignorePath,
+        `${gitignoreContent}${newLine}# fexapi\nfexapi/.cache\n`,
+        "utf-8",
+      );
+      gitignoreUpdated = true;
+    }
+  } else {
+    writeFileSync(gitignorePath, "# fexapi\nfexapi/.cache\n", "utf-8");
+    gitignoreUpdated = true;
+  }
+
   logSuccess(`Initialized fexapi in ${projectRoot}`);
   logInfo(`Detected framework: ${detectedProject.primaryFramework}`);
   logInfo(`Detected frameworks: ${detectedProject.frameworks.join(", ")}`);
@@ -233,6 +251,10 @@ export const initializeProject = async ({
     logSuccess(`Created ${runtimeConfigPath}`);
   }
 
+  if (gitignoreUpdated) {
+    logSuccess(`Updated ${gitignorePath}`);
+  }
+
   if (detectedProject.primaryFramework === "unknown") {
     logWarn(
       "No known framework dependency found. Update fexapi.config.js and schema.fexapi if needed.",
@@ -244,6 +266,7 @@ export const initializeProject = async ({
   const createdFiles = [
     !schemaExists || force,
     !runtimeConfigExists || force,
+    gitignoreUpdated,
   ].filter(Boolean).length;
 
   printSummaryCard("Init Summary", [

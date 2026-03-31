@@ -239,7 +239,7 @@ const getCountOverrideFromUrl = (
     return undefined;
   }
 
-  return Math.min(Math.max(Math.floor(parsedCount), 1), 50);
+  return Math.min(Math.max(Math.floor(parsedCount), 1), 1000);
 };
 
 export const startServer = ({
