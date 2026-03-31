@@ -1,3 +1,15 @@
-# Documentation Home
+---
+layout: home
+title: FexAPI
+---
 
-Start here: [Getting Started Introduction](./getting-started/introduction.md).
+<script setup>
+import { onMounted } from 'vue'
+import { useRouter } from 'vitepress'
+
+const router = useRouter()
+
+onMounted(() => {
+  router.go('/getting-started/introduction')
+})
+</script>

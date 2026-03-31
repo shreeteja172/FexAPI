@@ -3,7 +3,7 @@
     {
       "source": "/",
       "destination": "/getting-started/introduction",
-      "permanent": false
+      "permanent": true
     }
   ]
 }
