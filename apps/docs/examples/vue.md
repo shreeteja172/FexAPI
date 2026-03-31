@@ -5,7 +5,7 @@ Use FexAPI as your mock backend during Vue development.
 ## Setup
 
 ```bash
-npx fexapi init
+npx fexapi@latest init
 ```
 
 Edit `fexapi/schema.fexapi`:
@@ -20,8 +20,8 @@ GET /users:
 ```
 
 ```bash
-npx fexapi generate
-npx fexapi dev --watch
+npx fexapi@latest generate
+npx fexapi@latest dev --watch
 ```
 
 Enable CORS in `fexapi.config.js`:
@@ -30,24 +30,24 @@ Enable CORS in `fexapi.config.js`:
 module.exports = {
   port: 4000,
   cors: true,
-}
+};
 ```
 
 ## Composition API
 
 ```vue
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from "vue";
 
-const users = ref([])
-const loading = ref(true)
+const users = ref([]);
+const loading = ref(true);
 
 onMounted(async () => {
-  const res = await fetch('http://localhost:4000/users?count=10')
-  const data = await res.json()
-  users.value = data.users
-  loading.value = false
-})
+  const res = await fetch("http://localhost:4000/users?count=10");
+  const data = await res.json();
+  users.value = data.users;
+  loading.value = false;
+});
 </script>
 
 <template>

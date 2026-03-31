@@ -5,7 +5,7 @@ Use FexAPI as your mock backend during React development.
 ## Setup
 
 ```bash
-npx fexapi init
+npx fexapi@latest init
 ```
 
 Edit `fexapi/schema.fexapi`:
@@ -21,8 +21,8 @@ GET /users:
 ```
 
 ```bash
-npx fexapi generate
-npx fexapi dev --watch
+npx fexapi@latest generate
+npx fexapi@latest dev --watch
 ```
 
 ## Enable CORS
@@ -33,64 +33,64 @@ Your React dev server runs on `localhost:3000` (or `5173` with Vite), so enable 
 module.exports = {
   port: 4000,
   cors: true,
-}
+};
 ```
 
 ## Fetching Data
 
 ```jsx
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
 
 function UserList() {
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:4000/users?count=10')
-      .then(res => res.json())
-      .then(data => {
-        setUsers(data.users)
-        setLoading(false)
-      })
-  }, [])
+    fetch("http://localhost:4000/users?count=10")
+      .then((res) => res.json())
+      .then((data) => {
+        setUsers(data.users);
+        setLoading(false);
+      });
+  }, []);
 
-  if (loading) return <p>Loading...</p>
+  if (loading) return <p>Loading...</p>;
 
   return (
     <ul>
-      {users.map(user => (
+      {users.map((user) => (
         <li key={user.id}>
           {user.name} — {user.email}
         </li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
 ## With React Query
 
 ```jsx
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from "@tanstack/react-query";
 
 function UserList() {
   const { data, isLoading } = useQuery({
-    queryKey: ['users'],
+    queryKey: ["users"],
     queryFn: () =>
-      fetch('http://localhost:4000/users?count=10')
-        .then(res => res.json())
-        .then(data => data.users),
-  })
+      fetch("http://localhost:4000/users?count=10")
+        .then((res) => res.json())
+        .then((data) => data.users),
+  });
 
-  if (isLoading) return <p>Loading...</p>
+  if (isLoading) return <p>Loading...</p>;
 
   return (
     <ul>
-      {data.map(user => (
+      {data.map((user) => (
         <li key={user.id}>{user.name}</li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 

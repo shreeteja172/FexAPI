@@ -33,7 +33,7 @@ fexapi.config.js           # JavaScript configuration
 ## Example
 
 ```bash
-npx fexapi init
+npx fexapi@latest init
 ```
 
 ```
@@ -47,5 +47,5 @@ Created fexapi.config.js
 To overwrite existing files:
 
 ```bash
-npx fexapi init --force
+npx fexapi@latest init --force
 ```

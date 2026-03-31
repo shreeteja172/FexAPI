@@ -47,9 +47,10 @@ export const printHelp = () => {
   printSpacer();
 
   console.log(ui.bold("Package Manager Usage"));
-  console.log(`  ${formatCommand("npx fexapi init")}`);
-  console.log(`  ${formatCommand("pnpm dlx fexapi init")}`);
-  console.log(`  ${formatCommand("yarn dlx fexapi init")}`);
+  console.log(`  ${formatCommand("npx fexapi@latest init")}`);
+  console.log(`  ${formatCommand("pnpm dlx fexapi@latest init")}`);
+  console.log(`  ${formatCommand("yarn dlx fexapi@latest init")}`);
+  console.log(`  ${formatCommand("bunx fexapi@latest init")}`);
   printSpacer();
 
   console.log(ui.bold("fexapi init creates"));

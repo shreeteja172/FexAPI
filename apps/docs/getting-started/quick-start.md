@@ -5,8 +5,14 @@ Get a mock API running in under 2 minutes.
 ## 1. Initialize
 
 ```bash
-npx fexapi init
+npx fexapi@latest init
 ```
+
+Equivalent commands:
+
+- `pnpm dlx fexapi@latest init`
+- `yarn dlx fexapi@latest init`
+- `bunx fexapi@latest init`
 
 The wizard asks:
 

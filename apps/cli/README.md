@@ -19,21 +19,38 @@ fexapi [options]
 ### 1) Initialize
 
 ```bash
-pnpm dlx fexapi init
+npx fexapi@latest init
+```
+
+or
+
+```bash
+pnpm dlx fexapi@latest init
+```
+
+or
+
+```bash
+yarn dlx fexapi@latest init
+```
+
+or
+
+```bash
+bunx fexapi@latest init
 ```
 
 `fexapi init` runs an interactive setup wizard and asks:
 
-- What port? (default: 3000)
+- What port? (default: 4000)
 - Enable CORS? (Y/n)
-- Generate sample schemas? (Y/n)
 
 Creates:
 
 - `fexapi/schema.fexapi`
-- `fexapi.config.json`
 - `fexapi.config.js`
-- `fexapi/schemas/user.yaml` and `fexapi/schemas/post.yaml` (if sample schemas are enabled)
+
+Tip: if you see old prompts (for example default `3000` or "Generate sample schemas"), run with `@latest` as shown above to ensure every package manager resolves the same release.
 
 ### 2) Edit schema file
 
