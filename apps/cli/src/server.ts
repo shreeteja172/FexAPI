@@ -26,6 +26,20 @@ export type GeneratedApiSpec = {
 const DEFAULT_HOST = "localhost";
 const DEFAULT_PORT = 4000;
 
+const toDisplayHost = (host: string): string => {
+  const normalizedHost = host.trim().toLowerCase();
+
+  if (
+    normalizedHost === "127.0.0.1" ||
+    normalizedHost === "::1" ||
+    normalizedHost === "localhost"
+  ) {
+    return "localhost";
+  }
+
+  return normalizedHost;
+};
+
 const sendJson = (
   response: ServerResponse,
   statusCode: number,
@@ -368,8 +382,9 @@ export const startServer = ({
   });
 
   server.listen(port, host, () => {
+    const displayHost = toDisplayHost(host);
     console.log(
-      `${ui.green("ready")} Mock API running at ${ui.bold(`http://${host}:${port}`)}`,
+      `${ui.green("ready")} Mock API running at ${ui.bold(`http://${displayHost}:${port}`)}`,
     );
   });
 

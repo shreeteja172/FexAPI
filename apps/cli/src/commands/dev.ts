@@ -1,7 +1,14 @@
 import { existsSync, watch } from "node:fs";
 import type { FSWatcher } from "node:fs";
 import { join, relative } from "node:path";
-import { logError, logInfo, logSuccess, logWarn, printSpacer } from "../cli/ui";
+import {
+  logError,
+  logInfo,
+  logSuccess,
+  logWarn,
+  printGroupHeader,
+  printSpacer,
+} from "../cli/ui";
 import { resolveProjectRoot } from "../project/paths";
 import { generateFromSchema } from "./generate";
 import { createProjectServer, serveProject } from "./serve";
@@ -101,7 +108,10 @@ export const runDevCommand = ({
     return 1;
   }
 
+  printSpacer();
+  printGroupHeader("Dev Watch");
   logInfo("Watch mode enabled. Restarting on config/schema changes...");
+  printSpacer();
 
   let restartTimer: NodeJS.Timeout | undefined;
   let restartQueued = false;
@@ -138,6 +148,8 @@ export const runDevCommand = ({
 
     restartInProgress = true;
 
+    printSpacer();
+    printGroupHeader("Watch Reload");
     logInfo(`[watch] change detected (${reason})`);
 
     if (shouldRegenerate) {
@@ -187,6 +199,7 @@ export const runDevCommand = ({
         "[watch] server reload failed; waiting for next change to retry.",
       );
     }
+    printSpacer();
 
     restartInProgress = false;
 
@@ -240,7 +253,10 @@ export const runDevCommand = ({
 
     const watcher = watch(watchTarget, { recursive: true }, (_event, file) => {
       if (!file) {
-        scheduleRestart({ reason: "unknown file", shouldRegenerate: false });
+        scheduleRestart({
+          reason: "unknown file change",
+          shouldRegenerate: watchTarget.endsWith("fexapi"),
+        });
         return;
       }
 
@@ -264,6 +280,35 @@ export const runDevCommand = ({
           shouldRegenerate: watchReaction.shouldRegenerate,
         });
       }
+    });
+
+    activeWatchers.push(watcher);
+  }
+
+  // File-level watchers make schema/config reloads reliable across editors/terminals.
+  const criticalWatchFiles = [
+    {
+      filePath: join(projectRoot, "fexapi", "schema.fexapi"),
+      reason: "schema.fexapi changed",
+      shouldRegenerate: true,
+    },
+    {
+      filePath: join(projectRoot, "fexapi.config.js"),
+      reason: "fexapi.config.js changed",
+      shouldRegenerate: false,
+    },
+  ];
+
+  for (const watchFileEntry of criticalWatchFiles) {
+    if (!existsSync(watchFileEntry.filePath)) {
+      continue;
+    }
+
+    const watcher = watch(watchFileEntry.filePath, () => {
+      scheduleRestart({
+        reason: watchFileEntry.reason,
+        shouldRegenerate: watchFileEntry.shouldRegenerate,
+      });
     });
 
     activeWatchers.push(watcher);
