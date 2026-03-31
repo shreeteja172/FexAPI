@@ -1,9 +1,11 @@
 {
+  "buildCommand": "pnpm build",
+  "outputDirectory": ".vitepress/dist",
   "redirects": [
     {
       "source": "/",
       "destination": "/getting-started/introduction",
-      "permanent": true
+      "permanent": false
     }
   ]
 }
