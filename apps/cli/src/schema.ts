@@ -7,11 +7,14 @@ export type FexapiFieldType =
   | "email"
   | "url"
   | "name"
-  | "phone";
+  | "phone"
+  | "array"
+  | "object";
 
 export type FexapiField = {
   name: string;
   type: FexapiFieldType;
+  fields?: FexapiField[];
 };
 
 export type FexapiRoute = {
@@ -97,44 +100,131 @@ const parseRouteHeader = (
   };
 };
 
-const parseField = (rawField: string): FexapiField | { error: string } => {
-  const parts = rawField.split(":");
-  if (parts.length !== 2) {
+const parseTokens = (
+  tokens: string[],
+  startIndex: number,
+  endChar?: string,
+): { fields: FexapiField[]; nextIndex: number; error?: string } => {
+  const fields: FexapiField[] = [];
+  const seenFieldNames = new Set<string>();
+
+  let i = startIndex;
+  while (i < tokens.length) {
+    const token = tokens[i]!;
+
+    if (endChar && token === endChar) {
+      return { fields, nextIndex: i + 1 };
+    }
+
+    if (token === "]" || token === "}") {
+      return {
+        fields: [],
+        nextIndex: i,
+        error: `Unexpected closing character "${token}" without matching open.`,
+      };
+    }
+
+    const parts = token.split(":");
+    if (parts.length !== 2) {
+      return {
+        fields: [],
+        nextIndex: i,
+        error: `Invalid field "${token}". Expected format name:type.`,
+      };
+    }
+
+    const rawName = parts[0]?.trim() || "";
+    const rawType = parts[1]?.trim().toLowerCase() || "";
+
+    if (!rawName) {
+      return {
+        fields: [],
+        nextIndex: i,
+        error: `Invalid field "${token}". Missing field name.`,
+      };
+    }
+
+    if (!FIELD_NAME_PATTERN.test(rawName)) {
+      return {
+        fields: [],
+        nextIndex: i,
+        error: `Invalid field name "${rawName}". Use letters, numbers, and underscore only.`,
+      };
+    }
+
+    if (!rawType) {
+      return {
+        fields: [],
+        nextIndex: i,
+        error: `Invalid field "${token}". Missing field type.`,
+      };
+    }
+
+    let field: FexapiField;
+
+    if (rawType === "[" || rawType === "{") {
+      const isArray = rawType === "[";
+      const expectedEnd = isArray ? "]" : "}";
+      const nested = parseTokens(tokens, i + 1, expectedEnd);
+      
+      if (nested.error) {
+        return { fields: [], nextIndex: nested.nextIndex, error: nested.error };
+      }
+      
+      if (
+        nested.nextIndex > tokens.length ||
+        tokens[nested.nextIndex - 1] !== expectedEnd
+      ) {
+        return {
+          fields: [],
+          nextIndex: nested.nextIndex,
+          error: `Unclosed ${isArray ? "array" : "object"} for field "${rawName}". Expected "${expectedEnd}".`,
+        };
+      }
+      
+      field = {
+        name: rawName,
+        type: isArray ? "array" : "object",
+        fields: nested.fields,
+      };
+      i = nested.nextIndex;
+    } else {
+      if (!VALID_TYPES.includes(rawType as FexapiFieldType)) {
+        return {
+          fields: [],
+          nextIndex: i,
+          error: `Unknown type "${rawType}" in field "${rawName}". Valid types: ${VALID_TYPES.join(", ")}`,
+        };
+      }
+      
+      field = {
+        name: rawName,
+        type: rawType as FexapiFieldType,
+      };
+      i++;
+    }
+
+    if (seenFieldNames.has(field.name)) {
+      return {
+        fields: [],
+        nextIndex: i,
+        error: `Duplicate field "${field.name}".`,
+      };
+    }
+    
+    seenFieldNames.add(field.name);
+    fields.push(field);
+  }
+
+  if (endChar) {
     return {
-      error: `Invalid field "${rawField}". Expected format name:type.`,
+      fields: [],
+      nextIndex: i,
+      error: `Unclosed structure. Expected "${endChar}".`,
     };
   }
 
-  const [rawName, rawType] = parts;
-  const name = rawName?.trim();
-  const type = rawType?.trim().toLowerCase();
-
-  if (!name) {
-    return { error: `Invalid field "${rawField}". Missing field name.` };
-  }
-
-  if (!FIELD_NAME_PATTERN.test(name)) {
-    return {
-      error: `Invalid field name "${name}". Use letters, numbers, and underscore only (must not start with a number).`,
-    };
-  }
-
-  if (!type) {
-    return { error: `Invalid field "${rawField}". Missing field type.` };
-  }
-
-  if (!VALID_TYPES.includes(type as FexapiFieldType)) {
-    return {
-      error: `Unknown type "${type}" in field "${name}". Valid types: ${VALID_TYPES.join(
-        ", ",
-      )}`,
-    };
-  }
-
-  return {
-    name,
-    type: type as FexapiFieldType,
-  };
+  return { fields, nextIndex: i };
 };
 
 const parseRoute = ({
@@ -156,36 +246,26 @@ const parseRoute = ({
     };
   }
 
-  const fields: FexapiField[] = [];
-  const seenFieldNames = new Set<string>();
+  const tokens: string[] = [];
   for (const rawFieldLine of rawFields) {
     for (const part of rawFieldLine.split(",")) {
       const trimmedPart = stripInlineComment(part);
-      if (!trimmedPart) {
-        continue;
+      if (trimmedPart) {
+        tokens.push(trimmedPart);
       }
-
-      const parsedField = parseField(trimmedPart);
-      if ("error" in parsedField) {
-        return { error: parsedField.error };
-      }
-
-      if (seenFieldNames.has(parsedField.name)) {
-        return {
-          error: `Duplicate field "${parsedField.name}" in route ${method} ${path}.`,
-        };
-      }
-
-      seenFieldNames.add(parsedField.name);
-      fields.push(parsedField);
     }
   }
 
-  if (fields.length === 0) {
+  const parsed = parseTokens(tokens, 0);
+  if (parsed.error) {
+    return { error: parsed.error + ` (in route ${method} ${path})` };
+  }
+
+  if (parsed.fields.length === 0) {
     return { error: `Route ${method} ${path} has no valid fields.` };
   }
 
-  return { method, path, fields };
+  return { method, path, fields: parsed.fields };
 };
 
 export const parseFexapiSchema = (

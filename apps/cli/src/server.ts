@@ -72,6 +72,21 @@ const sendJson = (
 
 const createValueFromField = (field: FexapiField): unknown => {
   switch (field.type) {
+    case "array": {
+      const count = faker.number.int({ min: 1, max: 5 });
+      return Array.from({ length: count }, () => {
+        return (field.fields || []).reduce<Record<string, unknown>>((record, childField) => {
+          record[childField.name] = createValueFromField(childField);
+          return record;
+        }, {});
+      });
+    }
+    case "object": {
+      return (field.fields || []).reduce<Record<string, unknown>>((record, childField) => {
+        record[childField.name] = createValueFromField(childField);
+        return record;
+      }, {});
+    }
     case "number":
       return faker.number.int({ min: 1, max: 10000 });
     case "string":
