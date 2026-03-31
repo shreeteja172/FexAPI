@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { join, dirname } from "node:path";
 import {
   formatDuration,
   logError,
@@ -40,7 +40,7 @@ export const generateFromSchema = ({
   }
 
   const schemaPath = join(projectRoot, "fexapi", "schema.fexapi");
-  const generatedPath = join(projectRoot, "fexapi", "generated.api.json");
+  const generatedPath = join(projectRoot, "fexapi", ".cache", "generated.api.json");
 
   if (!existsSync(schemaPath)) {
     logError(`Schema file not found: ${schemaPath}`);
@@ -102,6 +102,7 @@ export const generateFromSchema = ({
 
   if (schemaChanged || !existsSync(generatedPath)) {
     generationSpinner?.update("Writing generated API spec");
+    mkdirSync(dirname(generatedPath), { recursive: true });
     writeFileSync(
       generatedPath,
       `${JSON.stringify(generated, null, 2)}\n`,
@@ -131,7 +132,7 @@ export const generateFromSchema = ({
         value: "fexapi/schema.fexapi",
       },
       {
-        label: "generated.api.json",
+        label: ".cache/generated.api.json",
         value: generatedStatus,
       },
       {

@@ -14,7 +14,7 @@ import { generateFromSchema } from "./generate";
 import { createProjectServer, serveProject } from "./serve";
 
 const WATCH_DEBOUNCE_MS = 150;
-const GENERATED_SPEC_PATH = "fexapi/generated.api.json";
+const GENERATED_SPEC_PATH = "fexapi/.cache/generated.api.json";
 const GENERATED_SPEC_SUPPRESS_MS = 1200;
 
 const normalizePath = (pathValue: string): string => {

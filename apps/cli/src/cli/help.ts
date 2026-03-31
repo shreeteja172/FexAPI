@@ -12,7 +12,7 @@ type ShortcutEntry = readonly [command: string, label: string];
 const data = {
   commands: [
     ["init [--force]", "create config + schema"],
-    ["generate", "build generated.api.json"],
+    ["generate", "build .cache/generated.api.json"],
     ["dev [--watch] [--log]", "start dev server"],
     ["serve [--host <host>] [--port <number>] [--log]", "run once (no watch)"],
     ["format", "format schema"],
