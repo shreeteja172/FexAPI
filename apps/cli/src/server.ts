@@ -71,21 +71,46 @@ const sendJson = (
 };
 
 const createValueFromField = (field: FexapiField): unknown => {
+  if (field.type.endsWith("[]")) {
+    const baseType = field.type.slice(0, -2) as Extract<
+      FexapiField["type"],
+      | "number"
+      | "string"
+      | "boolean"
+      | "date"
+      | "uuid"
+      | "email"
+      | "url"
+      | "name"
+      | "phone"
+    >;
+    const count = faker.number.int({ min: 1, max: 5 });
+    return Array.from({ length: count }, () => {
+      return createValueFromField({ ...field, type: baseType });
+    });
+  }
+
   switch (field.type) {
     case "array": {
       const count = faker.number.int({ min: 1, max: 5 });
       return Array.from({ length: count }, () => {
-        return (field.fields || []).reduce<Record<string, unknown>>((record, childField) => {
-          record[childField.name] = createValueFromField(childField);
-          return record;
-        }, {});
+        return (field.fields || []).reduce<Record<string, unknown>>(
+          (record, childField) => {
+            record[childField.name] = createValueFromField(childField);
+            return record;
+          },
+          {},
+        );
       });
     }
     case "object": {
-      return (field.fields || []).reduce<Record<string, unknown>>((record, childField) => {
-        record[childField.name] = createValueFromField(childField);
-        return record;
-      }, {});
+      return (field.fields || []).reduce<Record<string, unknown>>(
+        (record, childField) => {
+          record[childField.name] = createValueFromField(childField);
+          return record;
+        },
+        {},
+      );
     }
     case "number":
       return faker.number.int({ min: 1, max: 10000 });
@@ -139,6 +164,29 @@ const resolveFakerMethod = (path: string): (() => unknown) | undefined => {
 const createValueFromSchemaFieldDefinition = (
   fieldDefinition: FexapiSchemaFieldDefinition,
 ): unknown => {
+  if (fieldDefinition.type.endsWith("[]")) {
+    const baseType = fieldDefinition.type.slice(0, -2) as Extract<
+      FexapiSchemaFieldDefinition["type"],
+      | "number"
+      | "string"
+      | "boolean"
+      | "date"
+      | "uuid"
+      | "email"
+      | "url"
+      | "name"
+      | "phone"
+    >;
+    const count = faker.number.int({ min: 1, max: 5 });
+    return Array.from({ length: count }, () => {
+      return createValueFromSchemaFieldDefinition({
+        ...fieldDefinition,
+        type: baseType,
+        faker: undefined, // Usually faker applies to the item, or we can just pass it through
+      });
+    });
+  }
+
   if (fieldDefinition.faker) {
     const fakerMethod = resolveFakerMethod(fieldDefinition.faker);
     if (fakerMethod) {

@@ -7,7 +7,7 @@ import type {
   FexapiSchemaDefinitions,
 } from "../types/config";
 
-const VALID_TYPES = new Set<FexapiFieldValueType>([
+const PRIMITIVE_TYPES = [
   "number",
   "string",
   "boolean",
@@ -17,6 +17,11 @@ const VALID_TYPES = new Set<FexapiFieldValueType>([
   "url",
   "name",
   "phone",
+];
+
+const VALID_TYPES = new Set<FexapiFieldValueType>([
+  ...(PRIMITIVE_TYPES as FexapiFieldValueType[]),
+  ...(PRIMITIVE_TYPES.map((t) => `${t}[]`) as FexapiFieldValueType[]),
 ]);
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {

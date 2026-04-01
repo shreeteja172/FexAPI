@@ -3,7 +3,7 @@ export type FexapiRouteConfig = {
   schema: string;
 };
 
-export type FexapiFieldValueType =
+export type FexapiPrimitiveType =
   | "number"
   | "string"
   | "boolean"
@@ -13,6 +13,10 @@ export type FexapiFieldValueType =
   | "url"
   | "name"
   | "phone";
+
+export type FexapiFieldValueType =
+  | FexapiPrimitiveType
+  | `${FexapiPrimitiveType}[]`;
 
 export type FexapiSchemaFieldDefinition = {
   type: FexapiFieldValueType;

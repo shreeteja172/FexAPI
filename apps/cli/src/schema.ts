@@ -1,4 +1,4 @@
-export type FexapiFieldType =
+export type FexapiPrimitiveType =
   | "number"
   | "string"
   | "boolean"
@@ -7,7 +7,11 @@ export type FexapiFieldType =
   | "email"
   | "url"
   | "name"
-  | "phone"
+  | "phone";
+
+export type FexapiFieldType =
+  | FexapiPrimitiveType
+  | `${FexapiPrimitiveType}[]`
   | "array"
   | "object";
 
@@ -28,7 +32,7 @@ export type FexapiSchema = {
   routes: FexapiRoute[];
 };
 
-const VALID_TYPES: FexapiFieldType[] = [
+const PRIMITIVE_TYPES: FexapiPrimitiveType[] = [
   "number",
   "string",
   "boolean",
@@ -38,6 +42,11 @@ const VALID_TYPES: FexapiFieldType[] = [
   "url",
   "name",
   "phone",
+];
+
+const VALID_TYPES: FexapiFieldType[] = [
+  ...PRIMITIVE_TYPES,
+  ...(PRIMITIVE_TYPES.map((t) => `${t}[]`) as NonNullable<FexapiFieldType>[]),
 ];
 
 const VALID_METHODS = new Set([
@@ -166,11 +175,11 @@ const parseTokens = (
       const isArray = rawType === "[";
       const expectedEnd = isArray ? "]" : "}";
       const nested = parseTokens(tokens, i + 1, expectedEnd);
-      
+
       if (nested.error) {
         return { fields: [], nextIndex: nested.nextIndex, error: nested.error };
       }
-      
+
       if (
         nested.nextIndex > tokens.length ||
         tokens[nested.nextIndex - 1] !== expectedEnd
@@ -181,7 +190,7 @@ const parseTokens = (
           error: `Unclosed ${isArray ? "array" : "object"} for field "${rawName}". Expected "${expectedEnd}".`,
         };
       }
-      
+
       field = {
         name: rawName,
         type: isArray ? "array" : "object",
@@ -196,7 +205,7 @@ const parseTokens = (
           error: `Unknown type "${rawType}" in field "${rawName}". Valid types: ${VALID_TYPES.join(", ")}`,
         };
       }
-      
+
       field = {
         name: rawName,
         type: rawType as FexapiFieldType,
@@ -211,7 +220,7 @@ const parseTokens = (
         error: `Duplicate field "${field.name}".`,
       };
     }
-    
+
     seenFieldNames.add(field.name);
     fields.push(field);
   }
