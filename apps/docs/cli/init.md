@@ -1,6 +1,6 @@
 # fexapi init
 
-Scaffolds the FexAPI project files in your current directory.
+Runs setup and scaffolds FexAPI files in your project.
 
 ## Usage
 
@@ -16,12 +16,14 @@ fexapi init [--force]
 
 ## Interactive Wizard
 
-The init command runs an interactive wizard that asks:
+The command runs a 2-step interactive wizard (TTY only):
 
 | Prompt       | Default | Description                           |
 | ------------ | ------- | ------------------------------------- |
 | Port number  | `4000`  | The port your mock server will run on |
 | Enable CORS? | `Yes`   | Adds CORS headers to all responses    |
+
+If no TTY is available, defaults are used automatically (`port: 4000`, `cors: true`).
 
 ## Generated Files
 
@@ -29,6 +31,16 @@ The init command runs an interactive wizard that asks:
 fexapi/schema.fexapi       # endpoint definitions
 fexapi.config.js           # JavaScript configuration
 ```
+
+`fexapi.config.js` is generated with these defaults from the wizard answers:
+
+- `port: <wizard value>`
+- `cors: <wizard value>`
+- `delay: 0`
+
+Also updates `.gitignore` to include `fexapi/.cache` when needed.
+
+`init` also detects your project stack from the nearest `package.json` and chooses an initial schema template accordingly.
 
 ## Example
 
@@ -49,3 +61,5 @@ To overwrite existing files:
 ```bash
 npx fexapi@latest init --force
 ```
+
+Without `--force`, existing `fexapi/schema.fexapi` and `fexapi.config.js` are kept.

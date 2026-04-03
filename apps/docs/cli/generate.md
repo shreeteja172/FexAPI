@@ -12,13 +12,15 @@ fexapi generate
 
 1. Reads `fexapi/schema.fexapi`
 2. Parses routes and field definitions
-3. Outputs `fexapi/generated.api.json`
+3. Writes `fexapi/.cache/generated.api.json`
 
 ## Output Files
 
-| File                        | Purpose                                   |
-| --------------------------- | ----------------------------------------- |
-| `fexapi/generated.api.json` | Compiled API spec — the server reads this |
+| File                               | Purpose                                   |
+| ---------------------------------- | ----------------------------------------- |
+| `fexapi/.cache/generated.api.json` | Compiled API spec — the server reads this |
+
+The command compares the current schema signature with cached output and skips rewriting when unchanged.
 
 ## When to Run
 

@@ -7,7 +7,7 @@ FexAPI keeps the command surface intentionally small and composable.
 | Command              | Use it for                                                    |
 | -------------------- | ------------------------------------------------------------- |
 | `fexapi init`        | Scaffold project files (`schema.fexapi` + `fexapi.config.js`) |
-| `fexapi generate`    | Compile schema routes into `generated.api.json`               |
+| `fexapi generate`    | Compile schema routes into `.cache/generated.api.json`        |
 | `fexapi format`      | Normalize and reformat `schema.fexapi`                        |
 | `fexapi serve`       | Start server once without watch                               |
 | `fexapi dev --watch` | Auto-generate and auto-reload during development              |
@@ -16,8 +16,10 @@ FexAPI keeps the command surface intentionally small and composable.
 
 - `fexapi run` is an alias for `fexapi serve`
 - `fexapi` (no subcommand) behaves like `fexapi serve`
+- `fexapi --host ...`, `fexapi --port ...`, and `fexapi --log` also map to `serve`
 - `fexapi --version` and `fexapi version` print the installed version
 - `fexapi --help` prints full command help
+- `fexapi help` also prints full command help
 
 Detailed pages:
 
@@ -44,7 +46,7 @@ Active frontend development:
 fexapi dev --watch --log
 ```
 
-Watch mode reacts to schema/config changes and explains what it did (detected change, generated output, reload status).
+Watch mode reacts to changes under `fexapi/` and project root config, and regenerates when schema inputs change.
 
 Before pushing changes:
 
@@ -61,3 +63,5 @@ fexapi generate
 | `--version`, `-v` | Print CLI version         |
 
 Commands reject unexpected positional arguments and duplicate flags.
+
+Port values are validated and must be an integer between `1` and `65535`.

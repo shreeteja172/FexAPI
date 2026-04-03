@@ -15,7 +15,7 @@ fexapi run [--host <host>] [--port <number>] [--log]
 fexapi [--host <host>] [--port <number>] [--log]
 ```
 
-All three forms are equivalent.
+All three forms resolve to the same serve path.
 
 ## Flags
 
@@ -28,8 +28,17 @@ All three forms are equivalent.
 ## Port Priority
 
 ```
---port flag → schema.fexapi port → config file port → 4000
+--port flag → fexapi.config.js port → generated schema port → 4000
 ```
+
+Generated schema port comes from `fexapi/.cache/generated.api.json`.
+
+## Route Sources and Precedence
+
+- Routes can come from both `fexapi.config.js` and generated schema output.
+- If the same path exists in both, schema routes take precedence.
+- Custom schema definitions are loaded from `fexapi/schemas` when present.
+- If no config routes are defined and no generated schema is available, the CLI warns you to run `fexapi generate`.
 
 ## Request Logging
 
@@ -48,3 +57,10 @@ fexapi serve
 fexapi serve --port 5000
 fexapi serve --host 0.0.0.0 --port 3000 --log
 ```
+
+## Validation Rules
+
+- Unknown options fail fast.
+- Duplicate options fail fast.
+- `--port` must be an integer between `1` and `65535`.
+- Unexpected positional arguments fail fast.
