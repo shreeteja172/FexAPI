@@ -83,4 +83,4 @@ npm install -D start-server-and-test
 - Prefer a health check loop over fixed `sleep`
 - Use a fixed port to avoid conflicts
 - Commit your `schema.fexapi` file to version control
-- Don't commit `fexapi/generated.api.json` — generate it in CI
+- Don't commit `fexapi/.cache/generated.api.json` — generate it in CI

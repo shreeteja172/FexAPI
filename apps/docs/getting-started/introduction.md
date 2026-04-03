@@ -2,7 +2,7 @@
 
 FexAPI is a schema-first CLI for generating and serving mock APIs during frontend development.
 
-You define routes once in `fexapi/schema.fexapi`, compile them to `fexapi/generated.api.json`, and run a local API server with realistic fake data.
+You define routes once in `fexapi/schema.fexapi`, compile them to `fexapi/.cache/generated.api.json`, and run a local API server with realistic fake data.
 
 ## Why Teams Use FexAPI
 
@@ -14,7 +14,25 @@ You define routes once in `fexapi/schema.fexapi`, compile them to `fexapi/genera
 ## Mental Model
 
 ```txt
-schema.fexapi -> fexapi generate -> generated.api.json -> fexapi serve/dev
+schema.fexapi -> fexapi generate -> .cache/generated.api.json -> fexapi serve/dev
+```
+
+`fexapi.config.js` feeds runtime settings into the same flow, and the full port/route precedence rules live in [Configuration](./configuration.md).
+
+## Which Command When
+
+| Task                                          | Command              |
+| --------------------------------------------- | -------------------- |
+| Create the starter files                      | `fexapi init`        |
+| Regenerate the cached spec after schema edits | `fexapi generate`    |
+| Reformat schema files                         | `fexapi format`      |
+| Run the server once                           | `fexapi serve`       |
+| Develop with automatic reloads                | `fexapi dev --watch` |
+
+If you remember one thing, remember this flow:
+
+```txt
+init -> edit schema -> generate -> serve or dev --watch
 ```
 
 ## Startup Workflow
@@ -30,15 +48,11 @@ fexapi dev --watch
 
 ```txt
 fexapi/schema.fexapi
-fexapi/generated.api.json
+fexapi/.cache/generated.api.json
 fexapi.config.js
 ```
 
 `fexapi.config.js` is optional but recommended when you want runtime options like `cors`, `delay`, or route-level overrides.
-
-## Route Precedence
-
-If both schema routes and `fexapi.config.js` routes define the same path, schema-generated routes are used first.
 
 ## Next Steps
 

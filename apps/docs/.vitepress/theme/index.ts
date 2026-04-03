@@ -12,12 +12,17 @@ function getCaret(group: HTMLElement) {
   return group.querySelector<HTMLElement>(":scope > .item > .caret");
 }
 
-function closeGroup(group: HTMLElement) {
-  if (group.classList.contains("collapsed")) {
-    return;
-  }
-
-  getCaret(group)?.click();
+function getActiveGroup() {
+  const groups = getTopLevelGroups();
+  return (
+    groups.find((group) =>
+      Boolean(
+        group.querySelector(
+          ".VPSidebarLink.active, .VPSidebarItem.is-active, a[aria-current='page']",
+        ),
+      ),
+    ) ?? null
+  );
 }
 
 function openGroup(group: HTMLElement) {
@@ -28,28 +33,13 @@ function openGroup(group: HTMLElement) {
   getCaret(group)?.click();
 }
 
-function enforceSingleOpen(activeGroup?: HTMLElement | null) {
-  const groups = getTopLevelGroups();
-  if (groups.length === 0) {
+function ensureActiveGroupOpen() {
+  const activeGroup = getActiveGroup();
+  if (!activeGroup) {
     return;
   }
 
-  const openGroups = groups.filter(
-    (group) => !group.classList.contains("collapsed"),
-  );
-
-  let target = activeGroup ?? null;
-  if (!target || !groups.includes(target)) {
-    target = openGroups[0] ?? groups[0];
-  }
-
-  for (const group of groups) {
-    if (group !== target) {
-      closeGroup(group);
-    }
-  }
-
-  openGroup(target);
+  openGroup(activeGroup);
 }
 
 export default {
@@ -85,35 +75,8 @@ export default {
 
     requestAnimationFrame(scheduleScrollReset);
 
-    const bindSidebarAccordion = () => {
-      const onSidebarToggle = (event: Event) => {
-        const target = event.target as HTMLElement | null;
-        const group = target?.closest<HTMLElement>(TOP_LEVEL_SELECTOR) ?? null;
-
-        window.setTimeout(() => {
-          enforceSingleOpen(group);
-        }, 0);
-      };
-
-      const onSidebarEnter = (event: KeyboardEvent) => {
-        if (event.key === "Enter") {
-          onSidebarToggle(event);
-        }
-      };
-
-      document.addEventListener("click", onSidebarToggle);
-      document.addEventListener("keydown", onSidebarEnter);
-
-      // Keep one section open after hydration and route transitions.
-      window.setTimeout(() => enforceSingleOpen(), 0);
-
-      return () => {
-        document.removeEventListener("click", onSidebarToggle);
-        document.removeEventListener("keydown", onSidebarEnter);
-      };
-    };
-
-    const unbindAccordion = bindSidebarAccordion();
+    // Keep the section for the active route open after hydration.
+    window.setTimeout(ensureActiveGroupOpen, 0);
 
     const previousAfterRouteChanged = ctx.router.onAfterRouteChanged;
     ctx.router.onAfterRouteChanged = (to) => {
@@ -122,7 +85,7 @@ export default {
         requestAnimationFrame(scheduleScrollReset);
       }
 
-      window.setTimeout(() => enforceSingleOpen(), 0);
+      window.setTimeout(ensureActiveGroupOpen, 0);
     };
 
     window.addEventListener("pageshow", scheduleScrollReset);
@@ -132,7 +95,6 @@ export default {
       import.meta.hot.dispose(() => {
         window.removeEventListener("pageshow", scheduleScrollReset);
         window.removeEventListener("load", scheduleScrollReset);
-        unbindAccordion();
       });
     }
   },

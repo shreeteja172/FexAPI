@@ -58,11 +58,13 @@ FexAPI supports two ways to define routes:
 
 Both can be used together. If the same path appears in both, schema-generated routes take precedence.
 
-## Priority Order
+## Port and Route Precedence
 
 ```
-CLI flags → schema.fexapi port → config file port → defaults
+CLI flags → fexapi.config.js port → generated schema port → 4000
 ```
+
+For route precedence, schema-generated routes also win when the same path exists in both places.
 
 ## Next Steps
 

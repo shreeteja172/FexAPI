@@ -8,7 +8,7 @@ FexAPI defaults to port `4000`.
 
 ## Setting the Port
 
-There are three ways to configure the port, listed by priority:
+There are three effective sources for port selection, listed by priority:
 
 ### 1. CLI Flag (highest priority)
 
@@ -16,13 +16,7 @@ There are three ways to configure the port, listed by priority:
 fexapi serve --port 5000
 ```
 
-### 2. Schema File
-
-```txt
-port: 4100
-```
-
-### 3. Config File (lowest priority)
+### 2. Config File
 
 ```js
 module.exports = {
@@ -30,10 +24,16 @@ module.exports = {
 };
 ```
 
+### 3. Generated Schema
+
+```txt
+fexapi/.cache/generated.api.json -> "port": 4100
+```
+
 ## Priority Order
 
 ```
---port flag → schema.fexapi port → config file port → 4000
+--port flag → fexapi.config.js port → generated schema port → 4000
 ```
 
 ## Custom Host

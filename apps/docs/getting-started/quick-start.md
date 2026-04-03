@@ -56,7 +56,7 @@ Each route declares an HTTP method, path, and a list of fields with their types.
 npx fexapi generate
 ```
 
-This reads your schema and outputs `fexapi/generated.api.json`.
+This reads your schema and outputs `fexapi/.cache/generated.api.json`.
 
 ## 4. Start the Server
 

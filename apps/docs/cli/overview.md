@@ -2,15 +2,23 @@
 
 FexAPI keeps the command surface intentionally small and composable.
 
+## How It Works
+
+```txt
+schema.fexapi -> fexapi generate -> .cache/generated.api.json -> fexapi serve/dev
+```
+
+`fexapi.config.js` fits beside that flow as the runtime override layer for port, CORS, delay, and route-level settings. See [Configuration](../getting-started/configuration.md) for the precedence rules.
+
 ## Core Commands
 
-| Command              | Use it for                                                    |
-| -------------------- | ------------------------------------------------------------- |
-| `fexapi init`        | Scaffold project files (`schema.fexapi` + `fexapi.config.js`) |
-| `fexapi generate`    | Compile schema routes into `.cache/generated.api.json`        |
-| `fexapi format`      | Normalize and reformat `schema.fexapi`                        |
-| `fexapi serve`       | Start server once without watch                               |
-| `fexapi dev --watch` | Auto-generate and auto-reload during development              |
+| Command              | Writes                                                 | Watch behavior | Best for                                          |
+| -------------------- | ------------------------------------------------------ | -------------- | ------------------------------------------------- |
+| `fexapi init`        | `fexapi/schema.fexapi`, `fexapi.config.js`             | No             | Bootstrapping a new project                       |
+| `fexapi generate`    | `fexapi/.cache/generated.api.json`                     | No             | Refreshing the cached API spec after schema edits |
+| `fexapi format`      | `fexapi/schema.fexapi`                                 | No             | Normalizing schema formatting                     |
+| `fexapi serve`       | None                                                   | No             | Running the server once                           |
+| `fexapi dev --watch` | `fexapi/.cache/generated.api.json` when schema changes | Yes            | Iterating locally with auto-reload                |
 
 ## Aliases and Global Commands
 
@@ -31,6 +39,8 @@ Detailed pages:
 
 ## Common Workflows
 
+Use this if you want the shortest route from zero to running:
+
 New project:
 
 ```bash
@@ -47,6 +57,15 @@ fexapi dev --watch --log
 ```
 
 Watch mode reacts to changes under `fexapi/` and project root config, and regenerates when schema inputs change.
+
+## Common Gotchas
+
+- `init` creates the starter files, but it does not serve anything by itself.
+- `generate` writes the cached spec, but it does not start the server.
+- `serve` runs once and exits on shutdown signals; it does not watch files.
+- `dev --watch` is the only command that auto-regenerates on schema changes.
+
+Port and route precedence are documented once in [Configuration](../getting-started/configuration.md).
 
 Before pushing changes:
 

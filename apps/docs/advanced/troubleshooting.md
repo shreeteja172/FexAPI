@@ -2,6 +2,17 @@
 
 Common issues and how to fix them.
 
+## Fast Lookup
+
+| Symptom                         | Most likely fix                                                                |
+| ------------------------------- | ------------------------------------------------------------------------------ |
+| Nothing starts                  | Run `fexapi init` in a project root                                            |
+| Generate fails                  | Fix `fexapi/schema.fexapi` and rerun `fexapi generate`                         |
+| Server says no generated schema | Run `fexapi generate` first                                                    |
+| Sidebar routes look wrong       | Check route precedence in [Configuration](../getting-started/configuration.md) |
+| Watch mode does not reload      | Confirm `fexapi dev --watch` and the file is in the watch list                 |
+| Port conflict                   | Pick a different `--port` value                                                |
+
 ## Quick Diagnosis Checklist
 
 Run these in order when something feels off:
@@ -42,7 +53,7 @@ fexapi serve
 
 ## "No generated schema found..."
 
-**Cause:** `fexapi/generated.api.json` does not exist yet.
+**Cause:** `fexapi/.cache/generated.api.json` does not exist yet.
 
 **Fix:** Run:
 
@@ -68,11 +79,10 @@ Then restart the server.
 
 **Fix:**
 
-1. Keep your source-of-truth route in `fexapi/schema.fexapi`
-2. Remove overlapping path entries in `fexapi.config.js` routes
-3. Regenerate and restart
-
-Schema-generated routes are prioritized when overlaps exist.
+1. Review the canonical precedence rules in [Configuration](../getting-started/configuration.md)
+2. Keep your source-of-truth route in `fexapi/schema.fexapi`
+3. Remove overlapping path entries in `fexapi.config.js` routes
+4. Regenerate and restart
 
 ## "No routes defined in schema.fexapi"
 
@@ -83,6 +93,10 @@ Schema-generated routes are prioritized when overlaps exist.
 1. Check the syntax of `fexapi/schema.fexapi`
 2. Each route needs: `METHOD /path: field:type`
 3. Run `fexapi format` to normalize the file
+
+## Port and route precedence
+
+See [Configuration](../getting-started/configuration.md) for the single source of truth on config, generated schema, and CLI flag precedence.
 
 ## Port already in use
 
@@ -150,9 +164,10 @@ GET /users:
 **Watched files:**
 
 - `fexapi/schema.fexapi`
-- `fexapi/generated.api.json`
+- `fexapi/.cache/generated.api.json`
 - `fexapi.config.js`
-- `fexapi/schemas/*.yaml`
+- `fexapi/schemas/*.yaml` and `fexapi/schemas/*.yml`
+- other files under `fexapi/` (restart only)
 
 Make sure you're using `fexapi dev --watch` (not `fexapi serve`).
 
