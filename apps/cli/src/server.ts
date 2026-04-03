@@ -135,9 +135,29 @@ const createValueFromField = (field: FexapiField): unknown => {
   }
 };
 
-const createRecordFromRoute = (route: FexapiRoute): Record<string, unknown> => {
+const createRecordFromRoute = (
+  route: FexapiRoute,
+  params: Record<string, string> = {},
+): Record<string, unknown> => {
   return route.fields.reduce<Record<string, unknown>>((record, field) => {
-    record[field.name] = createValueFromField(field);
+    if (field.name in params) {
+      const value = params[field.name]!;
+      if (field.type === "number") {
+        const num = Number(value);
+        record[field.name] = Number.isNaN(num) ? value : num;
+      } else if (field.type === "boolean") {
+        record[field.name] =
+          value === "true" || value === "1"
+            ? true
+            : value === "false" || value === "0"
+              ? false
+              : value;
+      } else {
+        record[field.name] = value;
+      }
+    } else {
+      record[field.name] = createValueFromField(field);
+    }
     return record;
   }, {});
 };
@@ -246,7 +266,59 @@ const toCollectionKey = (routePath: string): string => {
     return "data";
   }
 
+  // Remove any dynamic parameters from the key (e.g. ":id")
+  if (lastSegment.startsWith(":")) {
+    const parentSegment = segments[segments.length - 2];
+    return parentSegment
+      ? parentSegment.replace(/[^a-zA-Z0-9_]/g, "_")
+      : "data";
+  }
+
   return lastSegment.replace(/[^a-zA-Z0-9_]/g, "_");
+};
+
+type MatchedRouteResult = {
+  route: FexapiRoute;
+  params: Record<string, string>;
+};
+
+const matchRoute = (
+  routes: FexapiRoute[],
+  method: string,
+  pathname: string,
+): MatchedRouteResult | undefined => {
+  for (const route of routes) {
+    if (route.method !== method) continue;
+
+    const routeParts = route.path.split("/").filter(Boolean);
+    const requestParts = pathname.split("/").filter(Boolean);
+
+    if (routeParts.length !== requestParts.length) {
+      continue;
+    }
+
+    let isMatch = true;
+    const params: Record<string, string> = {};
+
+    for (let i = 0; i < routeParts.length; i++) {
+      const routePart = routeParts[i]!;
+      const requestPart = requestParts[i]!;
+
+      if (routePart.startsWith(":")) {
+        const paramName = routePart.slice(1);
+        params[paramName] = requestPart;
+      } else if (routePart !== requestPart) {
+        isMatch = false;
+        break;
+      }
+    }
+
+    if (isMatch) {
+      return { route, params };
+    }
+  }
+
+  return undefined;
 };
 
 const createRecordFromSchemaName = (
@@ -288,6 +360,33 @@ const getCountOverrideFromUrl = (
   }
 
   return Math.min(Math.max(Math.floor(parsedCount), 1), 1000);
+};
+
+const getPaginationFromUrl = (
+  urlText: string | undefined,
+): { page?: number; limit?: number } | undefined => {
+  if (!urlText) {
+    return undefined;
+  }
+
+  const url = new URL(urlText, "http://localhost");
+  const rawPage = url.searchParams.get("page");
+  const rawLimit = url.searchParams.get("limit");
+
+  if (rawPage === null && rawLimit === null) {
+    return undefined;
+  }
+
+  const page =
+    rawPage !== null
+      ? Math.max(Math.floor(Number(rawPage) || 1), 1)
+      : undefined;
+  const limit =
+    rawLimit !== null
+      ? Math.min(Math.max(Math.floor(Number(rawLimit) || 10), 1), 1000)
+      : undefined;
+
+  return { page, limit };
 };
 
 export const startServer = ({
@@ -351,14 +450,45 @@ export const startServer = ({
     }
 
     if (apiSpec) {
-      const matchedRoute = apiSpec.routes.find(
-        (route) => route.method === request.method && route.path === pathname,
+      const matchResult = matchRoute(
+        apiSpec.routes,
+        request.method ?? "GET",
+        pathname,
       );
 
-      if (matchedRoute) {
+      if (matchResult) {
+        const { route: matchedRoute, params } = matchResult;
         const method = request.method ?? "GET";
 
         if (method === "GET") {
+          const pagination = getPaginationFromUrl(request.url);
+
+          if (pagination) {
+            const page = pagination.page ?? 1;
+            const limit = pagination.limit ?? 10;
+            const total = faker.number.int({
+              min: limit * page,
+              max: limit * (page + 5),
+            });
+
+            sendJson(
+              response,
+              200,
+              {
+                data: Array.from({ length: limit }, () =>
+                  createRecordFromRoute(matchedRoute, params),
+                ),
+                meta: {
+                  total,
+                  page,
+                  hasMore: page * limit < total,
+                },
+              },
+              { cors: corsEnabled, delay: responseDelay },
+            );
+            return;
+          }
+
           const count = getCountOverrideFromUrl(request.url) ?? 5;
           const payloadKey = toCollectionKey(matchedRoute.path);
 
@@ -367,7 +497,7 @@ export const startServer = ({
             200,
             {
               [payloadKey]: Array.from({ length: count }, () =>
-                createRecordFromRoute(matchedRoute),
+                createRecordFromRoute(matchedRoute, params),
               ),
             },
             { cors: corsEnabled, delay: responseDelay },
@@ -397,7 +527,7 @@ export const startServer = ({
             requestBody = {};
           }
 
-          const generatedRecord = createRecordFromRoute(matchedRoute);
+          const generatedRecord = createRecordFromRoute(matchedRoute, params);
           const merged = { ...generatedRecord, ...requestBody };
           const statusCode = method === "POST" ? 201 : 200;
 
@@ -413,6 +543,37 @@ export const startServer = ({
     if (request.method === "GET") {
       const configuredRoute = configuredRoutes[pathname];
       if (configuredRoute) {
+        const pagination = getPaginationFromUrl(request.url);
+
+        if (pagination) {
+          const page = pagination.page ?? 1;
+          const limit = pagination.limit ?? 10;
+          const total = faker.number.int({
+            min: limit * page,
+            max: limit * (page + 5),
+          });
+
+          sendJson(
+            response,
+            200,
+            {
+              data: Array.from({ length: limit }, () =>
+                createRecordFromSchemaName(
+                  configuredRoute.schema,
+                  schemaDefinitions,
+                ),
+              ),
+              meta: {
+                total,
+                page,
+                hasMore: page * limit < total,
+              },
+            },
+            { cors: corsEnabled, delay: responseDelay },
+          );
+          return;
+        }
+
         const count =
           getCountOverrideFromUrl(request.url) ?? configuredRoute.count;
         const payloadKey = toCollectionKey(pathname);
