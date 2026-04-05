@@ -3,7 +3,7 @@
 ## Requirements
 
 - Node.js 18 or later
-- npm, pnpm, yarn, or bun
+- npm, pnpm, bun, or yarn
 
 ## Install Globally
 
@@ -17,12 +17,12 @@ npm install -g fexapi
 pnpm add -g fexapi
 ```
 
-```bash [yarn]
-yarn global add fexapi
-```
-
 ```bash [bun]
 bun add --global fexapi
+```
+
+```bash [yarn]
+yarn global add fexapi
 ```
 
 :::
@@ -36,6 +36,8 @@ fexapi --help
 ## Use Without Installing
 
 You can run FexAPI directly with your package manager:
+
+Legend: npx = npm, pnpm dlx = pnpm, bunx = bun, yarn dlx = yarn.
 
 ::: code-group
 
@@ -71,12 +73,12 @@ npm install -D fexapi
 pnpm add -D fexapi
 ```
 
-```bash [yarn]
-yarn add -D fexapi
-```
-
 ```bash [bun]
 bun add -d fexapi
+```
+
+```bash [yarn]
+yarn add -D fexapi
 ```
 
 :::

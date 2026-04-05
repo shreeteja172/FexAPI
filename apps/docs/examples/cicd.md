@@ -46,7 +46,9 @@ yarn test
 
 ## GitHub Actions
 
-```yaml
+::: code-group
+
+```yaml [npm]
 name: Tests
 
 on: [push, pull_request]
@@ -59,6 +61,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: npm
 
       - run: npm install
       - run: npx fexapi generate
@@ -76,6 +79,105 @@ jobs:
       - name: Run tests
         run: npm test
 ```
+
+```yaml [pnpm]
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - run: corepack enable
+      - run: pnpm install
+      - run: pnpm dlx fexapi generate
+
+      - name: Start mock server
+        run: pnpm dlx fexapi serve --port 4000 &
+
+      - name: Wait for server readiness
+        run: |
+          for i in {1..30}; do
+            curl -s http://localhost:4000/unknown > /dev/null && break
+            sleep 1
+          done
+
+      - name: Run tests
+        run: pnpm test
+```
+
+```yaml [bun]
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - run: bun install
+      - run: bunx fexapi generate
+
+      - name: Start mock server
+        run: bunx fexapi serve --port 4000 &
+
+      - name: Wait for server readiness
+        run: |
+          for i in {1..30}; do
+            curl -s http://localhost:4000/unknown > /dev/null && break
+            sleep 1
+          done
+
+      - name: Run tests
+        run: bun test
+```
+
+```yaml [yarn]
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+
+      - run: corepack enable
+      - run: yarn install --frozen-lockfile
+      - run: yarn dlx fexapi generate
+
+      - name: Start mock server
+        run: yarn dlx fexapi serve --port 4000 &
+
+      - name: Wait for server readiness
+        run: |
+          for i in {1..30}; do
+            curl -s http://localhost:4000/unknown > /dev/null && break
+            sleep 1
+          done
+
+      - name: Run tests
+        run: yarn test
+```
+
+:::
 
 ## GitLab CI
 
@@ -148,7 +250,7 @@ yarn test
 }
 ```
 
-If you do not use npm, replace `npm test` in the script with `pnpm test`, `bun test`, or `yarn test`.
+See the [Installation guide](../getting-started/installation.md) for the package-manager legend.
 
 ## Tips
 

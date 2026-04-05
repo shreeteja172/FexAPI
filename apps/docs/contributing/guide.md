@@ -16,13 +16,13 @@ We welcome contributions. Here's how to get started.
 
 Use [Conventional Commits](https://www.conventionalcommits.org/):
 
-| Prefix | Use |
-|--------|-----|
-| `feat:` | New feature |
-| `fix:` | Bug fix |
-| `docs:` | Documentation change |
+| Prefix      | Use                                                 |
+| ----------- | --------------------------------------------------- |
+| `feat:`     | New feature                                         |
+| `fix:`      | Bug fix                                             |
+| `docs:`     | Documentation change                                |
 | `refactor:` | Code change that doesn't fix a bug or add a feature |
-| `chore:` | Maintenance tasks |
+| `chore:`    | Maintenance tasks                                   |
 
 ## Pull Request Guidelines
 
@@ -31,11 +31,18 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 - Make sure the build passes
 - Update documentation if your change affects user-facing behavior
 
+## Docs Consistency Checklist
+
+- Include all 4 package manager tabs
+- Keep tab order consistent
+- Avoid npm-only script references unless intentional
+
 ## Issues
 
 Found a bug or have a feature request? [Open an issue](https://github.com/shreeteja172/fexapi/issues).
 
 Please include:
+
 - What you expected to happen
 - What actually happened
 - Steps to reproduce
