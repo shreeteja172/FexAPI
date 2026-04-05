@@ -7,6 +7,8 @@ export default defineConfig({
   appearance: true,
 
   head: [
+    ["link", { rel: "icon", href: "/logo.png" }],
+    ["link", { rel: "apple-touch-icon", href: "/logo.png" }],
     ["meta", { name: "theme-color", content: "#0b1220" }],
     ["meta", { name: "color-scheme", content: "dark light" }],
     ["meta", { property: "og:type", content: "website" }],
@@ -34,7 +36,7 @@ export default defineConfig({
   ],
 
   themeConfig: {
-    logo: undefined,
+    logo: "/logo.png",
     siteTitle: "FexAPI",
 
     nav: [

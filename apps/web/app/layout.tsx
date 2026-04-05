@@ -20,6 +20,10 @@ const slabo = Slabo_27px({
 export const metadata: Metadata = {
   title: "FexAPI",
   description: "High-performance API mocking infrastructure for product teams.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

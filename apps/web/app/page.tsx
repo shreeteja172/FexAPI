@@ -24,7 +24,7 @@ export default function Home() {
       <div className="mx-auto max-w-[1200px] px-5">
         <Navbar
           productName="FexAPI"
-          productTag="Schema Runtime"
+          productTag=""
           items={[]}
           docsAction={{ label: "View Docs", href: docsUrl }}
           githubHref="https://github.com/shreeteja172/fexapi"

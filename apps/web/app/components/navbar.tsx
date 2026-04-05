@@ -36,17 +36,20 @@ export function Navbar({
             href="/"
             aria-label="Go to homepage"
           >
-            <span className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-[#2b4367] bg-[linear-gradient(150deg,#0b1424,#101f36)] text-xs font-semibold tracking-[0.08em] text-[#f4f8ff] shadow-[0_12px_26px_-16px_rgba(5,12,22,0.95)]">
-              FX
-              <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full border border-[#11243e] bg-[linear-gradient(145deg,var(--fx-brand-2),var(--fx-orange))]" />
-            </span>
+            <img
+              src="/logo.png"
+              alt="FexAPI Logo"
+              className="h-10 w-10 object-contain"
+            />
             <span className="flex items-end gap-2">
               <span className="font-[family-name:var(--font-slabo)] text-[1.95rem] leading-none tracking-[-0.02em] text-[var(--fx-text-1)]">
                 {productName}
               </span>
-              <span className="mb-[4px] rounded-full border border-[var(--fx-border)] bg-[color:var(--fx-surface-solid)] px-2.5 py-1 text-[0.63rem] font-semibold uppercase tracking-[0.12em] text-[var(--fx-text-3)] max-[920px]:hidden">
-                {productTag}
-              </span>
+              {productTag && (
+                <span className="mb-[4px] rounded-full border border-[var(--fx-border)] bg-[color:var(--fx-surface-solid)] px-2.5 py-1 text-[0.63rem] font-semibold uppercase tracking-[0.12em] text-[var(--fx-text-3)] max-[920px]:hidden">
+                  {productTag}
+                </span>
+              )}
             </span>
           </a>
 
