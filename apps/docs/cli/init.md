@@ -44,9 +44,25 @@ Also updates `.gitignore` to include `fexapi/.cache` when needed.
 
 ## Example
 
-```bash
+::: code-group
+
+```bash [npm]
 npx fexapi@latest init
 ```
+
+```bash [pnpm]
+pnpm dlx fexapi@latest init
+```
+
+```bash [bun]
+bunx fexapi@latest init
+```
+
+```bash [yarn]
+yarn dlx fexapi@latest init
+```
+
+:::
 
 ```
 What port? (default: 4000) 4000
@@ -58,8 +74,24 @@ Created fexapi.config.js
 
 To overwrite existing files:
 
-```bash
+::: code-group
+
+```bash [npm]
 npx fexapi@latest init --force
 ```
+
+```bash [pnpm]
+pnpm dlx fexapi@latest init --force
+```
+
+```bash [bun]
+bunx fexapi@latest init --force
+```
+
+```bash [yarn]
+yarn dlx fexapi@latest init --force
+```
+
+:::
 
 Without `--force`, existing `fexapi/schema.fexapi` and `fexapi.config.js` are kept.

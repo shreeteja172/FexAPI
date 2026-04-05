@@ -4,9 +4,25 @@ Use FexAPI as your mock backend during Vue development.
 
 ## Setup
 
-```bash
+::: code-group
+
+```bash [npm]
 npx fexapi@latest init
 ```
+
+```bash [pnpm]
+pnpm dlx fexapi@latest init
+```
+
+```bash [bun]
+bunx fexapi@latest init
+```
+
+```bash [yarn]
+yarn dlx fexapi@latest init
+```
+
+:::
 
 Edit `fexapi/schema.fexapi`:
 
@@ -19,10 +35,29 @@ GET /users:
   email:email
 ```
 
-```bash
+::: code-group
+
+```bash [npm]
 npx fexapi@latest generate
 npx fexapi@latest dev --watch
 ```
+
+```bash [pnpm]
+pnpm dlx fexapi@latest generate
+pnpm dlx fexapi@latest dev --watch
+```
+
+```bash [bun]
+bunx fexapi@latest generate
+bunx fexapi@latest dev --watch
+```
+
+```bash [yarn]
+yarn dlx fexapi@latest generate
+yarn dlx fexapi@latest dev --watch
+```
+
+:::
 
 Enable CORS in `fexapi.config.js`:
 

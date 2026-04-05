@@ -10,6 +10,40 @@ Run FexAPI in CI pipelines to provide mock data for automated tests.
 4. Wait for readiness (health probe)
 5. Run test suite
 
+## Package Manager Command Variants
+
+::: code-group
+
+```bash [npm]
+npm install
+npx fexapi generate
+npx fexapi serve --port 4000 &
+npm test
+```
+
+```bash [pnpm]
+pnpm install
+pnpm dlx fexapi generate
+pnpm dlx fexapi serve --port 4000 &
+pnpm test
+```
+
+```bash [bun]
+bun install
+bunx fexapi generate
+bunx fexapi serve --port 4000 &
+bun test
+```
+
+```bash [yarn]
+yarn install
+yarn dlx fexapi generate
+yarn dlx fexapi serve --port 4000 &
+yarn test
+```
+
+:::
+
 ## GitHub Actions
 
 ```yaml
@@ -64,9 +98,47 @@ test:
 
 If your project already uses npm scripts:
 
-```bash
+::: code-group
+
+```bash [npm]
 npm install -D start-server-and-test
 ```
+
+```bash [pnpm]
+pnpm add -D start-server-and-test
+```
+
+```bash [bun]
+bun add -d start-server-and-test
+```
+
+```bash [yarn]
+yarn add -D start-server-and-test
+```
+
+:::
+
+Run the test script with your package manager:
+
+::: code-group
+
+```bash [npm]
+npm test
+```
+
+```bash [pnpm]
+pnpm test
+```
+
+```bash [bun]
+bun test
+```
+
+```bash [yarn]
+yarn test
+```
+
+:::
 
 ```json
 {
@@ -75,6 +147,8 @@ npm install -D start-server-and-test
   }
 }
 ```
+
+If you do not use npm, replace `npm test` in the script with `pnpm test`, `bun test`, or `yarn test`.
 
 ## Tips
 

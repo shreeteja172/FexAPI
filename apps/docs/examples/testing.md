@@ -6,9 +6,25 @@ Use FexAPI to provide consistent mock data for your test suite.
 
 Install FexAPI and a test server orchestrator:
 
-```bash
+::: code-group
+
+```bash [npm]
 npm install -D fexapi start-server-and-test
 ```
+
+```bash [pnpm]
+pnpm add -D fexapi start-server-and-test
+```
+
+```bash [bun]
+bun add -d fexapi start-server-and-test
+```
+
+```bash [yarn]
+yarn add -D fexapi start-server-and-test
+```
+
+:::
 
 Add scripts that generate artifacts, start the server, wait for readiness, and run tests:
 
@@ -22,6 +38,28 @@ Add scripts that generate artifacts, start the server, wait for readiness, and r
   }
 }
 ```
+
+Run the test flow:
+
+::: code-group
+
+```bash [npm]
+npm test
+```
+
+```bash [pnpm]
+pnpm test
+```
+
+```bash [bun]
+bun test
+```
+
+```bash [yarn]
+yarn test
+```
+
+:::
 
 Why this is better than `fexapi serve &`:
 

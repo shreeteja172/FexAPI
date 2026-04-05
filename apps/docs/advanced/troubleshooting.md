@@ -34,10 +34,29 @@ If `generate` fails, fix schema errors first. If the server starts but responses
 1. Run commands from your app/project root (where `package.json` exists)
 2. Or initialize a Node project first:
 
-```bash
+::: code-group
+
+```bash [npm]
 npm init -y
 fexapi init
 ```
+
+```bash [pnpm]
+pnpm init
+fexapi init
+```
+
+```bash [bun]
+bun init -y
+fexapi init
+```
+
+```bash [yarn]
+yarn init -y
+fexapi init
+```
+
+:::
 
 ## "Schema file not found: .../fexapi/schema.fexapi"
 

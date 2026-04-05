@@ -21,6 +21,10 @@ pnpm add -g fexapi
 yarn global add fexapi
 ```
 
+```bash [bun]
+bun add --global fexapi
+```
+
 :::
 
 After installing, verify it works:
@@ -39,16 +43,16 @@ You can run FexAPI directly with your package manager:
 npx fexapi@latest init
 ```
 
-```bash [pnpm dlx]
+```bash [pnpm]
 pnpm dlx fexapi@latest init
 ```
 
-```bash [yarn dlx]
-yarn dlx fexapi@latest init
+```bash [bun]
+bunx fexapi@latest init
 ```
 
-```bash [bunx]
-bunx fexapi@latest init
+```bash [yarn]
+yarn dlx fexapi@latest init
 ```
 
 :::
@@ -69,6 +73,10 @@ pnpm add -D fexapi
 
 ```bash [yarn]
 yarn add -D fexapi
+```
+
+```bash [bun]
+bun add -d fexapi
 ```
 
 :::

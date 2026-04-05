@@ -4,15 +4,25 @@ Get a mock API running in under 2 minutes.
 
 ## 1. Initialize
 
-```bash
+::: code-group
+
+```bash [npm]
 npx fexapi@latest init
 ```
 
-Equivalent commands:
+```bash [pnpm]
+pnpm dlx fexapi@latest init
+```
 
-- `pnpm dlx fexapi@latest init`
-- `yarn dlx fexapi@latest init`
-- `bunx fexapi@latest init`
+```bash [bun]
+bunx fexapi@latest init
+```
+
+```bash [yarn]
+yarn dlx fexapi@latest init
+```
+
+:::
 
 The wizard asks:
 
@@ -52,17 +62,49 @@ Each route declares an HTTP method, path, and a list of fields with their types.
 
 ## 3. Generate
 
-```bash
+::: code-group
+
+```bash [npm]
 npx fexapi generate
 ```
+
+```bash [pnpm]
+pnpm dlx fexapi generate
+```
+
+```bash [bun]
+bunx fexapi generate
+```
+
+```bash [yarn]
+yarn dlx fexapi generate
+```
+
+:::
 
 This reads your schema and outputs `fexapi/.cache/generated.api.json`.
 
 ## 4. Start the Server
 
-```bash
+::: code-group
+
+```bash [npm]
 npx fexapi dev --watch
 ```
+
+```bash [pnpm]
+pnpm dlx fexapi dev --watch
+```
+
+```bash [bun]
+bunx fexapi dev --watch
+```
+
+```bash [yarn]
+yarn dlx fexapi dev --watch
+```
+
+:::
 
 `dev --watch` will regenerate and reload when `fexapi/schema.fexapi`, `fexapi.config.js`, or custom schema YAML files change.
 

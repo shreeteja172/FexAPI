@@ -22,6 +22,10 @@
     --vp-c-border: #cfd9ea;
     --vp-code-bg: #0b1220;
     --vp-code-color: #d8e6ff;
+
+    --scrollbar-thumb: rgba(61, 86, 125, 0.35);
+    --scrollbar-thumb-hover: rgba(61, 86, 125, 0.6);
+    --scrollbar-track: rgba(12, 20, 36, 0.22);
 }
 
 html:not(.dark) {
@@ -71,6 +75,69 @@ html:not(.dark) {
     --vp-c-border: #1a2742;
     --vp-code-bg: #020409;
     --vp-code-color: #c7dcff;
+
+    --scrollbar-thumb: rgba(162, 190, 237, 0.35);
+    --scrollbar-thumb-hover: rgba(162, 190, 237, 0.62);
+    --scrollbar-track: rgba(162, 190, 237, 0.15);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html,
+body,
+.Layout,
+.VPContent,
+.VPSidebar .nav,
+.aside-container,
+.vp-doc div[class*="language-"] pre {
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    scrollbar-width: thin;
+}
+
+.VPSidebar .nav::-webkit-scrollbar,
+.aside-container::-webkit-scrollbar,
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.Layout::-webkit-scrollbar,
+.VPContent::-webkit-scrollbar,
+.vp-doc div[class*="language-"] pre::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.VPSidebar .nav::-webkit-scrollbar-track,
+.aside-container::-webkit-scrollbar-track,
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+.Layout::-webkit-scrollbar-track,
+.VPContent::-webkit-scrollbar-track,
+.vp-doc div[class*="language-"] pre::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 999px;
+}
+
+.VPSidebar .nav::-webkit-scrollbar-thumb,
+.aside-container::-webkit-scrollbar-thumb,
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+.Layout::-webkit-scrollbar-thumb,
+.VPContent::-webkit-scrollbar-thumb,
+.vp-doc div[class*="language-"] pre::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 999px;
+    transition: background-color 0.2s ease;
+}
+
+.VPSidebar .nav::-webkit-scrollbar-thumb:hover,
+.aside-container::-webkit-scrollbar-thumb:hover,
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+.Layout::-webkit-scrollbar-thumb:hover,
+.VPContent::-webkit-scrollbar-thumb:hover,
+.vp-doc div[class*="language-"] pre::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
 }
 
 html,
