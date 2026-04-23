@@ -33,6 +33,14 @@ export default defineConfig({
         href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap",
       },
     ],
+    [
+      "script",
+      {
+        defer: "",
+        src: "https://cloud.umami.is/script.js",
+        "data-website-id": "7657ae83-0855-488f-864d-f7e168ff0612",
+      },
+    ],
   ],
 
   themeConfig: {
