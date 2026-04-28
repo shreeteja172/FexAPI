@@ -28,9 +28,9 @@ export function Navbar({
   const hasGithub = Boolean(githubHref);
 
   return (
-    <header className="sticky top-0 z-50 py-3">
+    <header className="sticky top-0 z-50 py-2 sm:py-3">
       <Container>
-        <div className="flex items-center justify-between gap-4 rounded-[18px] border border-[var(--fx-border)] bg-[color:var(--fx-surface)] px-4 py-3 shadow-[0_18px_38px_-28px_rgba(9,18,36,0.75)] backdrop-blur-xl">
+        <div className="flex flex-col gap-3 rounded-[18px] border border-[var(--fx-border)] bg-[color:var(--fx-surface)] px-3 py-2.5 shadow-[0_18px_38px_-28px_rgba(9,18,36,0.75)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-4 sm:py-3">
           <a
             className="flex items-center gap-3"
             href="/"
@@ -39,10 +39,10 @@ export function Navbar({
             <img
               src="/logo.png"
               alt="FexAPI Logo"
-              className="h-10 w-10 object-contain"
+              className="h-8 w-8 object-contain sm:h-10 sm:w-10"
             />
             <span className="flex items-end gap-2">
-              <span className="font-[family-name:var(--font-slabo)] text-[1.95rem] leading-none tracking-[-0.02em] text-[var(--fx-text-1)]">
+              <span className="font-[family-name:var(--font-slabo)] text-[1.55rem] leading-none tracking-[-0.02em] text-[var(--fx-text-1)] sm:text-[1.95rem]">
                 {productName}
               </span>
               {productTag && (
@@ -70,7 +70,7 @@ export function Navbar({
             </nav>
           ) : null}
 
-          <div className="flex items-center gap-2">
+          <div className="flex w-full items-center gap-2 sm:w-auto sm:justify-end">
             <ThemeToggle />
             {hasGithub ? (
               <a
@@ -94,7 +94,7 @@ export function Navbar({
               href={docsAction.href}
               target={isExternalDocs ? "_blank" : undefined}
               rel={isExternalDocs ? "noreferrer" : undefined}
-              className="inline-flex min-h-11 items-center gap-1 rounded-full border border-transparent bg-[linear-gradient(120deg,var(--fx-brand-1),var(--fx-brand-2),var(--fx-orange))] px-4 text-[0.9rem] font-bold text-[#03131d] shadow-[0_12px_24px_-18px_rgba(5,12,22,0.9)] transition-all duration-200 hover:-translate-y-[1px] hover:saturate-110"
+              className="inline-flex min-h-11 flex-1 items-center justify-center gap-1 rounded-full border border-transparent bg-[linear-gradient(120deg,var(--fx-brand-1),var(--fx-brand-2),var(--fx-orange))] px-3 text-[0.86rem] font-bold text-[#03131d] shadow-[0_12px_24px_-18px_rgba(5,12,22,0.9)] transition-all duration-200 hover:-translate-y-[1px] hover:saturate-110 sm:flex-none sm:px-4 sm:text-[0.9rem]"
             >
               {docsAction.label}
               <span aria-hidden="true">↗</span>

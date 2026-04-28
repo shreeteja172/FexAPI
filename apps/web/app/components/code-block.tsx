@@ -39,18 +39,20 @@ export function CodeBlock({
 
   return (
     <div
-      className={`overflow-hidden rounded-2xl border border-white/10 bg-[#0f1115] ${className}`}
+      className={`overflow-hidden rounded-[20px] border border-white/10 bg-[#0f1115] ${className}`}
       role="region"
       aria-label={`${filename} code sample`}
     >
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-        <span className="font-mono text-xs text-[#8f97a8]">{filename}</span>
-        <span className="rounded-md border border-white/10 px-2 py-1 font-mono text-[11px] uppercase tracking-[0.08em] text-[#8f97a8]">
+      <div className="flex flex-col gap-2 border-b border-white/10 px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+        <span className="font-mono text-[11px] text-[#8f97a8] sm:text-xs">
+          {filename}
+        </span>
+        <span className="self-start rounded-md border border-white/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-[#8f97a8] sm:self-auto sm:text-[11px]">
           {language}
         </span>
       </div>
-      <pre className="overflow-x-auto p-4">
-        <code className="font-mono text-sm leading-7 text-[#e9ecf2]">
+      <pre className="overflow-x-auto p-3 sm:p-4">
+        <code className="font-mono text-[0.76rem] leading-6 text-[#e9ecf2] sm:text-sm sm:leading-7">
           {lines.map(renderLine)}
         </code>
       </pre>

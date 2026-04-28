@@ -68,26 +68,26 @@ function lineToneClass(tone: TerminalTone) {
 
 export function HeroSection({ docsUrl }: HeroSectionProps) {
   return (
-    <section className="py-[96px] pb-[52px] max-[640px]:pt-[72px]">
+    <section className="py-[72px] pb-[42px] sm:py-[96px] sm:pb-[52px]">
       <div className="grid items-stretch gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-        <div className="pt-[10px]">
+        <div className="pt-0 sm:pt-[10px]">
           <p className="m-0 text-[0.74rem] font-bold uppercase tracking-[0.12em] text-[var(--fx-brand-1)]">
             Open Source Mock API Runtime
           </p>
-          <h1 className="m-0 mt-[14px] max-w-[13ch] font-[family-name:var(--font-slabo)] text-[clamp(2.3rem,5.8vw,4.85rem)] leading-[0.96] tracking-[-0.03em] text-[var(--fx-text-1)] lg:max-w-[17ch] max-[640px]:text-[clamp(1.95rem,9vw,3rem)]">
+          <h1 className="m-0 mt-[14px] max-w-[13ch] font-[family-name:var(--font-slabo)] text-[clamp(2rem,8.2vw,4.85rem)] leading-[0.96] tracking-[-0.03em] text-[var(--fx-text-1)] lg:max-w-[17ch]">
             Build frontend flows before backend delivery.
           </h1>
-          <p className="m-0 mt-[18px] max-w-[56ch] text-[1.01rem] leading-[1.75] text-[var(--fx-text-2)]">
+          <p className="m-0 mt-[16px] max-w-[56ch] text-[0.98rem] leading-[1.75] text-[var(--fx-text-2)] sm:text-[1.01rem]">
             FexAPI gives your team a schema-first local API with real data
             shape, clear watch feedback, and no artifact clutter.
           </p>
 
-          <div className="mt-[26px] flex flex-wrap gap-3">
+          <div className="mt-[22px] flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <a
               href={`${docsUrl}/getting-started/quick-start`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-transparent bg-[linear-gradient(120deg,var(--fx-brand-1),var(--fx-brand-2),var(--fx-orange))] px-[18px] text-[0.92rem] font-bold text-[#03131d] transition-transform duration-150 hover:-translate-y-[1px]"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-transparent bg-[linear-gradient(120deg,var(--fx-brand-1),var(--fx-brand-2),var(--fx-orange))] px-[18px] text-[0.92rem] font-bold text-[#03131d] transition-transform duration-150 hover:-translate-y-[1px] sm:w-auto"
             >
               Start in 2 Minutes
             </a>
@@ -95,13 +95,13 @@ export function HeroSection({ docsUrl }: HeroSectionProps) {
               href={`${docsUrl}/cli/overview`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--fx-border)] bg-[var(--fx-surface)] px-[18px] text-[0.92rem] font-bold text-[var(--fx-text-2)] transition-all duration-150 hover:-translate-y-[1px] hover:border-[var(--fx-brand-1)]"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[var(--fx-border)] bg-[var(--fx-surface)] px-[18px] text-[0.92rem] font-bold text-[var(--fx-text-2)] transition-all duration-150 hover:-translate-y-[1px] hover:border-[var(--fx-brand-1)] sm:w-auto"
             >
               Explore CLI
             </a>
           </div>
 
-          <div className="mt-6 grid gap-[10px] sm:grid-cols-3 lg:grid-cols-3 max-[860px]:grid-cols-1">
+          <div className="mt-6 grid grid-cols-1 gap-[10px] sm:grid-cols-2 lg:grid-cols-3">
             {landingStats.map((stat) => (
               <article
                 key={stat.label}

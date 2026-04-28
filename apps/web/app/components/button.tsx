@@ -8,7 +8,7 @@ type ButtonProps = {
 
 export function Button({ href, children, variant = "primary" }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-medium tracking-[-0.01em] transition-colors duration-200";
+    "inline-flex min-h-11 w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-medium tracking-[-0.01em] transition-colors duration-200 sm:w-auto sm:px-5 sm:py-2.5";
   const styles =
     variant === "primary"
       ? "bg-[var(--foreground)] text-white hover:bg-black"

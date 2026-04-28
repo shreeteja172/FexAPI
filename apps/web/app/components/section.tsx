@@ -19,7 +19,7 @@ export function Section({
   className = "",
 }: SectionProps) {
   return (
-    <section id={id} className={`py-24 sm:py-28 ${className}`}>
+    <section id={id} className={`py-16 sm:py-24 lg:py-28 ${className}`}>
       <Container>
         <div className="max-w-3xl">
           {eyebrow ? (
@@ -27,16 +27,16 @@ export function Section({
               {eyebrow}
             </p>
           ) : null}
-          <h2 className="font-[family-name:var(--font-slabo)] text-4xl leading-tight tracking-[-0.02em] text-[var(--foreground)] sm:text-5xl">
+          <h2 className="font-[family-name:var(--font-slabo)] text-[2rem] leading-tight tracking-[-0.02em] text-[var(--foreground)] sm:text-4xl lg:text-5xl">
             {title}
           </h2>
           {description ? (
-            <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--muted)] sm:text-lg">
+            <p className="mt-4 max-w-2xl text-[0.95rem] leading-7 text-[var(--muted)] sm:mt-5 sm:text-base sm:leading-8">
               {description}
             </p>
           ) : null}
         </div>
-        <div className="mt-12">{children}</div>
+        <div className="mt-8 sm:mt-12">{children}</div>
       </Container>
     </section>
   );
