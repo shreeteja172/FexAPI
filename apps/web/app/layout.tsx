@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Slabo_27px } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
-
+import "./globals.css";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
